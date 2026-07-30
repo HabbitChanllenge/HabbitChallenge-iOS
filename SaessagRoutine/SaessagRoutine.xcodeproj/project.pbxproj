@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F203939C301B9DFB00E8BF0A /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = F203939B301B9DFB00E8BF0A /* Then */; };
+		F203939F301B9E1800E8BF0A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F203939E301B9E1800E8BF0A /* SnapKit */; };
+		F20393A2301BA1DC00E8BF0A /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = F20393A1301BA1DC00E8BF0A /* Moya */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F2039284301B8F4700E8BF0A /* SaessagRoutine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaessagRoutine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +42,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F203939C301B9DFB00E8BF0A /* Then in Frameworks */,
+				F203939F301B9E1800E8BF0A /* SnapKit in Frameworks */,
+				F20393A2301BA1DC00E8BF0A /* Moya in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +87,9 @@
 			);
 			name = SaessagRoutine;
 			packageProductDependencies = (
+				F203939B301B9DFB00E8BF0A /* Then */,
+				F203939E301B9E1800E8BF0A /* SnapKit */,
+				F20393A1301BA1DC00E8BF0A /* Moya */,
 			);
 			productName = SaessagRoutine;
 			productReference = F2039284301B8F4700E8BF0A /* SaessagRoutine.app */;
@@ -107,6 +119,11 @@
 			);
 			mainGroup = F203927B301B8F4600E8BF0A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F203939A301B9DFB00E8BF0A /* XCRemoteSwiftPackageReference "Then" */,
+				F203939D301B9E1800E8BF0A /* XCRemoteSwiftPackageReference "SnapKit" */,
+				F20393A0301BA1DC00E8BF0A /* XCRemoteSwiftPackageReference "Moya" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F2039285301B8F4700E8BF0A /* Products */;
 			projectDirPath = "";
@@ -339,6 +356,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F203939A301B9DFB00E8BF0A /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		F203939D301B9E1800E8BF0A /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
+		F20393A0301BA1DC00E8BF0A /* XCRemoteSwiftPackageReference "Moya" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Moya/Moya";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 15.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F203939B301B9DFB00E8BF0A /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F203939A301B9DFB00E8BF0A /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
+		F203939E301B9E1800E8BF0A /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F203939D301B9E1800E8BF0A /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		F20393A1301BA1DC00E8BF0A /* Moya */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F20393A0301BA1DC00E8BF0A /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = Moya;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F203927C301B8F4600E8BF0A /* Project object */;
 }

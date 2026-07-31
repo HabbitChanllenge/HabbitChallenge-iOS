@@ -1,8 +1,8 @@
 //
-//  ViewController.swift
+//  HomeViewController.swift
 //  SaessagRoutine
 //
-//  Created by Seoyun Jin on 7/30/26.
+//  Created by Seoyun Jin on 7/31/26.
 //
 
 import UIKit
@@ -10,7 +10,7 @@ import SnapKit
 import Then
 import Moya
 
-class ViewController: UIViewController {
+class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

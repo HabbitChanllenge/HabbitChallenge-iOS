@@ -10,7 +10,7 @@ import SnapKit
 import Then
 import Moya
 
-class ViewController: UIViewController {
+class SignUpViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

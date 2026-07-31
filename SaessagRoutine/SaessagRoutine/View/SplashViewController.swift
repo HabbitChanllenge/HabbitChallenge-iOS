@@ -1,0 +1,33 @@
+//
+//  SplashViewController.swift
+//  SaessagRoutine
+//
+//  Created by Seoyun Jin on 7/31/26.
+//
+
+import UIKit
+import SnapKit
+import Then
+
+class SplashViewController: UIViewController {
+    let logoImg = UIImageView().then {
+        $0.image = UIImage(named: "splashLogo")
+        $0.contentMode = .scaleAspectFit
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        view.addSubview(logoImg)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
+            self?.splashToHome()
+        }
+        logoImg.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+    }
+    func splashToHome() {
+        let loginVC = LogInViewController()
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: false)
+    }
+}

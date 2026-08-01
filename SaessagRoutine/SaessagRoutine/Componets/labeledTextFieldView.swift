@@ -21,14 +21,12 @@ final class LabeledTextFieldView: UIView {
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
         $0.leftView = leftPaddingView
         $0.leftViewMode = .always
-        $0.isSecureTextEntry = true
     }
     let passwordSecureButton = UIButton(type: .system).then {
-        $0.addTarget(self, action: #selector(setSecure), for: .touchUpInside)
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "eye.slash")
         config.baseForegroundColor = UIColor(named: "gray600")
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 24)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 15)
         $0.configuration = config
     }
     
@@ -37,6 +35,8 @@ final class LabeledTextFieldView: UIView {
         titleText.text = title
         setup()
         textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor: UIColor(named: "gray600")])
+        passwordSecureButton.addTarget(self, action: #selector(setSecure), for: .touchUpInside)
+        textField.isSecureTextEntry = isPassword
         if !isPassword {
             passwordSecureButton.isHidden = true
         }

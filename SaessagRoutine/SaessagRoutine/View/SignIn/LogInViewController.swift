@@ -20,8 +20,8 @@ class LogInViewController: UIViewController {
         $0.font = .systemFont(ofSize: 37, weight: .semibold)
         $0.textColor = .black
     }
-    let emailTextField : UIView = LabeledTextFieldView(title: "이메일 주소", placeholder: "이메일을 입력해 주세요.")
-    let passwordTextField : UIView = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요.")
+    let emailTextField : UIView = LabeledTextFieldView(title: "이메일 주소", placeholder: "이메일을 입력해 주세요.", isPassword: false)
+    let passwordTextField : UIView = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요.", isPassword: true)
     let loginButton = UIButton().then {
         $0.setTitleColor(.white, for: .normal)
         $0.backgroundColor = UIColor(named: "main300")

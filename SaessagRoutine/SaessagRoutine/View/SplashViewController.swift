@@ -27,7 +27,8 @@ class SplashViewController: UIViewController {
     }
     func splashToHome() {
         let loginVC = LogInViewController()
-        loginVC.modalPresentationStyle = .fullScreen
-        present(loginVC, animated: false)
+        //rootViewController를 로그인 뷰 컨트롤러로 바꿈.
+        navigationController?.pushViewController(loginVC, animated: false)
+        UIWindow.changeRootViewController(to: loginVC, animated: false)
     }
 }

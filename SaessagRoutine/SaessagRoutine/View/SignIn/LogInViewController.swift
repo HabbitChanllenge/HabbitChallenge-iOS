@@ -55,14 +55,9 @@ class LogInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
-        
-        if emailTextField.textField.text?.isEmpty ?? true || passwordTextField.textField.text?.isEmpty ?? true {
-            loginButton.isEnabled = false
-            loginButton.backgroundColor = UIColor(named: "main300")
-        } else {
-            loginButton.isEnabled = true
-            loginButton.backgroundColor = UIColor(named: "main600")
-        }
+        logInButtonChange()
+        emailTextField.textField.addTarget(self, action: #selector(logInButtonChange), for: .editingChanged)
+        passwordTextField.textField.addTarget(self, action: #selector(logInButtonChange), for: .editingChanged)
     }
     
     private func setupLayout() {
@@ -111,5 +106,17 @@ class LogInViewController: UIViewController {
         let homeVC = HomeViewController()
         homeVC.modalPresentationStyle = .fullScreen
         present(homeVC, animated: false)
+    }
+    @objc private func logInButtonChange() {
+        let isEmailEmpty = emailTextField.textField.text?.isEmpty ?? true
+        let isPasswordEmpty = passwordTextField.textField.text?.isEmpty ?? true
+        
+        if emailTextField.textField.text?.isEmpty ?? true || passwordTextField.textField.text?.isEmpty ?? true {
+            loginButton.isEnabled = false
+            loginButton.backgroundColor = UIColor(named: "main300")
+        } else {
+            loginButton.isEnabled = true
+            loginButton.backgroundColor = UIColor(named: "main600")
+        }
     }
 }

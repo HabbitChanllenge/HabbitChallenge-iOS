@@ -20,6 +20,7 @@ class SignUpViewController: UIViewController {
         $0.axis = .vertical
         $0.spacing = 19
     }
+    
     let idTextField = LabeledTextFieldView(title: "아이디", placeholder: "앱에서 불릴 이름", isPassword: false)
     let emailTextField = LabeledTextFieldView(title: "이메일", placeholder: "이메일을 입력해 주세요", isPassword: false)
     let passwordTextField = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
@@ -37,15 +38,32 @@ class SignUpViewController: UIViewController {
         $0.isHidden = true
     }
     
+    let signUpButton = UIButton(type: .system).then {
+        $0.setTitle("가입하고 시작하기", for: .normal)
+        $0.setTitleColor(.white, for: .normal)
+        $0.layer.cornerRadius = 10
+        $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupLayout()
+        buttonChange()
+        //buttonChange 함수 초기 호출 해서 기본값 잡기
+        
+        idTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        emailTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        passwordTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        passwordCheckTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        //입력할 때마다 버튼 색, 활성화 여부 바꾸는 함수 호출
+
     }
     
     private func setupLayout() {
         view.addSubview(titleLabel)
         view.addSubview(stackView)
+        view.addSubview(signUpButton)
         
         stackView.addArrangedSubview(idTextField)
         stackView.addArrangedSubview(emailTextField)
@@ -61,6 +79,25 @@ class SignUpViewController: UIViewController {
         stackView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(79)
             $0.centerX.width.equalToSuperview().inset(24)
+        }
+        signUpButton.snp.makeConstraints {
+            $0.trailing.leading.equalTo(stackView)
+            $0.height.equalTo(63)
+            $0.bottom.equalToSuperview().inset(68)
+        }
+    }
+    @objc private func buttonChange() {
+        let isEmailEmpty = emailTextField.textField.text?.isEmpty ?? true
+        let isPasswordEmpty = passwordTextField.textField.text?.isEmpty ?? true
+        let isPasswordCheckEmpty = passwordCheckTextField.textField.text?.isEmpty ?? true
+        let isIdEmpty = idTextField.textField.text?.isEmpty ?? true
+        
+        if isEmailEmpty || isPasswordEmpty || isPasswordCheckEmpty || isIdEmpty{
+            signUpButton.isEnabled = false
+            signUpButton.backgroundColor = UIColor(named: "main300")
+        } else {
+            signUpButton.isEnabled = true
+            signUpButton.backgroundColor = UIColor(named: "main600")
         }
     }
 }

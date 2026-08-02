@@ -22,7 +22,7 @@ class LogInViewController: UIViewController {
     }
     let emailTextField : LabeledTextFieldView = LabeledTextFieldView(title: "이메일 주소", placeholder: "이메일을 입력해 주세요.", isPassword: false)
     let passwordTextField : LabeledTextFieldView = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요.", isPassword: true)
-    let loginButton = UIButton().then {
+    let loginButton = UIButton(type: .system).then {
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 10
         $0.setTitle("로그인하기", for: .normal)

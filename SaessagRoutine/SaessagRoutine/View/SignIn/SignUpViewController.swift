@@ -45,6 +45,17 @@ class SignUpViewController: UIViewController {
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.addTarget(self, action: #selector(passwordCheck), for: .touchUpInside)
     }
+    let toLoginText = UILabel().then {
+        $0.text = "이미 계정이 있으신가요?"
+        $0.textColor = .black
+        $0.font = .systemFont(ofSize: 15, weight: .semibold)
+    }
+    let toLoginButton = UIButton(type: .system).then {
+        $0.setTitle("로그인", for: .normal)
+        $0.setTitleColor(UIColor(named: "main700"), for: .normal)
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        $0.addTarget(self, action: #selector(toLogin), for: .touchUpInside)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,6 +76,8 @@ class SignUpViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(stackView)
         view.addSubview(signUpButton)
+        view.addSubview(toLoginText)
+        view.addSubview(toLoginButton)
         
         stackView.addArrangedSubview(idTextField)
         stackView.addArrangedSubview(emailTextField)
@@ -85,6 +98,14 @@ class SignUpViewController: UIViewController {
             $0.trailing.leading.equalTo(stackView)
             $0.height.equalTo(63)
             $0.bottom.equalToSuperview().inset(68)
+        }
+        toLoginText.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(103)
+            $0.bottom.equalToSuperview().inset(31)
+        }
+        toLoginButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(103)
+            $0.centerY.equalTo(toLoginText)
         }
     }
     @objc private func buttonChange() {
@@ -108,11 +129,14 @@ class SignUpViewController: UIViewController {
         let password = passwordTextField.textField.text
         let passwordCheck = passwordCheckTextField.textField.text
         if password == passwordCheck {
-            navigationController?.popViewController(animated: false)
+            toLogin()
         } else {
             errorMessagePassword.isHidden = false
         }
         return
+    }
+    @objc private func toLogin() {
+        navigationController?.popViewController(animated: false)
     }
 }
 

@@ -107,6 +107,7 @@ class LogInViewController: UIViewController {
         homeVC.modalPresentationStyle = .fullScreen
         present(homeVC, animated: false)
     }
+
     @objc private func logInButtonChange() {
         let isEmailEmpty = emailTextField.textField.text?.isEmpty ?? true
         let isPasswordEmpty = passwordTextField.textField.text?.isEmpty ?? true

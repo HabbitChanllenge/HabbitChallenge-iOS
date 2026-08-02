@@ -43,6 +43,7 @@ class SignUpViewController: UIViewController {
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 10
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
+        $0.addTarget(self, action: #selector(passwordCheck), for: .touchUpInside)
     }
     
     override func viewDidLoad() {
@@ -91,14 +92,27 @@ class SignUpViewController: UIViewController {
         let isPasswordEmpty = passwordTextField.textField.text?.isEmpty ?? true
         let isPasswordCheckEmpty = passwordCheckTextField.textField.text?.isEmpty ?? true
         let isIdEmpty = idTextField.textField.text?.isEmpty ?? true
+        //비었는지 안비었는지 확인
         
         if isEmailEmpty || isPasswordEmpty || isPasswordCheckEmpty || isIdEmpty{
             signUpButton.isEnabled = false
             signUpButton.backgroundColor = UIColor(named: "main300")
+            //하나라도 입력이 안됐을 때
         } else {
             signUpButton.isEnabled = true
             signUpButton.backgroundColor = UIColor(named: "main600")
+            //전부 다 입력이 됐을 때
         }
+    }
+    @objc private func passwordCheck() {
+        let password = passwordTextField.textField.text
+        let passwordCheck = passwordCheckTextField.textField.text
+        if password == passwordCheck {
+            navigationController?.popViewController(animated: false)
+        } else {
+            errorMessagePassword.isHidden = false
+        }
+        return
     }
 }
 

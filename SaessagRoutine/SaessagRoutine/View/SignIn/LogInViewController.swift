@@ -45,7 +45,7 @@ class LogInViewController: UIViewController {
         $0.setAttributedTitle(attributedString, for: .normal)
         $0.isEnabled = true
     }
-    let errorMessege = UILabel().then {
+    let errorMessage = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.textColor = UIColor(named: "error")
         $0.text = "이메일 주소와 비밀번호를 확인해 주세요."
@@ -71,7 +71,7 @@ class LogInViewController: UIViewController {
         
         stackView.addArrangedSubview(emailTextField)
         stackView.addArrangedSubview(passwordTextField)
-        stackView.addArrangedSubview(errorMessege)
+        stackView.addArrangedSubview(errorMessage)
         
         titleText.snp.makeConstraints {
             $0.centerX.equalToSuperview()

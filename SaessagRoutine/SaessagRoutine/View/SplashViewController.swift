@@ -27,6 +27,7 @@ class SplashViewController: UIViewController {
     }
     func splashToHome() {
         let loginVC = LogInViewController()
-        navigationController?.pushViewController(loginVC, animated: false)
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: false)
     }
 }

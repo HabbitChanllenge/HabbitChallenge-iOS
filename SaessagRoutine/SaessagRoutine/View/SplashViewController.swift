@@ -27,6 +27,6 @@ class SplashViewController: UIViewController {
     }
     func splashToHome() {
         let loginVC = LogInViewController()
-        navigationController?.pushViewController(loginVC, animated: false)
+        present(loginVC, animated: false)
     }
 }

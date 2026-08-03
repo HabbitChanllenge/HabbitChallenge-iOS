@@ -14,13 +14,16 @@ final class RootTabBarController: UITabBarController {
     private func setTabBar() {//탭 바 전체의 속성을 설정
         let navAppearance = UITabBarAppearance()
         navAppearance.configureWithOpaqueBackground()
-        navAppearance.backgroundColor = .clear
-        navAppearance.shadowColor = .clear
-        navAppearance.selectionIndicatorImage = UIImage()
+        navAppearance.backgroundColor = .white
         navAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(named: "gray500")
         navAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(named: "gray500")]
+        navAppearance.shadowColor = UIColor(named: "gray400")
         
+        tabBar.standardAppearance = navAppearance
         tabBar.tintColor = UIColor(named: "main800")
+        if #available(iOS 15.0, *) {
+            tabBar.scrollEdgeAppearance = navAppearance
+        }
     }
     private func setTabBarItem() {//탭바에서 각 버튼마다의 속성 설정
         viewControllers = [

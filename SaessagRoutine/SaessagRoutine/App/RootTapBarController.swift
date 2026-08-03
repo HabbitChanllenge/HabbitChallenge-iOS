@@ -16,10 +16,14 @@ final class RootTabBarController: UITabBarController {
         let navAppearance = UITabBarAppearance()
         navAppearance.configureWithOpaqueBackground()
         navAppearance.backgroundColor = .white
+        navAppearance.shadowColor = .clear
         
         tabBar.standardAppearance = navAppearance
-        tabBar.scrollEdgeAppearance = navAppearance
+        if #available(iOS 15.0, *) {
+            tabBar.scrollEdgeAppearance = navAppearance
+        }
         tabBar.tintColor = UIColor(named: "main800")
+        tabBar.unselectedItemTintColor = UIColor(named: "gray500")
         
         traitOverrides.horizontalSizeClass = .compact
     }
@@ -50,7 +54,8 @@ final class RootTabBarController: UITabBarController {
     private func makeNavController(rootViewController: UIViewController, title: String, img: String) -> UIViewController {
         let navController = UINavigationController(rootViewController: rootViewController)
         navController.tabBarItem.image = UIImage(systemName: img)
-        rootViewController.tabBarItem.title = title
+        navController.tabBarItem.selectedImage = UIImage(systemName: img)
+        navController.tabBarItem.title = title
         
         return navController
     }

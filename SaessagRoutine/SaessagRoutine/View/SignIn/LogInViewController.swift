@@ -103,7 +103,7 @@ class LogInViewController: UIViewController {
         navigationController?.pushViewController(signUpVC, animated: false)
     }
     @objc func logInToHome() {
-        let homeVC = HomeViewController()
+        let homeVC = RootTabBarController()
         navigationController?.pushViewController(homeVC, animated: false)
         UIWindow.changeRootViewController(to: homeVC, animated: true)
     }

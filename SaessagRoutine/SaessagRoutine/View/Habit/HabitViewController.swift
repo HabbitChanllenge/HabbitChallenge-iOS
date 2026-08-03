@@ -10,7 +10,7 @@ import SnapKit
 import Then
 import Moya
 
-class HabbitViewController: UIViewController {
+class HabitViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

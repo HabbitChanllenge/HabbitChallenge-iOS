@@ -7,7 +7,6 @@
 
 import UIKit
 final class RootTabBarController: UITabBarController {
-    
     override func viewDidLoad() {
         setTabBar()
         setTabBarItem()
@@ -15,17 +14,13 @@ final class RootTabBarController: UITabBarController {
     private func setTabBar() {//탭 바 전체의 속성을 설정
         let navAppearance = UITabBarAppearance()
         navAppearance.configureWithOpaqueBackground()
-        navAppearance.backgroundColor = .white
+        navAppearance.backgroundColor = .clear
         navAppearance.shadowColor = .clear
+        navAppearance.selectionIndicatorImage = UIImage()
+        navAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(named: "gray500")
+        navAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(named: "gray500")]
         
-        tabBar.standardAppearance = navAppearance
-        if #available(iOS 15.0, *) {
-            tabBar.scrollEdgeAppearance = navAppearance
-        }
         tabBar.tintColor = UIColor(named: "main800")
-        tabBar.unselectedItemTintColor = UIColor(named: "gray500")
-        
-        traitOverrides.horizontalSizeClass = .compact
     }
     private func setTabBarItem() {//탭바에서 각 버튼마다의 속성 설정
         viewControllers = [
@@ -35,7 +30,7 @@ final class RootTabBarController: UITabBarController {
                 img: "house"
             ),
             makeNavController(
-                rootViewController: HabbitViewController(),
+                rootViewController: HabitViewController(),
                 title: "습관",
                 img: "leaf"
             ),
@@ -43,8 +38,7 @@ final class RootTabBarController: UITabBarController {
                 rootViewController: RankingViewController(),
                 title: "랭킹",
                 img: "trophy"
-            ),
-            makeNavController(
+            ), makeNavController(
                 rootViewController: MyPageViewContoller(),
                 title: "마이페이지",
                 img: "person"
@@ -54,9 +48,7 @@ final class RootTabBarController: UITabBarController {
     private func makeNavController(rootViewController: UIViewController, title: String, img: String) -> UIViewController {
         let navController = UINavigationController(rootViewController: rootViewController)
         navController.tabBarItem.image = UIImage(systemName: img)
-        navController.tabBarItem.selectedImage = UIImage(systemName: img)
         navController.tabBarItem.title = title
-        
         return navController
     }
 }

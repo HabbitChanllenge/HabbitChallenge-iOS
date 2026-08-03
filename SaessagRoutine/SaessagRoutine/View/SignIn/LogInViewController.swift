@@ -104,15 +104,15 @@ class LogInViewController: UIViewController {
     }
     @objc func logInToHome() {
         let homeVC = HomeViewController()
-        homeVC.modalPresentationStyle = .fullScreen
-        present(homeVC, animated: false)
+        navigationController?.pushViewController(homeVC, animated: false)
+        UIWindow.changeRootViewController(to: homeVC, animated: true)
     }
 
     @objc private func logInButtonChange() {
         let isEmailEmpty = emailTextField.textField.text?.isEmpty ?? true
         let isPasswordEmpty = passwordTextField.textField.text?.isEmpty ?? true
         
-        if emailTextField.textField.text?.isEmpty ?? true || passwordTextField.textField.text?.isEmpty ?? true {
+        if isEmailEmpty || isPasswordEmpty {
             loginButton.isEnabled = false
             loginButton.backgroundColor = UIColor(named: "main300")
         } else {

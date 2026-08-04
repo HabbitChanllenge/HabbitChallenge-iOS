@@ -52,6 +52,13 @@ final class RootTabBarController: UITabBarController {
         let navController = UINavigationController(rootViewController: rootViewController)
         navController.tabBarItem.image = UIImage(systemName: img)
         navController.tabBarItem.title = title
+        navController.tabBarItem.image?.withRenderingMode(.alwaysOriginal)
+        navController.navigationBar.isTranslucent = false
+        navController.navigationBar.backgroundColor = .white
+        
+        let logoImg = UIImage(named: "topBarLogo")
+        navigationItem.titleView = UIImageView(image: logoImg)
+        
         return navController
     }
 }

@@ -57,14 +57,14 @@ final class HabitCardView: UIView {
     
     init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String) {
         super.init(frame: .zero)
-        setAtrributes(titleText, days, times, didTimes, category, cycle)
+        setAttributes(titleText, days, times, didTimes, category, cycle)
         setupLayout()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAtrributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String) {
+    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String) {
         titleLabel.text = titleText
         categoryLabel.text = category
         timesLabel.text = "\(cycle) \(didTimes)/\(times)"
@@ -73,13 +73,16 @@ final class HabitCardView: UIView {
         } else {
             daysButton.setTitle("\(days)주 성공", for: .normal)
         }
+        patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
         var isCompleted = (didTimes >= times)
         if isCompleted {
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
+            habitCard.backgroundColor = UIColor(named: "main300")
         } else {
             verificationButton.backgroundColor = UIColor(named: "main600")
+            habitCard.backgroundColor = UIColor(named: "gray300")
         }
     }
     private func setupLayout() {
@@ -99,6 +102,7 @@ final class HabitCardView: UIView {
         habitCard.snp.makeConstraints {
             $0.height.equalTo(116)
             $0.leading.trailing.equalToSuperview().inset(24)
+            $0.top.bottom.equalToSuperview()
         }
         
         verificationButton.snp.makeConstraints {
@@ -123,5 +127,8 @@ final class HabitCardView: UIView {
             $0.top.equalTo(textStack.snp.bottom).offset(14)
             $0.trailing.leading.bottom.equalToSuperview().inset(16)
         }
+    }
+    @objc private func patchButtonTapped() {
+        print("수정버튼 클릭")
     }
 }

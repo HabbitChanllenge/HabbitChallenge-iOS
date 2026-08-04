@@ -11,17 +11,14 @@ import Then
 import Moya
 
 class HomeViewController: UIViewController {
-    let titleText = UILabel().then {
-        $0.text = "홈"
-        $0.font = .systemFont(ofSize: 20, weight: .bold)
-    }
+    let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 3, didTimes: 2, category: "#일상", cycle: "매일")
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        view.addSubview(titleText)
-        titleText.snp.makeConstraints {
-            $0.center.equalToSuperview()
+        view.addSubview(topHabitCard)
+        topHabitCard.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
         }
     }
 }

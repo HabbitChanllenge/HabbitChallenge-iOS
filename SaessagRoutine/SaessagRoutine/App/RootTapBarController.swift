@@ -6,7 +6,14 @@
 //
 
 import UIKit
+enum tabIndex : Int {
+    case home
+    case habit
+    case ranking
+    case profile
+}
 final class RootTabBarController: UITabBarController {
+    
     override func viewDidLoad() {
         setTabBar()
         setTabBarItem()
@@ -26,30 +33,30 @@ final class RootTabBarController: UITabBarController {
         }
     }
     private func setTabBarItem() {//탭바에서 각 버튼마다의 속성 설정
-        viewControllers = [
-            makeNavController(
-                rootViewController: HomeViewController(),
-                title: "홈",
-                img: "house"
-            ),
-            makeNavController(
-                rootViewController: HabitViewController(),
-                title: "습관",
-                img: "leaf"
-            ),
-            makeNavController(
-                rootViewController: RankingViewController(),
-                title: "랭킹",
-                img: "trophy"
-            ), makeNavController(
-                rootViewController: MyPageViewContoller(),
-                title: "마이페이지",
-                img: "person"
-            )
-        ]
+        let home = makeNavController(
+            to: HomeViewController(),
+            title: "홈",
+            img: "house"
+        )
+        let habit = makeNavController(
+            to: HabitViewController(),
+            title: "습관",
+            img: "leaf"
+        )
+        let rank = makeNavController(
+            to: RankingViewController(),
+            title: "랭킹",
+            img: "trophy"
+        )
+        let myPage = makeNavController(
+            to: MyPageViewContoller(),
+            title: "마이페이지",
+            img: "person"
+        )
+        viewControllers = [home, habit, rank, myPage]
     }
-    private func makeNavController(rootViewController: UIViewController, title: String, img: String) -> UIViewController {
-        let navController = UINavigationController(rootViewController: rootViewController)
+    private func makeNavController(to: UIViewController, title: String, img: String) -> UIViewController {
+        let navController = UINavigationController(rootViewController: to)
         navController.tabBarItem.image = UIImage(systemName: img)
         navController.tabBarItem.title = title
         return navController

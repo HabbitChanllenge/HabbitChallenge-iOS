@@ -20,6 +20,14 @@ class HomeViewController: UIViewController {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
         }
+        topHabitCard.onPatchButtonTapped = { [weak self] in//수정 버튼 눌렸을 때 uiView에선 화면 전환이 불가하기 때문에 작성해주는 친구
+            guard let self = self,
+            let tabBarController = self.tabBarController else { return }
+            
+            tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
+            
+            navigationController?.pushViewController(HabitEditViewController(),animated: false)
+        }
     }
 }
 

@@ -54,6 +54,7 @@ final class HabitCardView: UIView {
         $0.tintColor = .white
         $0.layer.cornerRadius = 10
     }//인증버튼
+    var onPatchButtonTapped: (() -> Void)?
     
     init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String) {
         super.init(frame: .zero)
@@ -128,7 +129,8 @@ final class HabitCardView: UIView {
             $0.trailing.leading.bottom.equalToSuperview().inset(16)
         }
     }
-    @objc private func patchButtonTapped() {
+    @objc func patchButtonTapped() {
         print("수정버튼 클릭")
+        onPatchButtonTapped?()//클로저 사용
     }
 }

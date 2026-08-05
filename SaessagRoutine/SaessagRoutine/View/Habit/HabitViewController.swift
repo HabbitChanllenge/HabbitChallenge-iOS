@@ -11,10 +11,17 @@ import Then
 import Moya
 
 class HabitViewController: UIViewController {
-
+    let titleText = UILabel().then {
+        $0.text = "Habit"
+        $0.font = .systemFont(ofSize: 20, weight: .bold)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        view.backgroundColor = .white
+        view.addSubview(titleText)
+        titleText.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
     }
 }
 

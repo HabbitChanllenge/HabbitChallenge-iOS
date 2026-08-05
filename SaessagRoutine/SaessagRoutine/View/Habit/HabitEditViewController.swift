@@ -14,13 +14,14 @@ class HabitEditViewController: UIViewController {
     let titleText = UILabel().then {
         $0.text = "습관 수정"
         $0.font = .systemFont(ofSize: 20, weight: .bold)
+        $0.textColor = .black
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         view.addSubview(titleText)
         titleText.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
     }
 }
-

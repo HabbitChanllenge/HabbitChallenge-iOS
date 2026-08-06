@@ -12,52 +12,44 @@ final class RootTabBarController: UITabBarController {
         setTabBarItem()
     }
     private func setTabBar() {//탭 바 전체의 속성을 설정
-        let navAppearance = UITabBarAppearance()
-        navAppearance.configureWithOpaqueBackground()
-        navAppearance.backgroundColor = .white
-        navAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(named: "gray500")
-        navAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(named: "gray500")]
-        navAppearance.shadowColor = UIColor(named: "gray400")
+        let tabAppearance = UITabBarAppearance()
+        tabAppearance.configureWithOpaqueBackground()
+        tabAppearance.backgroundColor = .white
+        tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(named: "gray500")
+        tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(named: "gray500")]
+        tabAppearance.shadowColor = UIColor(named: "gray400")
         
-        tabBar.standardAppearance = navAppearance
+        tabBar.standardAppearance = tabAppearance
         tabBar.tintColor = UIColor(named: "main800")
-        if #available(iOS 15.0, *) {
-            tabBar.scrollEdgeAppearance = navAppearance
-        }
     }
     private func setTabBarItem() {//탭바에서 각 버튼마다의 속성 설정
-        viewControllers = [
-            makeNavController(
+        let home = makeNavController(
                 rootViewController: HomeViewController(),
                 title: "홈",
                 img: "house"
-            ),
-            makeNavController(
+            )
+        let habit = makeNavController(
                 rootViewController: HabitViewController(),
                 title: "습관",
                 img: "leaf"
-            ),
-            makeNavController(
+            )
+        let rank = makeNavController(
                 rootViewController: RankingViewController(),
                 title: "랭킹",
                 img: "trophy"
-            ), makeNavController(
+            )
+        let myPage = makeNavController(
                 rootViewController: MyPageViewContoller(),
                 title: "마이페이지",
                 img: "person"
             )
-        ]
+    viewControllers = [home, habit, rank, myPage]
     }
     private func makeNavController(rootViewController: UIViewController, title: String, img: String) -> UIViewController {
         let navController = UINavigationController(rootViewController: rootViewController)
         navController.tabBarItem.image = UIImage(systemName: img)
         navController.tabBarItem.title = title
         navController.tabBarItem.image?.withRenderingMode(.alwaysOriginal)
-        navController.navigationBar.isTranslucent = false
-        navController.navigationBar.backgroundColor = .white
-        
-        let logoImg = UIImage(named: "topBarLogo")
-        navigationItem.titleView = UIImageView(image: logoImg)
         
         return navController
     }

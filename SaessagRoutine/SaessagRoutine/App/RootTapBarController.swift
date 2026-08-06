@@ -13,7 +13,12 @@ enum tabIndex : Int {
     case profile
 }
 final class RootTabBarController: UITabBarController {
-    
+    enum Tab: Int {
+        case home
+        case habit
+        case rank
+        case myPage
+    }
     override func viewDidLoad() {
         setTabBar()
         setTabBarItem()

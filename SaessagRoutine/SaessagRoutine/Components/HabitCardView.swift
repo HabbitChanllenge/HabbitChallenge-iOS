@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import Then
 final class HabitCardView: UIView {
+    var cardHeight = 116
     let habitCard = UIView().then { //카드
         $0.backgroundColor = UIColor(named: "main300")
         $0.layer.cornerRadius = 10
@@ -53,6 +54,7 @@ final class HabitCardView: UIView {
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
         $0.tintColor = .white
         $0.layer.cornerRadius = 10
+        $0.addTarget(self, action: #selector(changeHeight), for: .touchUpInside)
     }//인증버튼
     var onPatchButtonTapped: (() -> Void)?
     
@@ -101,7 +103,7 @@ final class HabitCardView: UIView {
         buttonStack.addArrangedSubview(daysButton)
         
         habitCard.snp.makeConstraints {
-            $0.height.equalTo(116)
+            $0.height.equalTo(cardHeight)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.top.bottom.equalToSuperview()
         }
@@ -126,11 +128,22 @@ final class HabitCardView: UIView {
         buttonStack.snp.makeConstraints {
             $0.height.equalTo(24)
             $0.top.equalTo(textStack.snp.bottom).offset(14)
-            $0.trailing.leading.bottom.equalToSuperview().inset(16)
+            $0.trailing.leading.equalToSuperview().inset(16)
         }
     }
     @objc func patchButtonTapped() {
         print("수정버튼 클릭")
         onPatchButtonTapped?()//클로저 사용
+    }
+    @objc func changeHeight() {
+        cardHeight = (cardHeight == 116) ? 190 : 116
+        
+        habitCard.snp.updateConstraints {
+            $0.height.equalTo(cardHeight)
+        }
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
+            self.superview?.layoutIfNeeded()
+        }
     }
 }

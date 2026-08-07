@@ -10,6 +10,7 @@ import SnapKit
 import Then
 final class HabitCardView: UIView {
     var cardHeight = 116
+    var checkmarked = 0
     let habitCard = UIView().then { //카드
         $0.backgroundColor = UIColor(named: "main300")
         $0.layer.cornerRadius = 10
@@ -21,6 +22,11 @@ final class HabitCardView: UIView {
     let buttonStack = UIStackView().then {
         $0.axis = .horizontal
         $0.spacing = 29
+    }
+    let checkBoxStack = UIStackView().then {
+        $0.axis = .horizontal
+        $0.spacing = 24
+        $0.isHidden = true
     }
     
     let titleLabel = UILabel().then {
@@ -54,23 +60,28 @@ final class HabitCardView: UIView {
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
         $0.tintColor = .white
         $0.layer.cornerRadius = 10
-        $0.addTarget(self, action: #selector(changeHeight), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(verificationButtonTapped), for: .touchUpInside)
     }//인증버튼
     var onPatchButtonTapped: (() -> Void)?
     
-    init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String) {
+    let lineView = UIView().then {
+        $0.backgroundColor = UIColor(named: "gray600")
+        $0.isHidden = true
+    }
+    
+    init(titleText: String, days: Int, times: Int, category: String, cycle: String) {
         super.init(frame: .zero)
-        setAttributes(titleText, days, times, didTimes, category, cycle)
+        setAttributes(titleText, days, times, category, cycle)
         setupLayout()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String) {
+    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ category: String, _ cycle: String) {
         titleLabel.text = titleText
         categoryLabel.text = category
-        timesLabel.text = "\(cycle) \(didTimes)/\(times)"
+        timesLabel.text = "\(cycle) \(checkmarked)/\(times)"
         if cycle == "매일" {
             daysButton.setTitle("\(days)일 성공", for: .normal)
         } else {
@@ -78,7 +89,7 @@ final class HabitCardView: UIView {
         }
         patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
-        var isCompleted = (didTimes >= times)
+        var isCompleted = (checkmarked >= times)
         if isCompleted {
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
@@ -93,6 +104,7 @@ final class HabitCardView: UIView {
         
         habitCard.addSubview(textStack)
         habitCard.addSubview(buttonStack)
+        habitCard.addSubview(lineView)
         
         textStack.addArrangedSubview(titleLabel)
         textStack.addArrangedSubview(categoryLabel)
@@ -101,6 +113,7 @@ final class HabitCardView: UIView {
         buttonStack.addArrangedSubview(verificationButton)
         buttonStack.addArrangedSubview(patchButton)
         buttonStack.addArrangedSubview(daysButton)
+        
         
         habitCard.snp.makeConstraints {
             $0.height.equalTo(cardHeight)
@@ -130,13 +143,20 @@ final class HabitCardView: UIView {
             $0.top.equalTo(textStack.snp.bottom).offset(14)
             $0.trailing.leading.equalToSuperview().inset(16)
         }
+        
+        lineView.snp.makeConstraints {
+            $0.height.equalTo(1)
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.top.equalTo(buttonStack.snp.bottom).offset(24)
+        }
     }
     @objc func patchButtonTapped() {
         print("수정버튼 클릭")
         onPatchButtonTapped?()//클로저 사용
     }
-    @objc func changeHeight() {
+    @objc func verificationButtonTapped() {
         cardHeight = (cardHeight == 116) ? 190 : 116
+        lineView.isHidden = (lineView.isHidden == true) ? false : true
         
         habitCard.snp.updateConstraints {
             $0.height.equalTo(cardHeight)

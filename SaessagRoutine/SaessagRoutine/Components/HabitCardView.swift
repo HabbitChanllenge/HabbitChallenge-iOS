@@ -167,6 +167,7 @@ final class HabitCardView: UIView {
     }
     @objc func verificationButtonTapped() {
         let isExpanded = (cardHeight == 116)
+        var checkBox : CheckBoxView
         
         cardHeight = isExpanded ? 190 : 116
         lineView.isHidden = !isExpanded
@@ -177,20 +178,28 @@ final class HabitCardView: UIView {
                 $0.removeFromSuperview()
             }
             for i in 0 ..< self.times {
-                var checkBox : CheckBoxView
                 if i < self.didTimes {
                     checkBox = CheckBoxView(isChecked: true)
                 } else {
                     checkBox = CheckBoxView(isChecked: false)
                 }
                 checkBoxStack.addArrangedSubview(checkBox)
+                checkBox.onChecked = { [weak self] isNowChecked in
+                    guard let self = self else { return }
+                    if isNowChecked {
+                        self.didTimes += 1
+                    } else {
+                        self.didTimes -= 1
+                    }
+                    let cycleText = self.timesLabel.text?.components(separatedBy: " ").first ?? ""
+                    self.timesLabel.text = "\(cycleText) \(self.didTimes)/\(self.times)"
+                }
             }
         }
         
         habitCard.snp.updateConstraints {
             $0.height.equalTo(cardHeight)
         }
-        
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             self.superview?.layoutIfNeeded()
         }

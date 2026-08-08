@@ -20,10 +20,13 @@ final class CheckBoxView: UIView {
         $0.image = UIImage(systemName: "checkmark")
         $0.tintColor = UIColor(named: "main800")
     }
+    var onChecked: ((Bool) -> Void)?
+    var isChecked = false
     
     init(isChecked : Bool) {
         super.init(frame: .zero)
         checkmark.isHidden = !isChecked
+        self.isChecked = isChecked
         setLayout()
     }
     required init?(coder: NSCoder) {
@@ -42,6 +45,8 @@ final class CheckBoxView: UIView {
         }
     }
     @objc private func checkBoxTapped() {
-        checkmark.isHidden = false
+        isChecked.toggle()
+        checkmark.isHidden = !isChecked
+        onChecked?(isChecked)
     }
 }

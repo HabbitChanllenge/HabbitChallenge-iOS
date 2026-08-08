@@ -93,7 +93,7 @@ final class HabitCardView: UIView {
         }
         patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
-        var isCompleted = (didTimes >= times)
+        let isCompleted = (didTimes >= times)
         if isCompleted {
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
@@ -172,6 +172,16 @@ final class HabitCardView: UIView {
         lineView.isHidden = !isExpanded
         checkBoxStack.isHidden = !isExpanded
         
+        let isCompleted = (didTimes >= times)
+        if isCompleted {
+            verificationButton.isEnabled = false
+            verificationButton.backgroundColor = UIColor(named: "main500")
+            habitCard.backgroundColor = UIColor(named: "main300")
+        } else {
+            verificationButton.backgroundColor = UIColor(named: "main600")
+            habitCard.backgroundColor = UIColor(named: "gray300")
+        }
+
         if isExpanded {
             checkBoxStack.arrangedSubviews.forEach{
                 $0.removeFromSuperview()

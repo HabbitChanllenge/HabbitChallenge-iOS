@@ -10,8 +10,8 @@ import SnapKit
 import Then
 final class HabitCardView: UIView {
     var cardHeight = 116
-    var checkmarked = 0
     var times = 0
+    var didTimes = 0
     
     let habitCard = UIView().then { //카드
         $0.backgroundColor = UIColor(named: "main300")
@@ -72,20 +72,21 @@ final class HabitCardView: UIView {
         $0.isHidden = true
     }
     
-    init(titleText: String, days: Int, times: Int, category: String, cycle: String) {
+    init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String) {
         super.init(frame: .zero)
-        setAttributes(titleText, days, times, category, cycle)
+        self.didTimes = didTimes
+        setAttributes(titleText, days, times, didTimes, category, cycle)
         setupLayout()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ category: String, _ cycle: String) {
+    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String) {
         self.times = times
         titleLabel.text = titleText
         categoryLabel.text = category
-        timesLabel.text = "\(cycle) \(checkmarked)/\(times)"
+        timesLabel.text = "\(cycle) \(didTimes)/\(times)"
         if cycle == "매일" {
             daysButton.setTitle("\(days)일 성공", for: .normal)
         } else {
@@ -93,7 +94,7 @@ final class HabitCardView: UIView {
         }
         patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
-        var isCompleted = (checkmarked >= times)
+        var isCompleted = (didTimes >= times)
         if isCompleted {
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
@@ -176,7 +177,12 @@ final class HabitCardView: UIView {
                 $0.removeFromSuperview()
             }
             for i in 0 ..< self.times {
-                let checkBox : CheckBoxView = CheckBoxView()
+                var checkBox : CheckBoxView
+                if i < self.didTimes {
+                    checkBox = CheckBoxView(isChecked: true)
+                } else {
+                    checkBox = CheckBoxView(isChecked: false)
+                }
                 checkBoxStack.addArrangedSubview(checkBox)
             }
         }

@@ -19,11 +19,11 @@ final class CheckBoxView: UIView {
     let checkmark = UIImageView().then {
         $0.image = UIImage(systemName: "checkmark")
         $0.tintColor = UIColor(named: "main800")
-        $0.isHidden = true
     }
     
-    override init(frame: CGRect) {
+    init(isChecked : Bool) {
         super.init(frame: .zero)
+        checkmark.isHidden = !isChecked
         setLayout()
     }
     required init?(coder: NSCoder) {

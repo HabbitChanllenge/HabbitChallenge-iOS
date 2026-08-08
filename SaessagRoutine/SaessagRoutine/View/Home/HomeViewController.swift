@@ -11,7 +11,7 @@ import Then
 import Moya
 
 class HomeViewController: UIViewController {
-    let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 3, category: "#일상", cycle: "매일")
+    let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 3, didTimes: 2, category: "#일상", cycle: "매일")
 
     override func viewDidLoad() {
         super.viewDidLoad()

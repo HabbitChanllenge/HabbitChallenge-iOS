@@ -37,6 +37,7 @@ final class CheckBoxView: UIView {
         self.addSubview(checkmark)
         square.snp.makeConstraints {
             $0.center.equalToSuperview()
+            $0.edges.equalToSuperview()
             $0.height.width.equalTo(25)
         }
         checkmark.snp.makeConstraints {

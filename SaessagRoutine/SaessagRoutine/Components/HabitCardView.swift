@@ -29,7 +29,6 @@ final class HabitCardView: UIView {
         $0.axis = .horizontal
         $0.spacing = 24
         $0.isHidden = true
-        $0.distribution = .fillEqually
     }
     
     let titleLabel = UILabel().then {
@@ -156,7 +155,7 @@ final class HabitCardView: UIView {
             $0.top.equalTo(buttonStack.snp.bottom).offset(24)
         }
         checkBoxStack.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.leading.equalToSuperview().inset(16)
             $0.top.equalTo(lineView.snp.bottom).offset(20)
             $0.height.equalTo(25)
         }
@@ -186,6 +185,7 @@ final class HabitCardView: UIView {
                 checkBoxStack.addArrangedSubview(checkBox)
                 checkBox.onChecked = { [weak self] isNowChecked in
                     guard let self = self else { return }
+
                     if isNowChecked {
                         self.didTimes += 1
                     } else {
@@ -199,9 +199,6 @@ final class HabitCardView: UIView {
         
         habitCard.snp.updateConstraints {
             $0.height.equalTo(cardHeight)
-        }
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            self.superview?.layoutIfNeeded()
         }
     }
 }

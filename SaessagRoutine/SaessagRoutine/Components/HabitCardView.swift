@@ -11,6 +11,8 @@ import Then
 final class HabitCardView: UIView {
     var cardHeight = 116
     var checkmarked = 0
+    var times = 0
+    
     let habitCard = UIView().then { //카드
         $0.backgroundColor = UIColor(named: "main300")
         $0.layer.cornerRadius = 10
@@ -27,6 +29,7 @@ final class HabitCardView: UIView {
         $0.axis = .horizontal
         $0.spacing = 24
         $0.isHidden = true
+        $0.distribution = .fillEqually
     }
     
     let titleLabel = UILabel().then {
@@ -79,6 +82,7 @@ final class HabitCardView: UIView {
     }
     
     private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ category: String, _ cycle: String) {
+        self.times = times
         titleLabel.text = titleText
         categoryLabel.text = category
         timesLabel.text = "\(cycle) \(checkmarked)/\(times)"
@@ -105,6 +109,7 @@ final class HabitCardView: UIView {
         habitCard.addSubview(textStack)
         habitCard.addSubview(buttonStack)
         habitCard.addSubview(lineView)
+        habitCard.addSubview(checkBoxStack)
         
         textStack.addArrangedSubview(titleLabel)
         textStack.addArrangedSubview(categoryLabel)
@@ -149,14 +154,32 @@ final class HabitCardView: UIView {
             $0.leading.trailing.equalToSuperview().inset(16)
             $0.top.equalTo(buttonStack.snp.bottom).offset(24)
         }
+        checkBoxStack.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.top.equalTo(lineView.snp.bottom).offset(20)
+            $0.height.equalTo(25)
+        }
     }
     @objc func patchButtonTapped() {
         print("수정버튼 클릭")
         onPatchButtonTapped?()//클로저 사용
     }
     @objc func verificationButtonTapped() {
-        cardHeight = (cardHeight == 116) ? 190 : 116
-        lineView.isHidden = (lineView.isHidden == true) ? false : true
+        let isExpanded = (cardHeight == 116)
+        
+        cardHeight = isExpanded ? 190 : 116
+        lineView.isHidden = !isExpanded
+        checkBoxStack.isHidden = !isExpanded
+        
+        if isExpanded {
+            checkBoxStack.arrangedSubviews.forEach{
+                $0.removeFromSuperview()
+            }
+            for i in 0 ..< self.times {
+                let checkBox : CheckBoxView = CheckBoxView()
+                checkBoxStack.addArrangedSubview(checkBox)
+            }
+        }
         
         habitCard.snp.updateConstraints {
             $0.height.equalTo(cardHeight)

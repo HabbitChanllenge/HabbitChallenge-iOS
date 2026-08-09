@@ -20,13 +20,14 @@ final class CheckBoxView: UIView {
         $0.image = UIImage(systemName: "checkmark")
         $0.tintColor = UIColor(named: "main800")
     }
-    var onChecked: ((Bool) -> Void)?
+    var onChecked: ((Bool) -> Void)?//클로저 선언
     var isChecked = false
     
     init(isChecked : Bool) {
         super.init(frame: .zero)
-        checkmark.isHidden = !isChecked
         self.isChecked = isChecked
+        checkmark.isHidden = !isChecked
+        
         setLayout()
     }
     required init?(coder: NSCoder) {
@@ -44,10 +45,10 @@ final class CheckBoxView: UIView {
             $0.center.equalToSuperview()
             $0.height.width.equalTo(25)
         }
-    }
+    }//레이아웃 잡기
     @objc private func checkBoxTapped() {
-        isChecked.toggle()
-        checkmark.isHidden = !isChecked
-        onChecked?(isChecked)
-    }
+        isChecked.toggle()//체크 여부 바꾸기
+        checkmark.isHidden = !isChecked//체크 여부에 따른 체크마크 표시 여부
+        onChecked?(isChecked)//클로저 부르기, HabitCardView 파일에 가서 실행
+    }//체크박스 클릭 시
 }

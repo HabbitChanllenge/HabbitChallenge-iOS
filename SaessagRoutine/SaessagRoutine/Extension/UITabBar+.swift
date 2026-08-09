@@ -8,6 +8,6 @@
 import UIKit
 extension UITabBarController {
     func swichTo(tab : tabIndex) {
-        self.selectedIndex = tab.rawValue
+        self.selectedIndex = tab.rawValue//탭 전환
     }
 }

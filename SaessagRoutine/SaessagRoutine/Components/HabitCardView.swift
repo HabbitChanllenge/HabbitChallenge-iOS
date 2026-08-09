@@ -103,7 +103,7 @@ final class HabitCardView: UIView {
             verificationButton.backgroundColor = UIColor(named: "main600")
             habitCard.backgroundColor = UIColor(named: "gray300")
         }
-    }
+    }//텍스트 설정
     private func setupLayout() {
         self.addSubview(habitCard)
         
@@ -163,7 +163,7 @@ final class HabitCardView: UIView {
     
     @objc func patchButtonTapped() {
         onPatchButtonTapped?()//클로저 사용
-    }
+    }//수정 버튼 클릭 시
     @objc func verificationButtonTapped() {
         let isExpanded = lineView.isHidden
         var checkBox : CheckBoxView
@@ -224,18 +224,17 @@ final class HabitCardView: UIView {
             }//체크박스 생성
         }//확장 됐을 때 할 액션
         else {
-            mainCheckBoxStack.snp.removeConstraints()
+            mainCheckBoxStack.snp.removeConstraints()//체크박스 스택뷰 레이아웃 없애기
             buttonStack.snp.remakeConstraints {
                 $0.height.equalTo(24)
                 $0.top.equalTo(textStack.snp.bottom).offset(14)
                 $0.trailing.leading.equalToSuperview().inset(16)
                 $0.bottom.equalToSuperview().inset(16)
-            }
-
-        }
+            }//카드 바텀을 다시 버튼에서 16 떨어지게 설정
+        }//확장 돼 있던거 접기
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            self.superview?.layoutIfNeeded()
+            self.superview?.layoutIfNeeded()//바뀌면 바로바로 레이아웃 다시 잡아서 바꾸라는 코드
         }
-    }
+    }//인증 버튼 클릭 시
 }

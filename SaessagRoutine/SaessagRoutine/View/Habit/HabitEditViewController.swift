@@ -1,8 +1,8 @@
 //
-//  HabbitMainViewController.swift
+//  HabitEditViewController.swift
 //  SaessagRoutine
 //
-//  Created by Seoyun Jin on 8/2/26.
+//  Created by Seoyun Jin on 8/4/26.
 //
 
 import UIKit
@@ -10,10 +10,11 @@ import SnapKit
 import Then
 import Moya
 
-class HabitViewController: UIViewController {
+class HabitEditViewController: UIViewController {
     let titleText = UILabel().then {
-        $0.text = "Habit"
+        $0.text = "습관 수정"
         $0.font = .systemFont(ofSize: 20, weight: .bold)
+        $0.textColor = .black
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,4 +25,3 @@ class HabitViewController: UIViewController {
         }
     }
 }
-

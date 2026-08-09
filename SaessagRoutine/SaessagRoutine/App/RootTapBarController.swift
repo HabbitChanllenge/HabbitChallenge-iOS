@@ -6,7 +6,19 @@
 //
 
 import UIKit
+enum tabIndex : Int {
+    case home
+    case habit
+    case ranking
+    case profile
+}
 final class RootTabBarController: UITabBarController {
+    enum Tab: Int {
+        case home
+        case habit
+        case rank
+        case myPage
+    }
     override func viewDidLoad() {
         setTabBar()
         setTabBarItem()
@@ -24,29 +36,29 @@ final class RootTabBarController: UITabBarController {
     }
     private func setTabBarItem() {//탭바에서 각 버튼마다의 속성 설정
         let home = makeNavController(
-                rootViewController: HomeViewController(),
-                title: "홈",
-                img: "house"
-            )
+            to: HomeViewController(),
+            title: "홈",
+            img: "house"
+        )
         let habit = makeNavController(
-                rootViewController: HabitViewController(),
-                title: "습관",
-                img: "leaf"
-            )
+            to: HabitViewController(),
+            title: "습관",
+            img: "leaf"
+        )
         let rank = makeNavController(
-                rootViewController: RankingViewController(),
-                title: "랭킹",
-                img: "trophy"
-            )
+            to: RankingViewController(),
+            title: "랭킹",
+            img: "trophy"
+        )
         let myPage = makeNavController(
-                rootViewController: MyPageViewContoller(),
-                title: "마이페이지",
-                img: "person"
-            )
-    viewControllers = [home, habit, rank, myPage]
+            to: MyPageViewContoller(),
+            title: "마이페이지",
+            img: "person"
+        )
+        viewControllers = [home, habit, rank, myPage]
     }
-    private func makeNavController(rootViewController: UIViewController, title: String, img: String) -> UIViewController {
-        let navController = UINavigationController(rootViewController: rootViewController)
+    private func makeNavController(to: UIViewController, title: String, img: String) -> UIViewController {
+        let navController = UINavigationController(rootViewController: to)
         navController.tabBarItem.image = UIImage(systemName: img)
         navController.tabBarItem.title = title
         navController.tabBarItem.image?.withRenderingMode(.alwaysOriginal)

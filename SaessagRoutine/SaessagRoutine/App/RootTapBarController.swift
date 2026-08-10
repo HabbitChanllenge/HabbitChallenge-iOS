@@ -29,10 +29,14 @@ final class RootTabBarController: UITabBarController {
         tabAppearance.backgroundColor = .white
         tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(named: "gray500")
         tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(named: "gray500")]
-        tabAppearance.shadowColor = UIColor(named: "gray400")
+        tabAppearance.shadowColor = UIColor(named: "gray500")
+        
         
         tabBar.standardAppearance = tabAppearance
         tabBar.tintColor = UIColor(named: "main800")
+        if #available(iOS 15.0, *) {
+            tabBar.scrollEdgeAppearance = tabAppearance 
+        }
     }
     private func setTabBarItem() {//탭바에서 각 버튼마다의 속성 설정
         let home = makeNavController(

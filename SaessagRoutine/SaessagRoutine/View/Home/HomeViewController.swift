@@ -49,6 +49,7 @@ class HomeViewController: UIViewController {
         $0.tintColor = UIColor(named: "gray700")
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
         $0.contentHorizontalAlignment = .right
+        $0.addTarget(self, action: #selector(habitMoreButtonDidTap), for: .touchUpInside)
     }
     let rankText = UILabel().then {
         $0.text = "랭킹"
@@ -63,6 +64,7 @@ class HomeViewController: UIViewController {
         $0.tintColor = UIColor(named: "gray700")
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
         $0.contentHorizontalAlignment = .right
+        $0.addTarget(self, action: #selector(rankMoreButtonDidTap), for: .touchUpInside)
     }
     let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 10, didTimes: 4, category: "#일상", cycle: "매일")
     let middleHabitCard : HabitCardView = HabitCardView(titleText: "수영", days: 31, times: 1, didTimes: 0, category: "#건강", cycle: "금요일")
@@ -82,7 +84,29 @@ class HomeViewController: UIViewController {
                     nav.pushViewController(HabitEditViewController(),animated: true)
                 }
             }//탭이동 이후 화면 이동으로 순서 보장 위함
-        }//수정 버튼 눌렸을 때 uiView에선 화면 전환이 불가하기 때문에 작성해주는 친구
+        }//top 카드 수정버튼. 수정 버튼 눌렸을 때 uiView에선 화면 전환이 불가하기 때문에 작성.
+        middleHabitCard.onPatchButtonTapped = { [weak self] in
+            guard let self = self,
+            let tabBarController = self.tabBarController else { return }
+            tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
+
+            DispatchQueue.main.async {
+                if let nav = tabBarController.selectedViewController as? UINavigationController {
+                    nav.pushViewController(HabitEditViewController(),animated: true)
+                }
+            }//탭이동 이후 화면 이동으로 순서 보장 위함
+        }//middle 카드 수정버튼. 수정 버튼 눌렸을 때 uiView에선 화면 전환이 불가하기 때문에 작성해주는 친구
+        bottomHabitCard.onPatchButtonTapped = { [weak self] in
+            guard let self = self,
+            let tabBarController = self.tabBarController else { return }
+            tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
+
+            DispatchQueue.main.async {
+                if let nav = tabBarController.selectedViewController as? UINavigationController {
+                    nav.pushViewController(HabitEditViewController(),animated: true)
+                }
+            }//탭이동 이후 화면 이동으로 순서 보장 위함
+        }//bottom 카드 수정버튼. 수정 버튼 눌렸을 때 uiView에선 화면 전환이 불가하기 때문에 작성해주는 친구
     }
     private func setLayout() {
         view.addSubview(navBar)
@@ -116,5 +140,13 @@ class HomeViewController: UIViewController {
             $0.top.leading.trailing.equalToSuperview()
             $0.width.equalTo(scrollView.snp.width)
         }
+    }
+    @objc private func habitMoreButtonDidTap() {
+        guard let tabBarController = self.tabBarController else { return }
+        tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
+    }
+    @objc private func rankMoreButtonDidTap() {
+        guard let tabBarController = self.tabBarController else { return }
+        tabBarController.swichTo(tab: .ranking)// 탭을 어디로 이동할지
     }
 }

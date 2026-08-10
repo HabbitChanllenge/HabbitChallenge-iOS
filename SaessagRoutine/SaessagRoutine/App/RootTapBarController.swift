@@ -62,6 +62,7 @@ final class RootTabBarController: UITabBarController {
         navController.tabBarItem.image = UIImage(systemName: img)
         navController.tabBarItem.title = title
         navController.tabBarItem.image?.withRenderingMode(.alwaysOriginal)
+        navController.isNavigationBarHidden = true
         
         return navController
     }

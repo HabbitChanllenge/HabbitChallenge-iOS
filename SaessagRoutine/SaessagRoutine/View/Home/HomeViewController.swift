@@ -11,7 +11,6 @@ import Then
 import Moya
 
 class HomeViewController: UIViewController {
-    let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 10, didTimes: 4, category: "#일상", cycle: "매일")
     let navBar = NavigationBarView(streak: "31")
     let scrollView = UIScrollView()
     let wholeStack = UIStackView().then {
@@ -65,11 +64,13 @@ class HomeViewController: UIViewController {
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
         $0.contentHorizontalAlignment = .right
     }
-    
-    
+    let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 10, didTimes: 4, category: "#일상", cycle: "매일")
+    let middleHabitCard : HabitCardView = HabitCardView(titleText: "수영", days: 31, times: 1, didTimes: 0, category: "#건강", cycle: "금요일")
+    let bottomHabitCard : HabitCardView = HabitCardView(titleText: "독서", days: 18, times: 1, didTimes: 1, category: "#자기계발", cycle: "매일")
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         setLayout()
         topHabitCard.onPatchButtonTapped = { [weak self] in
             guard let self = self,
@@ -85,34 +86,31 @@ class HomeViewController: UIViewController {
     }
     private func setLayout() {
         view.addSubview(navBar)
-        view.addSubview(topHabitCard)
-        navBar.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(108)
-        view.backgroundColor = .white
-        setupLayout()
-    }
-    private func setupLayout() {
         view.addSubview(scrollView)
+        
         scrollView.addSubview(wholeStack)
         wholeStack.addArrangedSubview(habitStack)
         wholeStack.addArrangedSubview(rankTextView)
         
         habitStack.addArrangedSubview(habitTextView)
+        habitStack.addArrangedSubview(topHabitCard)
+        habitStack.addArrangedSubview(middleHabitCard)
+        habitStack.addArrangedSubview(bottomHabitCard)
         
         habitTextView.addArrangedSubview(habitText)
         habitTextView.addArrangedSubview(habitMoreButton)
+        
         rankTextView.addArrangedSubview(rankText)
         rankTextView.addArrangedSubview(rankMoreButton)
         
+        navBar.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(101)
+        }
         scrollView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
-            $0.top.equalTo(view.safeAreaLayoutGuide)
-        }
-        topHabitCard.snp.makeConstraints {
-            $0.top.equalTo(navBar.snp.bottom).offset(4)
-            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(navBar.snp.bottom).offset(11)
         }
         wholeStack.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()

@@ -234,7 +234,7 @@ final class HabitCardView: UIView {
         }//확장 돼 있던거 접기
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            self.superview?.layoutIfNeeded()//바뀌면 바로바로 레이아웃 다시 잡아서 바꾸라는 코드
+            self.window?.layoutIfNeeded()//바뀌면 바로바로 레이아웃 다시 잡아서 바꾸라는 코드
         }
     }//인증 버튼 클릭 시
 }

@@ -69,7 +69,7 @@ class HomeViewController: UIViewController {
     let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 10, didTimes: 4, category: "#일상", cycle: "매일")
     let middleHabitCard : HabitCardView = HabitCardView(titleText: "수영", days: 31, times: 1, didTimes: 0, category: "#건강", cycle: "금요일")
     let bottomHabitCard : HabitCardView = HabitCardView(titleText: "독서", days: 18, times: 1, didTimes: 1, category: "#자기계발", cycle: "매일")
-
+    let top3RankCard : TopRankingView = TopRankingView()
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -115,6 +115,7 @@ class HomeViewController: UIViewController {
         scrollView.addSubview(wholeStack)
         wholeStack.addArrangedSubview(habitStack)
         wholeStack.addArrangedSubview(rankTextView)
+        wholeStack.addArrangedSubview(top3RankCard)
         
         habitStack.addArrangedSubview(habitTextView)
         habitStack.addArrangedSubview(topHabitCard)

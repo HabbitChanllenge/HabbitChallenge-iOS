@@ -17,10 +17,12 @@ class HabitCreateViewController: UIViewController {
         $0.textColor = .black
         $0.font = .systemFont(ofSize: 20)
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
     }
+    
     private func setupLayout() {
         view.addSubview(topBar)
         view.addSubview(text)

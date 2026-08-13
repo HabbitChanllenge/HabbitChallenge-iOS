@@ -17,9 +17,11 @@ class HabitEditViewController: UIViewController {
         $0.textColor = .black
     }
     let topBar = NavigationBarView(streak: "31")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         setLayout()
     }
     private func setLayout() {

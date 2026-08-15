@@ -66,9 +66,9 @@ class HomeViewController: UIViewController {
         $0.contentHorizontalAlignment = .right
         $0.addTarget(self, action: #selector(rankMoreButtonDidTap), for: .touchUpInside)
     }
-    let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 10, didTimes: 4, category: "#일상", cycle: "매일")
-    let middleHabitCard : HabitCardView = HabitCardView(titleText: "수영", days: 31, times: 1, didTimes: 0, category: "#건강", cycle: "금요일")
-    let bottomHabitCard : HabitCardView = HabitCardView(titleText: "독서", days: 18, times: 1, didTimes: 1, category: "#자기계발", cycle: "매일")
+    let topHabitCard : HabitCardView = HabitCardView(titleText: "물마시기", days: 54, times: 10, didTimes: 4, category: "#일상", cycle: "day", day: nil)
+    let middleHabitCard : HabitCardView = HabitCardView(titleText: "수영", days: 31, times: 1, didTimes: 0, category: "#건강", cycle: "week", day: ["friday"])
+    let bottomHabitCard : HabitCardView = HabitCardView(titleText: "독서", days: 18, times: 1, didTimes: 1, category: "#자기계발", cycle: "day", day: nil)
     let top3RankCard : TopRankingView = TopRankingView()
     override func viewDidLoad() {
         super.viewDidLoad()

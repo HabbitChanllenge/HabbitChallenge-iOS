@@ -8,6 +8,15 @@
 import UIKit
 import SnapKit
 import Then
+enum weekdays : String {
+    case sunday = "일요일"
+    case monday = "월요일"
+    case tuesday = "화요일"
+    case wednesday = "수요일"
+    case thursday = "목요일"
+    case friday = "금요일"
+    case saturday = "토요일"
+}
 final class HabitCardView: UIView {
     var cardHeight = 116
     var times = 0
@@ -72,18 +81,19 @@ final class HabitCardView: UIView {
         $0.isHidden = true
     }//펼쳤을 때 중간에 가로 선
     
-    init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String) {
+    init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : [String]?) {
         super.init(frame: .zero)
         self.didTimes = didTimes
-        setAttributes(titleText, days, times, didTimes, category, cycle)
+        setAttributes(titleText, days, times, didTimes, category, cycle, day)
         setupLayout()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String) {
+    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String, _ day: [String]?) {
         self.times = times
+        let cycle = (cycle == "day") ? "매일" : (weekdays(rawValue: day?.first ?? "")?.rawValue ?? "매주")
         titleLabel.text = titleText
         categoryLabel.text = category
         timesLabel.text = "\(cycle) \(didTimes)/\(times)"

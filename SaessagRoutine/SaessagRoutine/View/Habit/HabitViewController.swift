@@ -23,6 +23,7 @@ class HabitViewController: UIViewController {
         $0.axis = .vertical
         $0.spacing = 16
     }
+    let scrollView = UIScrollView()
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -35,21 +36,27 @@ class HabitViewController: UIViewController {
     }
     private func setLayout() {
         view.addSubview(topBar)
-        view.addSubview(createButton)
-        view.addSubview(cardStackView)
+        view.addSubview(scrollView)
+        
+        scrollView.addSubview(createButton)
+        scrollView.addSubview(cardStackView)
     
         topBar.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.height.equalTo(101)
         }
-        createButton.snp.makeConstraints {
+        scrollView.snp.makeConstraints {
+            $0.leading.bottom.trailing.equalToSuperview()
             $0.top.equalTo(topBar.snp.bottom)
+        }
+        createButton.snp.makeConstraints {
+            $0.top.equalToSuperview()
             $0.trailing.equalToSuperview().inset(24)
             $0.height.width.equalTo(25)
         }
         cardStackView.snp.makeConstraints {
             $0.top.equalTo(createButton.snp.bottom).offset(9)
-            $0.leading.trailing.equalToSuperview()
+            $0.width.bottom.equalToSuperview()
         }
     }//레이아웃 잡기
     @objc private func plusTapped() {
@@ -67,6 +74,9 @@ class HabitViewController: UIViewController {
             day: habitList[id].dayOfWeek
         )
         cardStackView.addArrangedSubview(card)
+        card.onPatchButtonTapped = {
+            self.navigationController?.pushViewController(HabitEditViewController(), animated: false)
+        }
     }
 }
 

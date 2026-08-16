@@ -24,14 +24,47 @@ class HabitViewController: UIViewController {
         $0.spacing = 16
     }
     let scrollView = UIScrollView()
+    
+    let noHabitCard : UIView = {
+        let card = UIView().then {
+            $0.backgroundColor = UIColor(named: "gray300")
+            $0.layer.cornerRadius = 10
+        }
+        let text = UILabel().then {
+            $0.text = "아직 습관이 없습니다"
+            $0.font = .systemFont(ofSize: 15, weight: .medium)
+        }
+        let createButton = UIButton(type: .system).then {
+            $0.setTitle("습관 생성", for: .normal)
+            $0.tintColor = .white
+            $0.backgroundColor = UIColor(named: "main600")
+            $0.layer.cornerRadius = 10
+            $0.addTarget(self, action: #selector(plusTapped), for: .touchUpInside)
+        }
+        
+        card.addSubview(text)
+        card.addSubview(createButton)
+        text.snp.makeConstraints {
+            $0.top.leading.equalToSuperview().inset(16)
+        }
+        createButton.snp.makeConstraints {
+            $0.leading.trailing.bottom.equalToSuperview().inset(16)
+            $0.height.equalTo(24)
+        }
+        return card
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
         setLayout()
-        
-        for i in 0..<habitList.count {
-            createCard(id: i)
+        if habitList.count == 0 {
+            noHabitCard.isHidden = false
+        } else {
+            noHabitCard.isHidden = true
+            for i in 0..<habitList.count {
+                createCard(id: i)
+            }
         }
     }
     private func setLayout() {
@@ -40,6 +73,8 @@ class HabitViewController: UIViewController {
         
         scrollView.addSubview(createButton)
         scrollView.addSubview(cardStackView)
+        
+        cardStackView.addArrangedSubview(noHabitCard)
     
         topBar.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
@@ -51,12 +86,18 @@ class HabitViewController: UIViewController {
         }
         createButton.snp.makeConstraints {
             $0.top.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(24)
+            $0.trailing.equalTo(view.snp.trailing).inset(24)
             $0.height.width.equalTo(25)
         }
         cardStackView.snp.makeConstraints {
             $0.top.equalTo(createButton.snp.bottom).offset(9)
-            $0.width.bottom.equalToSuperview()
+            $0.leading.trailing.equalTo(scrollView.frameLayoutGuide)
+            $0.bottom.width.equalToSuperview()
+        }
+        noHabitCard.snp.makeConstraints {
+            $0.height.equalTo(116)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.top.equalToSuperview()
         }
     }//레이아웃 잡기
     @objc private func plusTapped() {
@@ -76,7 +117,7 @@ class HabitViewController: UIViewController {
         cardStackView.addArrangedSubview(card)
         card.onPatchButtonTapped = {
             self.navigationController?.pushViewController(HabitEditViewController(), animated: false)
+            print("수정버튼 탭. id: \(id)")
         }
     }
 }
-

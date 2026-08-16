@@ -10,7 +10,7 @@ import Foundation
 struct HabitListResponse: Codable {
     let status: String
     let habits: [Habit]
-}
+}//얜 실제 API 통신 할 때 사용.
 struct Habit: Codable {
     let habitId: Int
     let periodType: String

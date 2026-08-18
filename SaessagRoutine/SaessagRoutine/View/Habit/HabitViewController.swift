@@ -77,27 +77,26 @@ class HabitViewController: UIViewController {
         cardStackView.addArrangedSubview(noHabitCard)
     
         topBar.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+            $0.top.leading.trailing.equalTo(view)
             $0.height.equalTo(101)
         }
         scrollView.snp.makeConstraints {
-            $0.leading.bottom.trailing.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
             $0.top.equalTo(topBar.snp.bottom)
         }
         createButton.snp.makeConstraints {
             $0.top.equalToSuperview()
-            $0.trailing.equalTo(view.snp.trailing).inset(24)
+            $0.trailing.equalTo(scrollView.frameLayoutGuide).inset(24)
             $0.height.width.equalTo(25)
         }
         cardStackView.snp.makeConstraints {
             $0.top.equalTo(createButton.snp.bottom).offset(9)
-            $0.leading.trailing.equalTo(scrollView.frameLayoutGuide)
-            $0.bottom.width.equalToSuperview()
+            $0.leading.trailing.equalTo(scrollView.frameLayoutGuide).inset(24)
+            $0.bottom.equalToSuperview()
         }
         noHabitCard.snp.makeConstraints {
             $0.height.equalTo(116)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.top.equalToSuperview()
         }
     }//레이아웃 잡기
     @objc private func plusTapped() {

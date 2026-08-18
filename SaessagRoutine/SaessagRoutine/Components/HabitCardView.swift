@@ -132,7 +132,7 @@ final class HabitCardView: UIView {
         
         
         habitCard.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.leading.trailing.equalToSuperview()
             $0.top.bottom.equalToSuperview()
         }
         

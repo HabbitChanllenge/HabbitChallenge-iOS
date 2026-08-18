@@ -17,24 +17,22 @@ class HomeViewController: UIViewController {
     let wholeStack = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 24
+        $0.alignment = .center
     }
     let habitStack = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 16
+        $0.alignment = .center
     }
     let habitTextView = UIStackView().then {
         $0.axis = .horizontal//가로정렬 스택
         $0.distribution = .equalSpacing//양쪽 끝에 띄우겠다
         $0.alignment = .center
-        $0.isLayoutMarginsRelativeArrangement = true//자체적으로 마진을 주겠냐? yes
-        $0.layoutMargins = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)//좌우로 24px씩 마진 줌
     }
     let rankTextView = UIStackView().then {
         $0.axis = .horizontal
         $0.distribution = .equalSpacing
         $0.alignment = .center
-        $0.isLayoutMarginsRelativeArrangement = true
-        $0.layoutMargins = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
     }
     
     let habitText = UILabel().then {
@@ -122,7 +120,7 @@ class HomeViewController: UIViewController {
             day: habitList[id].dayOfWeek
         )
         habitStack.addArrangedSubview(card)
-        card.onPatchButtonTapped = {[weak self] in//수정 버튼 눌렸을 때 uiView에선 화면 전환이 불가하기 때문에 작성해주는 친구
+        card.onPatchButtonTapped = {[weak self] in//수정버튼 클릭 시 실행 클로저
             guard let self = self,
             let tabBarController = self.tabBarController else { return }
             tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
@@ -158,19 +156,26 @@ class HomeViewController: UIViewController {
             $0.height.equalTo(101)
         }
         scrollView.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
             $0.top.equalTo(navBar.snp.bottom).offset(11)
         }
         wholeStack.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-            $0.width.equalTo(scrollView.snp.width)
+            $0.leading.trailing.equalTo(scrollView.frameLayoutGuide).inset(24)
+            $0.top.bottom.equalToSuperview()
         }
         noHabitCard.snp.makeConstraints {
-            $0.trailing.leading.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview()
             $0.height.equalTo(116)
+            $0.width.equalTo(354)
+        }
+        habitTextView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
+        }
+        rankTextView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview()
         }
     }
+    
     @objc private func habitMoreButtonDidTap() {
         guard let tabBarController = self.tabBarController else { return }
         tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지

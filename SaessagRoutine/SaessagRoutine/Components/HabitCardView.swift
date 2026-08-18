@@ -105,14 +105,15 @@ final class HabitCardView: UIView {
         patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
         let isCompleted = (didTimes >= times)
-        if isCompleted {
+        if isCompleted {//달성시
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
             habitCard.backgroundColor = UIColor(named: "main300")
-        } else {
+            HabitViewController().completedHabits += 1
+        } else {//미달성시
             verificationButton.backgroundColor = UIColor(named: "main600")
             habitCard.backgroundColor = UIColor(named: "gray300")
-        }
+        }//습관 달성여부에 따른 로직
     }//텍스트 설정
     private func setupLayout() {
         self.addSubview(habitCard)
@@ -186,6 +187,7 @@ final class HabitCardView: UIView {
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
             habitCard.backgroundColor = UIColor(named: "main300")
+            HabitViewController().completedHabits += 1
         }//성공 했으면 인증버튼 비활성화, 배경색 변경
         
         if isExpanded {

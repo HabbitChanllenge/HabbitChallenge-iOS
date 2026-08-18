@@ -186,7 +186,7 @@ class HomeViewController: UIViewController {
     }
     @objc private func habitCreateButtonTapped() {
         guard let tabBarController = self.tabBarController else { return }
-        tabBarController.swichTo(tab: .habit)
+        tabBarController.swichTo(tab: .habit)//습관탭으로 이동
         
         DispatchQueue.main.async {[weak self] in
             guard let self = self,

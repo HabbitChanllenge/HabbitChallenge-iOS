@@ -12,6 +12,15 @@ import Moya
 
 class HabitViewController: UIViewController {
     var habitList: [Habit] = MockHabitCard.habit
+    
+    
+    var totalHabits = 0
+    var completedHabits: Int = 0 {
+        didSet {
+            habitProgressCard.layoutIfNeeded()
+        }
+    }
+    
     let topBar = NavigationBarView(streak: "20")
     let createButton = UIButton(type: .system).then {
         $0.imageView?.contentMode = .scaleAspectFit
@@ -24,6 +33,7 @@ class HabitViewController: UIViewController {
         $0.spacing = 16
     }
     let scrollView = UIScrollView()
+    var habitProgressCard = HabitProgressCardView(totalHabits: 4, complete: 3)
     
     let noHabitCard : UIView = {
         let card = UIView().then {
@@ -57,15 +67,20 @@ class HabitViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        totalHabits = habitList.count
+    
         setLayout()
         if habitList.count == 0 {
             noHabitCard.isHidden = false
-        } else {
+            habitProgressCard.isHidden = true
+        }//습관 없을 시
+        else {
             noHabitCard.isHidden = true
+    
             for i in 0..<habitList.count {
                 createCard(id: i)
             }
-        }
+        }//습관 있을 시
     }
     private func setLayout() {
         view.addSubview(topBar)
@@ -74,6 +89,7 @@ class HabitViewController: UIViewController {
         scrollView.addSubview(createButton)
         scrollView.addSubview(cardStackView)
         
+        cardStackView.addArrangedSubview(habitProgressCard)
         cardStackView.addArrangedSubview(noHabitCard)
     
         topBar.snp.makeConstraints {

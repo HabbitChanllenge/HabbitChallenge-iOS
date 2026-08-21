@@ -28,7 +28,7 @@ class MyPageViewContoller: UIViewController {
         $0.backgroundColor = UIColor(named: "main200")
         $0.layer.cornerRadius = 16
     }
-    let textFiledStack = MyPageTextField()
+    let textFiledStack = MyPageTextField(canEdit: false)
     
     override func viewDidLoad() {
         super.viewDidLoad()

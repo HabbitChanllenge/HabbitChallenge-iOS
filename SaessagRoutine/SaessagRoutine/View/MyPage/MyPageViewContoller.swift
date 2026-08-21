@@ -29,6 +29,14 @@ class MyPageViewContoller: UIViewController {
         $0.layer.cornerRadius = 16
     }
     let textFiledStack = MyPageTextField(canEdit: false)
+    let editButton = UIButton(type: .system).then {
+        $0.setTitle("내 정보 수정하기", for: .normal)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = UIColor(named: "main400")
+        $0.layer.cornerRadius = 10
+        $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
+        $0.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +49,7 @@ class MyPageViewContoller: UIViewController {
         view.addSubview(userID)
         view.addSubview(logoutButton)
         view.addSubview(textFiledStack)
+        view.addSubview(editButton)
         
         navBar.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
@@ -65,6 +74,14 @@ class MyPageViewContoller: UIViewController {
             $0.top.equalTo(profileImg.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(24)
         }
+        editButton.snp.makeConstraints {
+            $0.top.equalTo(textFiledStack.snp.bottom).offset(36)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.height.equalTo(63)
+        }
+    }
+    @objc private func editButtonTapped() {
+        navigationController?.pushViewController(MyPageEditViewController(), animated: false)
     }
 }
 

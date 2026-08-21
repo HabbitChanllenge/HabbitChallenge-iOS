@@ -12,6 +12,7 @@ import Moya
 
 class MyPageViewContoller: UIViewController {
     let userInfo : [user] = UserData.userInformation
+    let editVC = MyPageEditViewController()
     
     let navBar = NavigationBarView(streak: "31")
     let profileImg = UIImageView().then {
@@ -37,18 +38,26 @@ class MyPageViewContoller: UIViewController {
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
     }
+    let editSucsessMessage = UILabel().then {
+        $0.text = "수정이 완료되었습니다!"
+        $0.textColor = UIColor(named: "main800")
+        $0.font = .systemFont(ofSize: 20, weight: .regular)
+        $0.isHidden = true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         userID.text = userInfo[0].Id
         setupView()
     }
+    
     private func setupView() {
         view.addSubview(navBar)
         view.addSubview(profileImg)
         view.addSubview(userID)
         view.addSubview(logoutButton)
         view.addSubview(textFiledStack)
+        view.addSubview(editSucsessMessage)
         view.addSubview(editButton)
         
         navBar.snp.makeConstraints {
@@ -74,6 +83,10 @@ class MyPageViewContoller: UIViewController {
             $0.top.equalTo(profileImg.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(24)
         }
+        editSucsessMessage.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(textFiledStack.snp.bottom).offset(3)
+        }
         editButton.snp.makeConstraints {
             $0.top.equalTo(textFiledStack.snp.bottom).offset(36)
             $0.leading.trailing.equalToSuperview().inset(24)
@@ -83,5 +96,6 @@ class MyPageViewContoller: UIViewController {
     @objc private func editButtonTapped() {
         navigationController?.pushViewController(MyPageEditViewController(), animated: false)
     }
+    
 }
 

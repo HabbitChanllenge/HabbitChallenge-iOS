@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Then
+
 enum weekdays : String {
     case sunday = "일요일"
     case monday = "월요일"
@@ -17,10 +18,14 @@ enum weekdays : String {
     case friday = "금요일"
     case saturday = "토요일"
 }
+
 final class HabitCardView: UIView {
     var cardHeight = 116
     var times = 0
     var didTimes = 0
+    
+    // 수정함: 습관 달성 상태나 체크박스가 변경되었음을 HomeViewController에 알리기 위한 클로저 추가
+    var onStatusChanged: (() -> ())?
     
     let habitCard = UIView().then {
         $0.backgroundColor = UIColor(named: "main300")
@@ -84,6 +89,7 @@ final class HabitCardView: UIView {
     init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : [String]?) {
         super.init(frame: .zero)
         self.didTimes = didTimes
+        onStatusChanged?()
         setAttributes(titleText, days, times, didTimes, category, cycle, day)
         setupLayout()
     }
@@ -109,12 +115,13 @@ final class HabitCardView: UIView {
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
             habitCard.backgroundColor = UIColor(named: "main300")
-            HabitViewController().completedHabits += 1
+            HabitManager.shared.didHabits += 1
         } else {//미달성시
             verificationButton.backgroundColor = UIColor(named: "main600")
             habitCard.backgroundColor = UIColor(named: "gray300")
         }//습관 달성여부에 따른 로직
     }//텍스트 설정
+
     private func setupLayout() {
         self.addSubview(habitCard)
         
@@ -175,6 +182,7 @@ final class HabitCardView: UIView {
     @objc func patchButtonTapped() {
         onPatchButtonTapped?()//클로저 사용
     }//수정 버튼 클릭 시
+
     @objc func verificationButtonTapped() {
         let isExpanded = lineView.isHidden
         var checkBox : CheckBoxView
@@ -187,7 +195,8 @@ final class HabitCardView: UIView {
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
             habitCard.backgroundColor = UIColor(named: "main300")
-            HabitViewController().completedHabits += 1
+            HabitManager.shared.didHabits += 1
+            onStatusChanged?()
         }//성공 했으면 인증버튼 비활성화, 배경색 변경
         
         if isExpanded {
@@ -231,6 +240,7 @@ final class HabitCardView: UIView {
                     }
                     let cycleText = self.timesLabel.text?.components(separatedBy: " ").first ?? ""//매일, 월요일 같은 텍스트 추출
                     self.timesLabel.text = "\(cycleText) \(self.didTimes)/\(self.times)"//"매일 6/8" 텍스트 변경
+                    
                 }//체크 됐을 때 텍스트 변경 하는 클로저
                 checkBoxHStack?.addArrangedSubview(checkBox)//가로 체크박스 스택에 박스 하나하나 추가
             }//체크박스 생성

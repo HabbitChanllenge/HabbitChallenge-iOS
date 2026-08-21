@@ -39,20 +39,23 @@ class HabitProgressCardView : UIView {
     }
     var progressBarWidth: CGFloat = 0
     
-    init(totalHabits : Int, complete : Int) {
+    init() {
         super.init(frame: .zero)
-        setAtrribute(total: totalHabits, complete: complete)
+        // 수정함: init 시점에 HomeViewController()를 직접 생성하여 데이터를 가져오던 setAtrribute() 호출 제거 (크래시 원인 제거)
         setupView()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    private func setAtrribute(total : Int, complete : Int) {
-        let total = CGFloat(total)
-        let complete = CGFloat(complete)
-        progressBarWidth = (complete/total)*322.0
+    
+    // 수정함: 외부에서 total과 complete 값을 전달받아 게이지 및 텍스트를 업데이트하도록 파라미터 추가
+    func setAtrribute(total: Int, complete: Int) {
+        let totalFloat = CGFloat(max(total, 1)) // 0 나누기 방지
+        let completeFloat = CGFloat(complete)
         
-        var progressText = "\(Int(complete))/\(Int(total))"
+        progressBarWidth = (completeFloat / totalFloat) * 322.0
+        
+        let progressText = "\(complete)/\(total)"
         grayProgressLabel.text = progressText
         whiteProgressLabel.text = progressText
     }
@@ -91,8 +94,19 @@ class HabitProgressCardView : UIView {
             $0.center.equalToSuperview()
         }
     }
+    
+    // 수정함: 외부에서 최신 total, complete 데이터를 받아 제약조건을 업데이트하도록 수정
     func updateBar() {
-        
+        let total = HabitManager.shared.totalHabits
+        let complete = HabitManager.shared.didHabits
+        setAtrribute(total: total, complete: complete)
+        print("total: \(total), complete: \(complete)")
+        progressBar.snp.updateConstraints {
+            $0.width.equalTo(self.progressBarWidth)
+        }
+        UIView.animate(withDuration: 0.3) {
+            self.layoutIfNeeded()
+        }
     }
 }
 

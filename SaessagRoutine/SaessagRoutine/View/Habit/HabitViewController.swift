@@ -13,14 +13,6 @@ import Moya
 class HabitViewController: UIViewController {
     var habitList: [Habit] = MockHabitCard.habit
     
-    
-    var totalHabits = 0
-    var completedHabits: Int = 0 {
-        didSet {
-            habitProgressCard.layoutIfNeeded()
-        }
-    }
-    
     let topBar = NavigationBarView(streak: "20")
     let createButton = UIButton(type: .system).then {
         $0.imageView?.contentMode = .scaleAspectFit
@@ -33,7 +25,7 @@ class HabitViewController: UIViewController {
         $0.spacing = 16
     }
     let scrollView = UIScrollView()
-    var habitProgressCard = HabitProgressCardView(totalHabits: 4, complete: 3)
+    var habitProgressCard : HabitProgressCardView = HabitProgressCardView()
     
     let noHabitCard : UIView = {
         let card = UIView().then {
@@ -67,8 +59,6 @@ class HabitViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        totalHabits = habitList.count
-    
         setLayout()
         if habitList.count == 0 {
             noHabitCard.isHidden = false
@@ -80,6 +70,7 @@ class HabitViewController: UIViewController {
             for i in 0..<habitList.count {
                 createCard(id: i)
             }
+            habitProgressCard.isHidden = false
         }//습관 있을 시
     }
     private func setLayout() {
@@ -98,7 +89,7 @@ class HabitViewController: UIViewController {
         }
         scrollView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide)
             $0.top.equalTo(topBar.snp.bottom)
         }
         createButton.snp.makeConstraints {
@@ -109,7 +100,7 @@ class HabitViewController: UIViewController {
         cardStackView.snp.makeConstraints {
             $0.top.equalTo(createButton.snp.bottom).offset(9)
             $0.leading.trailing.equalTo(scrollView.frameLayoutGuide).inset(24)
-            $0.bottom.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(24)
         }
         noHabitCard.snp.makeConstraints {
             $0.height.equalTo(116)
@@ -134,5 +125,9 @@ class HabitViewController: UIViewController {
             self.navigationController?.pushViewController(HabitEditViewController(), animated: false)
             print("수정버튼 탭. id: \(id)")
         }
+        card.onStatusChanged = {
+            self.habitProgressCard.updateBar()
+        }
+        card.onStatusChanged?()
     }
 }

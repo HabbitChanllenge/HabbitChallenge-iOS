@@ -12,7 +12,9 @@ import Moya
 
 class HomeViewController: UIViewController {
     let habitList: [Habit] = MockHabitCard.habit
+
     let navBar = NavigationBarView(streak: "31")
+    
     let scrollView = UIScrollView()
     let wholeStack = UIStackView().then {
         $0.axis = .vertical
@@ -24,6 +26,7 @@ class HomeViewController: UIViewController {
         $0.spacing = 16
         $0.alignment = .center
     }
+    
     let habitTextView = UIStackView().then {
         $0.axis = .horizontal//가로정렬 스택
         $0.distribution = .equalSpacing//양쪽 끝에 띄우겠다
@@ -95,11 +98,16 @@ class HomeViewController: UIViewController {
         }
         return card
     }()
+    var progressCard : HabitProgressCardView = HabitProgressCardView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         setLayout()
+        
+        HabitManager.shared.totalHabits = habitList.count
+        
         if habitList.count == 0 {
             noHabitCard.isHidden = false
         } else {
@@ -107,6 +115,7 @@ class HomeViewController: UIViewController {
             for i in 0..<3 {
                 setHabitCards(id: i)
             }
+            progressCard.updateBar()
         }
     }
     private func setHabitCards(id: Int) {
@@ -119,19 +128,23 @@ class HomeViewController: UIViewController {
             cycle: habitList[id].periodType,
             day: habitList[id].dayOfWeek
         )
+        card.onStatusChanged = {
+            let homeVC = self
+            self.progressCard.updateBar()
+        }
         habitStack.addArrangedSubview(card)
         card.onPatchButtonTapped = {[weak self] in//수정버튼 클릭 시 실행 클로저
             guard let self = self,
             let tabBarController = self.tabBarController else { return }
             tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
-
+            
             DispatchQueue.main.async {
                 if let nav = tabBarController.selectedViewController as? UINavigationController {
                     nav.pushViewController(HabitEditViewController(),animated: false)
                 }
             }
         }
-    }
+    }//습관 카드 생성 함수
     private func setLayout() {
         view.addSubview(navBar)
         view.addSubview(scrollView)

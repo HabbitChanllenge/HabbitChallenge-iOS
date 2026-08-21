@@ -26,6 +26,8 @@ final class NavigationBarView: UIView {//쓸 화면 내에서 자체적으로 �
         fatalError("init(coder:) has not been implemented")
     }
     private func setup() {
+        backgroundColor = .white
+        
         addSubview(logoImg)
         addSubview(streakLabel)
         logoImg.snp.makeConstraints {

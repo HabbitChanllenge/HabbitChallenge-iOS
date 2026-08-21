@@ -9,7 +9,7 @@ import UIKit
 import Then
 import SnapKit
 
-final class NavigationBarView: UIView {//쓸 화면 내에서 자체적으로 네비바 높이를 108로 설정해 주세요
+final class NavigationBarView: UIView {//쓸 화면 내에서 자체적으로 네비바 높이를 101로 설정해 주세요
     let logoImg = UIImageView().then {
         $0.image = UIImage(named: "topBarLogo")
     }//로고 이미지 설정

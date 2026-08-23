@@ -168,6 +168,7 @@ class MyPageEditViewController: UIViewController {
             $0.width.equalTo(60)
         }
     }
+    
     @objc private func editFinishButtonTapped() {
         let emailT = textFiledStack.email.textField.text
         let passwordT = textFiledStack.password.textField.text
@@ -175,10 +176,16 @@ class MyPageEditViewController: UIViewController {
         
         if emailT == "" || passwordT == "" || idT == "" {//하나라도 비어있을 시 에러메세지 표시
             notAllFilled.isHidden = false
-        } else {
-            self.navigationController?.popViewController(animated: false)//다 채워져 있을 시 화면전환
+        } else {//모두 다 채워져 있을 시
+            if let rootVC = self .navigationController?.viewControllers.first(where: { $0 is MyPageViewContoller }) as? MyPageViewContoller {
+                rootVC.editSucsessMessage.isHidden = false//수정 완료 메세지 표시
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    rootVC.editSucsessMessage.isHidden = true
+                }//1.2초 후에 수정 완료 메세지 숨기기
+            }
+            self.navigationController?.popViewController(animated: false)//화면전환
         }//모두 채워져 있는지 확인 로직
-    }
+    }//수정 완료 버튼 클릭시
     @objc private func deleteAccountButtonTapped() {
         dimmedView.isHidden = false
         alertView.isHidden = false

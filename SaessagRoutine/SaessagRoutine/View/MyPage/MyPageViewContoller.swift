@@ -28,6 +28,7 @@ class MyPageViewContoller: UIViewController {
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = UIColor(named: "main200")
         $0.layer.cornerRadius = 16
+        $0.addTarget(self, action: #selector(logoutButtonTapped), for: .touchUpInside)
     }
     let textFiledStack = MyPageTextField(canEdit: false)
     let editButton = UIButton(type: .system).then {
@@ -96,6 +97,7 @@ class MyPageViewContoller: UIViewController {
     @objc private func editButtonTapped() {
         navigationController?.pushViewController(MyPageEditViewController(), animated: false)
     }
-    
+    @objc private func logoutButtonTapped() {
+        UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
+    }
 }
-

@@ -40,6 +40,7 @@ class MyPageEditViewController: UIViewController {
         $0.backgroundColor = .clear
         $0.addTarget(self, action: #selector(deleteAccountButtonTapped), for: .touchUpInside)
     }//회원 탈퇴버튼. 클릭시 배경 딤처리 및 탈퇴 팝업 표시
+    
     let dimmedView = UIView().then {
         $0.backgroundColor = .black.withAlphaComponent(0.4)
         $0.isHidden = true
@@ -61,16 +62,6 @@ class MyPageEditViewController: UIViewController {
             $0.textColor = .black
             $0.font = .systemFont(ofSize: 15, weight: .regular)
         }
-        let passwordCheckTextField = UITextField().then {
-            $0.placeholder = "비밀번호를 입력해주세요"
-            $0.isSecureTextEntry = true
-            $0.backgroundColor = .white
-            let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
-            $0.leftView = leftPaddingView
-            $0.leftViewMode = .always
-            $0.layer.cornerRadius = 10
-        }
-        
         let cancelButton = UIButton(type: .system).then {
             $0.setTitle("취소", for: .normal)
             $0.setTitleColor(.black, for: .normal)
@@ -85,6 +76,7 @@ class MyPageEditViewController: UIViewController {
             $0.setTitleColor(.black, for: .normal)
             $0.backgroundColor = UIColor(named: "gray600")
             $0.layer.cornerRadius = 16
+            $0.addTarget(self, action: #selector(deleteAccount), for: .touchUpInside)
         }
         
         alertView.addSubview(titleLabel)
@@ -120,7 +112,15 @@ class MyPageEditViewController: UIViewController {
     
         return alertView
     }()//탈퇴 팝업. 탈퇴 버튼 클릭 시 표시
-
+    let passwordCheckTextField = UITextField().then {
+        $0.placeholder = "비밀번호를 입력해주세요"
+        $0.isSecureTextEntry = true
+        $0.backgroundColor = .white
+        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+        $0.leftView = leftPaddingView
+        $0.leftViewMode = .always
+        $0.layer.cornerRadius = 10
+    }//다른 메서드에서 얘 입력값 확인해야 해서 빼둠
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -206,4 +206,15 @@ class MyPageEditViewController: UIViewController {
         dimmedView.removeFromSuperview()//매 탈퇴 버튼 클릭 시 뷰에 추가되면 메모리가 아파서 취소버튼 클릭 시 레이아웃 지워줌
         alertView.removeFromSuperview()//위와 같음
     }//탈퇴 팝업에 취소 버튼 클릭 시 실행
+    @objc private func deleteAccount() {
+        print("확인버튼 클릭")
+        if self.passwordCheckTextField.text == userInfo[0].password {
+            UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
+        } else {
+            print(self.passwordCheckTextField.text)
+            print("탈퇴 실패-비번 다름")
+            passwordCheckTextField.layer.borderColor = UIColor(named: "error")?.cgColor
+            passwordCheckTextField.layer.borderWidth = 1
+        }
+    }//탈퇴 팝업 확인 버튼 클릭 시 실행
 }

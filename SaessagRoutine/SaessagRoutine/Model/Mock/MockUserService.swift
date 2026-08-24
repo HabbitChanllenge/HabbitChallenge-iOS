@@ -7,15 +7,25 @@
 
 import Foundation
 struct Mypage: Codable {
-    let user: [user]
+    let user : [user]
 }
 struct user : Codable {
-    let email : String
-    let Id : String
-    let password : String
+    var email : String
+    var Id : String
+    var password : String
 }
-struct UserData: Codable {
-    static let userInformation : [user] = [
+final class UserData {
+    static let shared = UserData()
+    
+    private init() {}
+    
+    var userInformation : [user] = [
         user(email: "test@gmail.com", Id: "testID", password: "1234")
     ]
+    func updateUserInfo(email: String, id: String, password: String) {
+        guard !userInformation.isEmpty else { return }
+        userInformation[0].email = email
+        userInformation[0].Id = id
+        userInformation[0].password = password
+    }
 }

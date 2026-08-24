@@ -11,7 +11,7 @@ import Then
 import Moya
 
 class MyPageViewContoller: UIViewController {
-    let userInfo : [user] = UserData.userInformation
+    let userInfo = UserData.shared
     let editVC = MyPageEditViewController()
     
     let navBar = NavigationBarView(streak: "31")
@@ -30,7 +30,7 @@ class MyPageViewContoller: UIViewController {
         $0.layer.cornerRadius = 16
         $0.addTarget(self, action: #selector(logoutButtonTapped), for: .touchUpInside)
     }
-    let textFiledStack = MyPageTextField(canEdit: false)
+    let textFiledStack : MyPageTextField = MyPageTextField(canEdit: false)
     let editButton = UIButton(type: .system).then {
         $0.setTitle("내 정보 수정하기", for: .normal)
         $0.setTitleColor(.white, for: .normal)
@@ -45,10 +45,17 @@ class MyPageViewContoller: UIViewController {
         $0.font = .systemFont(ofSize: 20, weight: .regular)
         $0.isHidden = true
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(false)
+        
+        if let user = userInfo.userInformation.first {
+            userID.text = user.Id
+        }
+        textFiledStack.updateInfo()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        userID.text = userInfo[0].Id
+        if let userIDText = userInfo.userInformation.first?.Id { userID.text = userIDText; }
         setupView()
     }
     
@@ -99,5 +106,11 @@ class MyPageViewContoller: UIViewController {
     }
     @objc private func logoutButtonTapped() {
         UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
+    }
+    private func updateUserInfo() {
+        if let user = userInfo.userInformation.first {
+            userID.text = user.Id
+            
+        }
     }
 }

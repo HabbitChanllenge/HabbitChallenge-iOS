@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Then
 final class MyPageTextField: UIView {
-    let userInfo: [user] = UserData.userInformation
+    let userInfo = UserData.shared.userInformation
     
     let stack = UIStackView().then {
         $0.axis = .vertical
@@ -27,17 +27,14 @@ final class MyPageTextField: UIView {
             password.textField.isEnabled = false
             id.textField.isEnabled = false
         }
-        email.textField.text = userInfo[0].email
-        password.textField.text = userInfo[0].password
-        id.textField.text = userInfo[0].Id
-        
-        setUp()
+        setupLayout()
+        updateInfo()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setUp() {
+    private func setupLayout() {
         self.addSubview(stack)
         
         stack.addArrangedSubview(email)
@@ -47,5 +44,12 @@ final class MyPageTextField: UIView {
         stack.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+    }
+    func updateInfo() {
+        let userInfo : [user] = UserData.shared.userInformation
+        
+        email.textField.text = userInfo[0].email
+        password.textField.text = userInfo[0].password
+        id.textField.text = userInfo[0].Id
     }
 }

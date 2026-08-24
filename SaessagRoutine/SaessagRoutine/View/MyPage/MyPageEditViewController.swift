@@ -11,7 +11,7 @@ import Then
 import Moya
 
 class MyPageEditViewController: UIViewController {
-    let userInfo : [user] = UserData.userInformation
+    let userInfo = UserData.shared
     
     let navBar = NavigationBarView(streak: "31")
     
@@ -170,21 +170,23 @@ class MyPageEditViewController: UIViewController {
     }
     
     @objc private func editFinishButtonTapped() {
-        let emailT = textFiledStack.email.textField.text
-        let passwordT = textFiledStack.password.textField.text
-        let idT = textFiledStack.id.textField.text
-        
-        if emailT == "" || passwordT == "" || idT == "" {//하나라도 비어있을 시 에러메세지 표시
+        guard let emailT = textFiledStack.email.textField.text,
+            let passwordT = textFiledStack.password.textField.text,
+            let idT = textFiledStack.id.textField.text,
+            !emailT.isEmpty, !passwordT.isEmpty, !idT.isEmpty else {
             notAllFilled.isHidden = false
-        } else {//모두 다 채워져 있을 시
-            if let rootVC = self .navigationController?.viewControllers.first(where: { $0 is MyPageViewContoller }) as? MyPageViewContoller {
-                rootVC.editSucsessMessage.isHidden = false//수정 완료 메세지 표시
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                    rootVC.editSucsessMessage.isHidden = true
-                }//1.2초 후에 수정 완료 메세지 숨기기
-            }
-            self.navigationController?.popViewController(animated: false)//화면전환
-        }//모두 채워져 있는지 확인 로직
+            return
+        }
+        //모두 다 채워져 있을 시
+        userInfo.updateUserInfo(email: emailT, id: idT, password: passwordT)
+        
+        if let rootVC = self .navigationController?.viewControllers.first(where: { $0 is MyPageViewContoller }) as? MyPageViewContoller {
+            rootVC.editSucsessMessage.isHidden = false//수정 완료 메세지 표시
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                rootVC.editSucsessMessage.isHidden = true
+            }//1.2초 후에 수정 완료 메세지 숨기기
+        }
+        self.navigationController?.popViewController(animated: false)//화면전환
     }//수정 완료 버튼 클릭시
     @objc private func deleteAccountButtonTapped() {
         dimmedView.isHidden = false
@@ -215,7 +217,7 @@ class MyPageEditViewController: UIViewController {
     }//탈퇴 팝업에 취소 버튼 클릭 시 실행
     @objc private func deleteAccount() {
         print("확인버튼 클릭")
-        if self.passwordCheckTextField.text == userInfo[0].password {
+        if self.passwordCheckTextField.text == userInfo.userInformation.first?.password {
             UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
         } else {
             print(self.passwordCheckTextField.text)

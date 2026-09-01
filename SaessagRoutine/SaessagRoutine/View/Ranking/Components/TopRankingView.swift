@@ -9,18 +9,38 @@ final class TopRankingView: UIView {
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textAlignment = .center
     }
-    
+
     private let firstDayLabel = UILabel().then {
         $0.text = "365일"
         $0.font = .systemFont(ofSize: 15, weight: .bold)
-        $0.textAlignment = .center
         $0.textColor = UIColor(named: "main900")
+        $0.textAlignment = .center
     }
 
-    private let firstStackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.spacing = 4
-        $0.alignment = .center
+    private let secondNameLabel = UILabel().then {
+        $0.text = "seoyun_2444"
+        $0.font = .systemFont(ofSize: 15, weight: .bold)
+        $0.textAlignment = .center
+    }
+
+    private let secondDayLabel = UILabel().then {
+        $0.text = "277일"
+        $0.font = .systemFont(ofSize: 15, weight: .bold)
+        $0.textColor = UIColor(named: "main900")
+        $0.textAlignment = .center
+    }
+
+    private let thirdNameLabel = UILabel().then {
+        $0.text = "seoyun_3444"
+        $0.font = .systemFont(ofSize: 15, weight: .bold)
+        $0.textAlignment = .center
+    }
+
+    private let thirdDayLabel = UILabel().then {
+        $0.text = "244일"
+        $0.font = .systemFont(ofSize: 15, weight: .bold)
+        $0.textColor = UIColor(named: "main900")
+        $0.textAlignment = .center
     }
     
     private let firstRankView = UIView().then {
@@ -28,50 +48,63 @@ final class TopRankingView: UIView {
         $0.layer.cornerRadius = 20
     }
     
-    private let trophyImageView = UIImageView().then {
-        $0.image = UIImage(named: "trophyImage")
-        $0.contentMode = .scaleAspectFit
-    }
-    
-    private let secondNameLabel = UILabel().then {
-        $0.text = "seoyun_2444"
-        $0.font = .systemFont(ofSize: 15, weight: .bold)
-        $0.textAlignment = .center
-    }
-    private let secondDayLabel = UILabel().then {
-        $0.text = "277일"
-        $0.font = .systemFont(ofSize: 15, weight: .bold)
-        $0.textAlignment = .center
-        $0.textColor = UIColor(named: "main900")
-    }
-    private let secondStackView = UIStackView().then {
-        $0.axis = .vertical
-        $0.spacing = 4
-        $0.alignment = .center
-    }
     private let secondRankView = UIView().then {
         $0.backgroundColor = UIColor(named: "main600")
         $0.layer.cornerRadius = 20
     }
-    private let thirdNameLabel = UILabel().then {
-        $0.text = "seoyun_3444"
-        $0.font = .systemFont(ofSize: 15, weight: .bold)
-        $0.textAlignment = .center
+    
+    private let thirdRankView = UIView().then {
+        $0.backgroundColor = UIColor(named: "main700")
+        $0.layer.cornerRadius = 20
     }
-    private let thirdDayLabel = UILabel().then {
-        $0.text = "244일"
-        $0.font = .systemFont(ofSize: 15, weight: .bold)
-        $0.textAlignment = .center
-        $0.textColor = UIColor(named: "main900")
+    
+    private let trophyImageView = UIImageView().then {
+        $0.image = UIImage(systemName: "trophy.fill")
+        $0.tintColor = UIColor(named: "gold")
+        $0.contentMode = .scaleAspectFit
     }
-    private let thirdStackView = UIStackView().then {
+    
+    private let firstInfoStackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 4
         $0.alignment = .center
     }
-    private let thirdRankView = UIView().then {
-        $0.backgroundColor = UIColor(named: "main700")
-        $0.layer.cornerRadius = 20
+    
+    private let secondInfoStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 4
+        $0.alignment = .center
+    }
+    
+    private let thirdInfoStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 4
+        $0.alignment = .center
+    }
+    
+    private let firstColumnStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 4
+        $0.alignment = .center
+    }
+    
+    private let secondColumnStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 4
+        $0.alignment = .center
+    }
+    
+    private let thirdColumnStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 4
+        $0.alignment = .center
+    }
+    
+    private let podiumStackView = UIStackView().then {
+        $0.axis = .horizontal
+        $0.spacing = 8
+        $0.alignment = .bottom
+        $0.distribution = .fill
     }
     
     override init(frame: CGRect) {
@@ -86,62 +119,74 @@ final class TopRankingView: UIView {
     }
     
     private func setupView() {
-        addSubview(firstStackView)
-        addSubview(firstRankView)
-        addSubview(secondStackView)
-        addSubview(secondRankView)
-        addSubview(thirdStackView)
-        addSubview(thirdRankView)
+        addSubview(podiumStackView)
         
-        firstStackView.addArrangedSubview(firstNameLabel)
-        firstStackView.addArrangedSubview(firstDayLabel)
+        firstInfoStackView.addArrangedSubview(firstNameLabel)
+        firstInfoStackView.addArrangedSubview(firstDayLabel)
         
-        secondStackView.addArrangedSubview(secondNameLabel)
-        secondStackView.addArrangedSubview(secondDayLabel)
+        secondInfoStackView.addArrangedSubview(secondNameLabel)
+        secondInfoStackView.addArrangedSubview(secondDayLabel)
         
-        thirdStackView.addArrangedSubview(thirdNameLabel)
-        thirdStackView.addArrangedSubview(thirdDayLabel)
+        thirdInfoStackView.addArrangedSubview(thirdNameLabel)
+        thirdInfoStackView.addArrangedSubview(thirdDayLabel)
         
         firstRankView.addSubview(trophyImageView)
+        
+        firstColumnStackView.addArrangedSubview(firstInfoStackView)
+        firstColumnStackView.addArrangedSubview(firstRankView)
+        
+        secondColumnStackView.addArrangedSubview(secondInfoStackView)
+        secondColumnStackView.addArrangedSubview(secondRankView)
+        
+        thirdColumnStackView.addArrangedSubview(thirdInfoStackView)
+        thirdColumnStackView.addArrangedSubview(thirdRankView)
+        
+        podiumStackView.addArrangedSubview(secondColumnStackView)
+        podiumStackView.addArrangedSubview(firstColumnStackView)
+        podiumStackView.addArrangedSubview(thirdColumnStackView)
     }
     
     private func setupLayout() {
-        
-        firstStackView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(82)
-            $0.leading.equalToSuperview().offset(153)
+        podiumStackView.snp.makeConstraints {
+            $0.top.bottom.equalToSuperview()
+            $0.centerX.equalToSuperview()
         }
         
         firstRankView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(125)
-            $0.leading.equalToSuperview().offset(154.5)
             $0.width.equalTo(97)
             $0.height.equalTo(136)
         }
-        secondStackView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(127)
-            $0.leading.equalToSuperview().offset(52)
-        }
+        
         secondRankView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(169)
-            $0.leading.equalToSuperview().offset(52)
             $0.width.equalTo(97)
             $0.height.equalTo(92)
         }
-        trophyImageView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
-        thirdStackView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(147)
-            $0.trailing.equalToSuperview().offset(-48.5)
-        }
+        
         thirdRankView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(189)
-            $0.trailing.equalToSuperview().offset(-49.5)
             $0.width.equalTo(97)
             $0.height.equalTo(72)
         }
+        
+        trophyImageView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(25)
+        }
     }
     
+    func configure(
+        firstName: String,
+        firstDays: Int,
+        secondName: String,
+        secondDays: Int,
+        thirdName: String,
+        thirdDays: Int
+    ) {
+        firstNameLabel.text = firstName
+        firstDayLabel.text = "\(firstDays)일"
+        
+        secondNameLabel.text = secondName
+        secondDayLabel.text = "\(secondDays)일"
+        
+        thirdNameLabel.text = thirdName
+        thirdDayLabel.text = "\(thirdDays)일"
+    }
 }
-

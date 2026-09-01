@@ -192,6 +192,9 @@ class MyPageEditViewController: UIViewController {
         dimmedView.isHidden = false
         alertView.isHidden = false
         
+        passwordCheckTextField.layer.borderWidth = 0
+        self.passwordCheckTextField.text = ""
+        
         //여기부터 레이아웃 잡기
         guard let tabBarContainerView = self.tabBarController?.view else { return }
         tabBarContainerView.addSubview(dimmedView)

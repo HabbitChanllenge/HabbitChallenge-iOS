@@ -220,7 +220,7 @@ class MyPageEditViewController: UIViewController {
     }//탈퇴 팝업에 취소 버튼 클릭 시 실행
     @objc private func deleteAccount() {
         print("확인버튼 클릭")
-        if self.passwordCheckTextField.text == userInfo.userInformation.first?.password {
+        if self.passwordCheckTextField.text == userInfo.userInformation.password {
             UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
         } else {
             print(self.passwordCheckTextField.text)

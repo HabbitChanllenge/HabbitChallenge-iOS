@@ -19,13 +19,11 @@ final class UserData {
     
     private init() {}
     
-    var userInformation : [user] = [
-        user(email: "test@gmail.com", Id: "testID", password: "1234")
-    ]
+    var userInformation : user = user(email: "test@gmail.com", Id: "testID", password: "1234")
+    
     func updateUserInfo(email: String, id: String, password: String) {
-        guard !userInformation.isEmpty else { return }
-        userInformation[0].email = email
-        userInformation[0].Id = id
-        userInformation[0].password = password
+        userInformation.email = email
+        userInformation.Id = id
+        userInformation.password = password
     }
 }

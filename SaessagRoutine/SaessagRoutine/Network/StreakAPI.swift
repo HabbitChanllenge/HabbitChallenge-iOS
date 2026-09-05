@@ -41,16 +41,14 @@ extension StreakAPI: TargetType {
 }
 
 struct Streak {
-    let streak: Int
+    let allStreak: Int
 }
 struct Rank: Codable {
     let status : Int
-    let data : [RankData]
-    let user : [RankData]
+    let data : [RankData]?
 }
 struct RankData: Codable {
     let rank : Int
     let name : String
     let streak: Int
 }
-

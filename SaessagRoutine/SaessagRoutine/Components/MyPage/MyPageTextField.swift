@@ -46,10 +46,10 @@ final class MyPageTextField: UIView {
         }
     }
     func updateInfo() {
-        let userInfo : [user] = UserData.shared.userInformation
+        let userInfo : user = UserData.shared.userInformation
         
-        email.textField.text = userInfo[0].email
-        password.textField.text = userInfo[0].password
-        id.textField.text = userInfo[0].Id
+        email.textField.text = userInfo.email
+        password.textField.text = userInfo.password
+        id.textField.text = userInfo.Id
     }
 }

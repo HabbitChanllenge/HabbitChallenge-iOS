@@ -7,28 +7,50 @@
 
 import Foundation
 import Moya
+import Alamofire
 
 enum StreakAPI {
     case getStreak
+    case getRank
 }
 extension StreakAPI: TargetType {
     var baseURL: URL {
-        <#code#>
+        Secrets.baseURL
     }
     
     var path: String {
-        <#code#>
+        switch self {
+        case .getStreak:
+            return "/streak/allStreak"
+        case .getRank:
+            return "/streak/rank"
+        }
     }
     
     var method: Moya.Method {
-        <#code#>
+        return .get
     }
     
     var task: Moya.Task {
-        <#code#>
+        return .requestPlain
     }
     
     var headers: [String : String]? {
-        <#code#>
+        return nil
     }
 }
+
+struct Streak {
+    let streak: Int
+}
+struct Rank: Codable {
+    let status : Int
+    let data : [RankData]
+    let user : [RankData]
+}
+struct RankData: Codable {
+    let rank : Int
+    let name : String
+    let streak: Int
+}
+

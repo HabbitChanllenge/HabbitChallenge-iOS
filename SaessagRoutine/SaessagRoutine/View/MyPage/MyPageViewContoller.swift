@@ -11,7 +11,8 @@ import Then
 import Moya
 
 class MyPageViewContoller: UIViewController {
-    let userInfo = UserData.shared
+    let provider = MoyaProvider<UserAPI>()
+    
     let editVC = MyPageEditViewController()
     
     let navBar = NavigationBarView(streak: "31")
@@ -48,14 +49,11 @@ class MyPageViewContoller: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         
-        if let user = userInfo.userInformation.first {
-            userID.text = user.Id
-        }
+        updateUserInfo()
         textFiledStack.updateInfo()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let userIDText = userInfo.userInformation.first?.Id { userID.text = userIDText; }
         setupView()
     }
     
@@ -108,9 +106,17 @@ class MyPageViewContoller: UIViewController {
         UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
     }
     private func updateUserInfo() {
-        if let user = userInfo.userInformation.first {
-            userID.text = user.Id
-            
+        provider.request(.getUserInfo) {
+            switch $0 {
+            case .success(let res) :
+                guard let data = try? res.map(getMypageInfo.self) else { return }
+                self.userID.text = data.userId
+                
+                print(data)
+                print("delete 요청 성공")
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
         }
     }
 }

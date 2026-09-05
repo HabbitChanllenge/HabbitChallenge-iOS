@@ -11,6 +11,7 @@ import Then
 import Moya
 
 class SignUpViewController: UIViewController {
+    let provider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     let titleLabel = UILabel().then {
         $0.text = "계정 만들기"
         $0.textColor = .black
@@ -43,7 +44,7 @@ class SignUpViewController: UIViewController {
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 10
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
-        $0.addTarget(self, action: #selector(passwordCheck), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
     }
     let toLoginText = UILabel().then {
         $0.text = "이미 계정이 있으신가요?"
@@ -125,15 +126,34 @@ class SignUpViewController: UIViewController {
             //전부 다 입력이 됐을 때
         }
     }
-    @objc private func passwordCheck() {
+    @objc private func signUpButtonTapped() {
+        let isPasswordSame = passwordCheck()
+        
+        if isPasswordSame {
+            provider.request(
+                .signup(userId: idTextField.textField.text!,email: emailTextField.textField.text!, password: passwordTextField.textField.text!))
+            {
+                switch $0 {
+                case .success:
+                    print("회원가입 성공")
+                    self.toLogin()
+                case .failure:
+                    return
+                }
+            }
+        } else {
+            print("모르겠다")
+        }
+    }
+    private func passwordCheck() -> Bool {
         let password = passwordTextField.textField.text
         let passwordCheck = passwordCheckTextField.textField.text
         if password == passwordCheck {
-            toLogin()
+            return true
         } else {
             errorMessagePassword.isHidden = false
+            return false
         }
-        return
     }
     @objc private func toLogin() {
         navigationController?.popViewController(animated: false)

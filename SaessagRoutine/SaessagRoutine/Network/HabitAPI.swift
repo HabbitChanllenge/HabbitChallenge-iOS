@@ -7,28 +7,13 @@
 
 import Foundation
 import Moya
+import Alamofire
 
 enum HabitAPI {
-    
-}
-extension HabitAPI: TargetType {
-    var baseURL: URL {
-        <#code#>
-    }
-    
-    var path: String {
-        <#code#>
-    }
-    
-    var method: Moya.Method {
-        <#code#>
-    }
-    
-    var task: Moya.Task {
-        <#code#>
-    }
-    
-    var headers: [String : String]? {
-        <#code#>
-    }
+    case createHabit(periodType : String, name : String, categorys : [String], totalRepeat : Int, dayOfWeek: [Int], alarm : Bool)
+    case getHabits
+    case verifyHabit(completedCount : Int, complated : Bool)
+    case deleteHabit
+    case patchHabit(name : String, categorys : [String], totalRepeat : Int, dayOfWeek: [Int], alarm : Bool)
+    case checkHabit(completedCount : Int, complated : Bool)
 }

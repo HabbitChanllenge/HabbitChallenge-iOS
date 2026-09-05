@@ -11,6 +11,7 @@ import Then
 import Moya
 
 class LogInViewController: UIViewController {
+    let provider = MoyaProvider<AuthAPI>(plugins:[MoyaLoggingPlugin()])
     let stackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 19
@@ -27,7 +28,7 @@ class LogInViewController: UIViewController {
         $0.layer.cornerRadius = 10
         $0.setTitle("로그인하기", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
-        $0.addTarget(self, action: #selector(logInToHome), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(logInButtonTapped), for: .touchUpInside)
     }
     let signUpText = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
@@ -102,10 +103,22 @@ class LogInViewController: UIViewController {
         let signUpVC = SignUpViewController()
         navigationController?.pushViewController(signUpVC, animated: false)
     }
-    @objc func logInToHome() {
-        let homeVC = RootTabBarController()
-        navigationController?.pushViewController(homeVC, animated: false)
-        UIWindow.changeRootViewController(to: homeVC, animated: true)
+    @objc func logInButtonTapped() {
+        provider.request(.login(email: emailTextField.textField.text!, password: passwordTextField.textField.text!)) {
+            switch $0 {
+            case .success(let res):
+                print("로그인 성공")
+                let homeVC = RootTabBarController()
+                self.navigationController?.pushViewController(homeVC, animated: false)
+                UIWindow.changeRootViewController(to: homeVC, animated: true)
+                
+            case .failure(_):
+                self.errorMessage.isHidden = false
+                print("실패")
+            }
+        }
+        print("버튼 이벤트 작동은 함")
+
     }
 
     @objc private func logInButtonChange() {
@@ -121,3 +134,5 @@ class LogInViewController: UIViewController {
         }
     }
 }
+ 
+

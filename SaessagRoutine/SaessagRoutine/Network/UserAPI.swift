@@ -10,8 +10,8 @@ import Moya
 import Alamofire
 
 enum UserAPI {
-    case getUserInfo
-    case patchUserInfo(userId:String, email:String, password:String)
+    case getUserInfo(token:String)
+    case patchUserInfo(token:String, userId:String, email:String, password:String)
 }
 
 extension UserAPI: TargetType {
@@ -36,22 +36,30 @@ extension UserAPI: TargetType {
         switch self {
         case .getUserInfo:
             return .requestPlain
-        case .patchUserInfo:
-            return .requestParameters(parameters: [:], encoding: JSONEncoding.default)
+        case .patchUserInfo(_, let userId, let email, let password):
+            let param : [String: String] = ["userId": userId, "email": email, "password": password]
+            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         }
     }
     
     var headers: [String : String]? {
-        return nil
+        switch self {
+        case .getUserInfo(let token):
+            let header = ["Authorization": "Bearer \(token)"]
+            return header
+        case .patchUserInfo(let token, _, _, _):
+            let header = ["Authorization": "Bearer \(token)"]
+            return header
+        }
     }
 }
-struct getMypageInfo: Codable, Equatable {
+struct getMypageInfo: Codable, Equatable {//마이페이지 조회 시 사용
     let userId : String
     let email : String
     let password : String
     let statusCode : Int
 }
-struct patchMypageInfo: Codable, Equatable {
+struct patchMypageInfo: Codable, Equatable {// 마이페이지 수정시 사용
     let status : Int?
     let message : String
 }

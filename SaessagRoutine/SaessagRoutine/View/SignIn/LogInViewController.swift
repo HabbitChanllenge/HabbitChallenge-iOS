@@ -49,7 +49,6 @@ class LogInViewController: UIViewController {
     let errorMessage = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.textColor = UIColor(named: "error")
-        $0.text = "이메일 주소와 비밀번호를 확인해 주세요."
         $0.isHidden = true
     }
     
@@ -107,19 +106,43 @@ class LogInViewController: UIViewController {
         provider.request(.login(email: emailTextField.textField.text!, password: passwordTextField.textField.text!)) {
             switch $0 {
             case .success(let res):
-                print("로그인 성공")
-                let homeVC = RootTabBarController()
-                self.navigationController?.pushViewController(homeVC, animated: false)
-                UIWindow.changeRootViewController(to: homeVC, animated: true)
+                guard let data = try? res.map(loginResponse.self) else { print("디코딩 실패"); return }
+                if data.statusCode == 200 {
+                    print("로그인 성공")
+                    TokenManager.shared.token = data.accessToken!
+                    
+                    let homeVC = RootTabBarController()
+                    self.navigationController?.pushViewController(homeVC, animated: false)
+                    UIWindow.changeRootViewController(to: homeVC, animated: true)
+                } else if data.statusCode == 401 {
+                    print("비밀번호 틀림")
+                    
+                    DispatchQueue.main.async {
+                        self.errorMessage.text = "비밀번호를 다시 확인해 주세요."
+                        self.errorMessage.isHidden = false
+                        
+                        self.passwordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                        self.passwordTextField.textField.layer.borderWidth = 1
+                        self.emailTextField.textField.layer.borderWidth = 0
+                    }
+                } else if data.statusCode == 400 {
+                    DispatchQueue.main.async {
+                        self.errorMessage.text = "이메일과 비밀번호를 다시 확인해 주세요."
+                        self.errorMessage.isHidden = false
+                        
+                        self.emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                        self.emailTextField.textField.layer.borderWidth = 1
+                    }
+                    print("계정 없음")
+                } else {
+                    print(data.statusCode)
+                }
                 
             case .failure(_):
-                self.errorMessage.isHidden = false
-                print("실패")
+                print("API 연동 실패")
             }
         }
-        print("버튼 이벤트 작동은 함")
-
-    }
+    }//로그인 버튼 클릭시
 
     @objc private func logInButtonChange() {
         let isEmailEmpty = emailTextField.textField.text?.isEmpty ?? true
@@ -134,5 +157,3 @@ class LogInViewController: UIViewController {
         }
     }
 }
- 
-

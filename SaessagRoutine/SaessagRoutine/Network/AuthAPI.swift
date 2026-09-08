@@ -45,10 +45,10 @@ extension AuthAPI: TargetType {
     var task: Moya.Task {
         switch self {
         case .login(let email, let password):
-            let param: [String: Any] = ["email" : email, "password" : password]
+            let param: [String: String] = ["email" : email, "password" : password]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         case .signup(userId: let userId, email: let email, password: let password):
-            let param: [String: Any] = ["userId" : userId, "email" : email, "password" : password]
+            let param: [String: String] = ["userId" : userId, "email" : email, "password" : password]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         case .logout, .resign:
             return .requestPlain
@@ -61,8 +61,9 @@ extension AuthAPI: TargetType {
 }
 
 struct loginResponse : Codable, Equatable {//로그인 시 사용
-    let accessToken : String
-    let tokenType : String
+    let accessToken : String?
+    let tokenType : String?
+    let type : String?
     let statusCode : Int
 }
 struct authResponse : Codable, Equatable {//회원가입, 로그아웃, 탈퇴시 사용

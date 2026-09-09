@@ -12,18 +12,16 @@ struct Mypage: Codable {
 struct user : Codable {
     var email : String
     var Id : String
-    var password : String
 }
 final class UserData {
     static let shared = UserData()
     
     private init() {}
     
-    var userInformation : user = user(email: "test@gmail.com", Id: "testID", password: "1234")
+    var userInformation : user = user(email: "test@gmail.com", Id: "testID")
     
-    func updateUserInfo(email: String, id: String, password: String) {
+    func updateUserInfo(email: String, id: String) {
         userInformation.email = email
         userInformation.Id = id
-        userInformation.password = password
     }
 }

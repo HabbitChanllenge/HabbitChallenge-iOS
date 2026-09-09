@@ -12,10 +12,9 @@ import Moya
 
 class MyPageViewContoller: UIViewController {
     let provider = MoyaProvider<UserAPI>()
-    
     let editVC = MyPageEditViewController()
-    
     let navBar = NavigationBarView(streak: "31")
+    
     let profileImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.image = UIImage(named: "profileImg")
@@ -50,7 +49,6 @@ class MyPageViewContoller: UIViewController {
         super.viewWillAppear(false)
         
         updateUserInfo()
-        textFiledStack.updateInfo()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,16 +104,20 @@ class MyPageViewContoller: UIViewController {
         UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
     }
     private func updateUserInfo() {
-        provider.request(.getUserInfo) {
+        provider.request(.getUserInfo(token: TokenManager.shared.token)) {
             switch $0 {
-            case .success(let res) :
-                guard let data = try? res.map(getMypageInfo.self) else { return }
-                self.userID.text = data.userId
-                
-                print(data)
-                print("delete 요청 성공")
-            case .failure(let err):
-                print(err.localizedDescription)
+            case .success(let response):
+                if response.statusCode == 200 {
+                    guard let data = try? response.map(getMypageInfo.self) else { print("데이터 디코딩 실패"); return }
+                    self.userID.text = data.name
+                    
+                    let id = data.name
+                    let email = data.email
+                    self.textFiledStack.setInfo(id: id, email: email)
+                }
+                print("유저 정보 불러오기 성공")
+            case .failure(let error):
+                print(error)
             }
         }
     }

@@ -11,7 +11,7 @@ import Alamofire
 
 enum UserAPI {
     case getUserInfo(token:String)
-    case patchUserInfo(token:String, userId:String, email:String, password:String)
+    case patchUserInfo(token:String, userId:String, email:String)
 }
 
 extension UserAPI: TargetType {
@@ -36,8 +36,8 @@ extension UserAPI: TargetType {
         switch self {
         case .getUserInfo:
             return .requestPlain
-        case .patchUserInfo(_, let userId, let email, let password):
-            let param : [String: String] = ["userId": userId, "email": email, "password": password]
+        case .patchUserInfo(_, let userId, let email):
+            let param : [String: String] = ["userId": userId, "email": email]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         }
     }
@@ -47,16 +47,16 @@ extension UserAPI: TargetType {
         case .getUserInfo(let token):
             let header = ["Authorization": "Bearer \(token)"]
             return header
-        case .patchUserInfo(let token, _, _, _):
+        case .patchUserInfo(let token, _, _):
             let header = ["Authorization": "Bearer \(token)"]
             return header
         }
     }
 }
 struct getMypageInfo: Codable, Equatable {//마이페이지 조회 시 사용
-    let userId : String
+    let userId : Int
+    let name : String
     let email : String
-    let password : String
     let statusCode : Int
 }
 struct patchMypageInfo: Codable, Equatable {// 마이페이지 수정시 사용

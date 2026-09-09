@@ -171,14 +171,13 @@ class MyPageEditViewController: UIViewController {
     
     @objc private func editFinishButtonTapped() {
         guard let emailT = textFiledStack.email.textField.text,
-            let passwordT = textFiledStack.password.textField.text,
             let idT = textFiledStack.id.textField.text,
-            !emailT.isEmpty, !passwordT.isEmpty, !idT.isEmpty else {
+            !emailT.isEmpty, !idT.isEmpty else {
             notAllFilled.isHidden = false
             return
         }
         //모두 다 채워져 있을 시
-        userInfo.updateUserInfo(email: emailT, id: idT, password: passwordT)
+        userInfo.updateUserInfo(email: emailT, id: idT)
         
         if let rootVC = self .navigationController?.viewControllers.first(where: { $0 is MyPageViewContoller }) as? MyPageViewContoller {
             rootVC.editSucsessMessage.isHidden = false//수정 완료 메세지 표시
@@ -220,13 +219,5 @@ class MyPageEditViewController: UIViewController {
     }//탈퇴 팝업에 취소 버튼 클릭 시 실행
     @objc private func deleteAccount() {
         print("확인버튼 클릭")
-        if self.passwordCheckTextField.text == userInfo.userInformation.password {
-            UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
-        } else {
-            print(self.passwordCheckTextField.text)
-            print("탈퇴 실패-비번 다름")
-            passwordCheckTextField.layer.borderColor = UIColor(named: "error")?.cgColor
-            passwordCheckTextField.layer.borderWidth = 1
-        }
     }//탈퇴 팝업 확인 버튼 클릭 시 실행
 }

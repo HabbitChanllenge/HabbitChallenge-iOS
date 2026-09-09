@@ -10,7 +10,7 @@ import SnapKit
 import Then
 import Moya
 
-class LogInViewController: UIViewController {
+class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
     let stackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 19
@@ -51,7 +51,12 @@ class LogInViewController: UIViewController {
         $0.text = "이메일 주소와 비밀번호를 확인해 주세요."
         $0.isHidden = true
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
@@ -119,5 +124,10 @@ class LogInViewController: UIViewController {
             loginButton.isEnabled = true
             loginButton.backgroundColor = UIColor(named: "main600")
         }
+    }
+}
+extension LogInViewController {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return (navigationController?.viewControllers.count ?? 0) > 1
     }
 }

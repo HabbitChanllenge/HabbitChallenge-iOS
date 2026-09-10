@@ -59,22 +59,27 @@ final class PasswordChangeViewController: UIViewController {
     
     let changeButton = UIButton(type: .system).then {
         $0.setTitle("비밀번호 변경하기 ", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-        $0.tintColor = .white
-        $0.backgroundColor = UIColor(named: "main400")
+        $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = UIColor(named: "main300")
         $0.layer.cornerRadius = 10
+        $0.isEnabled = false
         $0.addTarget(self, action: #selector(changePassword), for: .touchUpInside)
     }
     let errorMessage = UILabel().then {
         $0.textColor = UIColor(named: "error")
         $0.font = .systemFont(ofSize: 15, weight: .regular)
-        $0.text = "테스트용 텍스트"
+        $0.isHidden = true
     }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setup()
-
+        
+        emailTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        passwordTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        checkPasswordTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        verificationCodeTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
     }
     private func setup() {
         view.addSubview(scrollView)
@@ -126,11 +131,56 @@ final class PasswordChangeViewController: UIViewController {
     
     @objc private func sendEmail() {
         print("이메일 전송버튼 클릭")
+        if emailTextField.textField.text?.isEmpty == true {//텍스트필드 비어있을 때
+            errorMessage.text = "이메일 주소를 입력해주세요"
+            errorMessage.isHidden = false
+            emailTextField.textField.layer.borderWidth = 1
+            emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+        } else {//채워져 있을 때
+            emailSendButton.backgroundColor = UIColor(named: "main300")
+            emailTextField.textField.layer.borderWidth = 0
+            errorMessage.isHidden = true
+        }
     }
     @objc private func checkCode() {
         print("인증번호 확인 버튼 클릭")
+        if verificationCodeTextField.textField.text?.isEmpty == true {//텍스트필드 비어있을 때
+            errorMessage.text = "인증 코드를 입력해주세요"
+            errorMessage.isHidden = false
+            verificationCodeTextField.textField.layer.borderWidth = 1
+            verificationCodeTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+        } else {//채워져 있을 때
+            codeCheckButton.backgroundColor = UIColor(named: "main300")
+            verificationCodeTextField.textField.layer.borderWidth = 0
+            errorMessage.isHidden = true
+        }
     }
     @objc private func changePassword() {
         print("비밀번호 변경 버튼 클릭")
+        let isPasswordSame = passwordTextField.textField.text == checkPasswordTextField.textField.text
+        if isPasswordSame {//비밀번호 일치 시
+            navigationController?.popViewController(animated: true)
+        } else {
+            errorMessage.text = "비밀번호가 일치하지 않습니다"
+            errorMessage.isHidden = false
+            
+            passwordTextField.textField.layer.borderWidth = 1
+            passwordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+            
+            checkPasswordTextField.textField.layer.borderWidth = 1
+            checkPasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+        }
+    }
+    @objc func buttonChange() {
+        
+        let isEmpty = (passwordTextField.textField.text?.isEmpty ?? true) || (checkPasswordTextField.textField.text?.isEmpty ?? true) || (verificationCodeTextField.textField.text?.isEmpty ?? true) || (emailTextField.textField.text?.isEmpty ?? true)
+        
+        if !isEmpty {//다 채워져있을 때
+            changeButton.backgroundColor = UIColor(named: "main600")
+            changeButton.isEnabled = true
+        } else {
+            changeButton.backgroundColor = UIColor(named: "main300")
+            changeButton.isEnabled = false
+        }
     }
 }

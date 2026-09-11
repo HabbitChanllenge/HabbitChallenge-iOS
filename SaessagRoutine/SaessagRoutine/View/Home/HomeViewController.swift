@@ -1,10 +1,3 @@
-//
-//  HomeViewController.swift
-//  SaessagRoutine
-//
-//  Created by Seoyun Jin on 7/31/26.
-//
-
 import UIKit
 import SnapKit
 import Then
@@ -12,7 +5,7 @@ import Moya
 
 class HomeViewController: UIViewController {
     let habitList: [Habit] = MockHabitCard.habit
-
+    
     let navBar = NavigationBarView(streak: "31")
     
     let scrollView = UIScrollView()
@@ -68,7 +61,7 @@ class HomeViewController: UIViewController {
         $0.contentHorizontalAlignment = .right
         $0.addTarget(self, action: #selector(rankMoreButtonDidTap), for: .touchUpInside)
     }
-
+    
     let top3RankCard : TopRankingView = TopRankingView()
     let noHabitCard : UIView = {
         let card = UIView().then {
@@ -135,7 +128,7 @@ class HomeViewController: UIViewController {
         habitStack.addArrangedSubview(card)
         card.onPatchButtonTapped = {[weak self] in//수정버튼 클릭 시 실행 클로저
             guard let self = self,
-            let tabBarController = self.tabBarController else { return }
+                  let tabBarController = self.tabBarController else { return }
             tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
             
             DispatchQueue.main.async {
@@ -203,9 +196,9 @@ class HomeViewController: UIViewController {
         
         DispatchQueue.main.async {[weak self] in
             guard let self = self,
-            let tabBarController = self.tabBarController else { return }
+                  let tabBarController = self.tabBarController else { return }
             tabBarController.swichTo(tab: .habit)
-
+            
             DispatchQueue.main.async {
                 if let nav = tabBarController.selectedViewController as? UINavigationController {
                     nav.pushViewController(HabitCreateViewController(),animated: false)

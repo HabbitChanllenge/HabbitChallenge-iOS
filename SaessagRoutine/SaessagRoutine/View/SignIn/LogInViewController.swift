@@ -39,17 +39,25 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         $0.setTitleColor(UIColor(named: "gray600"), for: .normal)
         $0.addTarget(self, action: #selector(logInToSignUp), for: .touchUpInside)
         
-        let attributedString = NSMutableAttributedString(string: "가입하기")
+        let attributedString = NSMutableAttributedString(string: "회원가입")
         
         attributedString.addAttribute(.underlineStyle , value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: attributedString.length))
         $0.setAttributedTitle(attributedString, for: .normal)
-        $0.isEnabled = true
     }
     let errorMessage = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.textColor = UIColor(named: "error")
         $0.text = "이메일 주소와 비밀번호를 확인해 주세요."
         $0.isHidden = true
+    }
+    let changePasswordButton = UIButton(type: .system).then {
+        $0.setTitleColor(UIColor(named: "gray600"), for: .normal)
+        
+        let attributedString = NSMutableAttributedString(string: "비밀번호 찾기")
+        
+        attributedString.addAttribute(.underlineStyle , value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: attributedString.length))
+        $0.setAttributedTitle(attributedString, for: .normal)
+        $0.addTarget(self, action: #selector(toPasswordChange), for: .touchUpInside)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -73,6 +81,7 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         view.addSubview(loginButton)
         view.addSubview(signUpText)
         view.addSubview(signUpButton)
+        view.addSubview(changePasswordButton)
         
         stackView.addArrangedSubview(emailTextField)
         stackView.addArrangedSubview(passwordTextField)
@@ -102,6 +111,10 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(63)
         }
+        changePasswordButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(24)
+            $0.top.equalTo(passwordTextField.snp.bottom).offset(6)
+        }
     }
     @objc func logInToSignUp() {
         let signUpVC = SignUpViewController()
@@ -124,6 +137,10 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
             loginButton.isEnabled = true
             loginButton.backgroundColor = UIColor(named: "main600")
         }
+    }
+    @objc private func toPasswordChange() {
+        let passwordChangeVC = PasswordChangeViewController()
+        navigationController?.pushViewController(passwordChangeVC, animated: true)
     }
 }
 extension LogInViewController {

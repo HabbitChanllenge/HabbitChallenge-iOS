@@ -57,9 +57,10 @@ final class LabeledTextFieldView: UIView {
             $0.height.equalTo(30)
         }
         textField.snp.makeConstraints {
-            $0.top.equalTo(titleText.snp.bottom).offset(19)
+            $0.top.equalTo(titleText.snp.bottom).offset(16)
             $0.leading.trailing.bottom.equalToSuperview()
             $0.height.equalTo(50)
+            $0.width.equalTo(354)
         }
     }
     @objc private func setSecure() {

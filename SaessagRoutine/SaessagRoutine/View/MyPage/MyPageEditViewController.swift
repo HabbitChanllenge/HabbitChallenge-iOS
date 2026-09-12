@@ -40,25 +40,16 @@ class MyPageEditViewController: UIViewController {
         $0.backgroundColor = .clear
         $0.addTarget(self, action: #selector(deleteAccountButtonTapped), for: .touchUpInside)
     }//회원 탈퇴버튼. 클릭시 배경 딤처리 및 탈퇴 팝업 표시
-    
-    let dimmedView = UIView().then {
-        $0.backgroundColor = .black.withAlphaComponent(0.4)
-        $0.isHidden = true
-    }//배경 어둡게. 평소엔 안보임
-    
-    let passwordCheckTextField = UITextField().then {
-        $0.placeholder = "비밀번호를 입력해주세요"
-        $0.isSecureTextEntry = true
-        $0.backgroundColor = .white
-        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
-        $0.leftView = leftPaddingView
-        $0.leftViewMode = .always
-        $0.layer.cornerRadius = 10
-    }//다른 메서드에서 얘 입력값 확인해야 해서 빼둠
+    let changePasswordButton = UIButton(type: .system).then {
+        let attributedText = NSMutableAttributedString(string: "비밀번호 변경")
+        attributedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: 7))
+        $0.setAttributedTitle(attributedText, for: .normal)
+        $0.tintColor = UIColor(named: "gray600")
+        $0.addTarget(self, action: #selector(changePasswordButtonTapped), for: .touchUpInside)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupView()
     }
     
@@ -69,6 +60,7 @@ class MyPageEditViewController: UIViewController {
         view.addSubview(notAllFilled)
         view.addSubview(editButton)
         view.addSubview(accountDeleteButton)
+        view.addSubview(changePasswordButton)
         
         navBar.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
@@ -100,6 +92,10 @@ class MyPageEditViewController: UIViewController {
             $0.height.equalTo(15)
             $0.width.equalTo(60)
         }
+        changePasswordButton.snp.makeConstraints {
+            $0.top.equalTo(textFiledStack.snp.bottom).offset(5)
+            $0.trailing.equalToSuperview().inset(24)
+        }
     }
     
     @objc private func editFinishButtonTapped() {
@@ -122,8 +118,6 @@ class MyPageEditViewController: UIViewController {
         self.navigationController?.popViewController(animated: false)//화면전환
     }//수정 완료 버튼 클릭시
     @objc private func deleteAccountButtonTapped() {
-        
-        dimmedView.isHidden = false
         let alertView = UIAlertController(title: "새싹루틴 회원을 탈퇴하시겠습니까?", message: "", preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         let confirmAction = UIAlertAction(title: "탈퇴", style: .destructive, handler: { _ in
@@ -139,4 +133,8 @@ class MyPageEditViewController: UIViewController {
         UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
         print("확인버튼 클릭")
     }//탈퇴 팝업 확인 버튼 클릭 시 실행
+    @objc private func changePasswordButtonTapped() {
+        print("비밀번호 변경 버튼 클릭")
+        navigationController?.pushViewController(PasswordChangeViewController(), animated: true)
+    }
 }

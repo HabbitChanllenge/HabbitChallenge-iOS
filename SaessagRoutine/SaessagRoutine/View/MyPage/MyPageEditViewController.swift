@@ -45,73 +45,7 @@ class MyPageEditViewController: UIViewController {
         $0.backgroundColor = .black.withAlphaComponent(0.4)
         $0.isHidden = true
     }//배경 어둡게. 평소엔 안보임
-    lazy var alertView : UIView = {//그냥 let으로 하면 버튼 연동 안되서 lazy var 사용
-        let alertView = UIView().then {
-            $0.backgroundColor = UIColor(named: "gray300")
-            $0.layer.cornerRadius = 10
-        }//최종 뷰
-        let titleLabel = UILabel().then {
-            $0.text = "탈퇴 하시려면 비밀번호 확인을 해주세요."
-            $0.textColor = .black
-            $0.font = .systemFont(ofSize: 18, weight: .regular)
-            $0.numberOfLines = 0
-        }
-        
-        let passwordCheckText = UILabel().then {
-            $0.text = "비밀번호 확인"
-            $0.textColor = .black
-            $0.font = .systemFont(ofSize: 15, weight: .regular)
-        }
-        let cancelButton = UIButton(type: .system).then {
-            $0.setTitle("취소", for: .normal)
-            $0.setTitleColor(.black, for: .normal)
-            $0.backgroundColor = UIColor(named: "gray500")
-            $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-            $0.layer.cornerRadius = 16
-            $0.addTarget(self, action: #selector(dismissAlphaDarkView), for: .touchUpInside)
-        }
-        let deleteButton = UIButton(type: .system).then {
-            $0.setTitle("확인", for: .normal)
-            $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-            $0.setTitleColor(.black, for: .normal)
-            $0.backgroundColor = UIColor(named: "gray600")
-            $0.layer.cornerRadius = 16
-            $0.addTarget(self, action: #selector(deleteAccount), for: .touchUpInside)
-        }
-        
-        alertView.addSubview(titleLabel)
-        alertView.addSubview(passwordCheckText)
-        alertView.addSubview(passwordCheckTextField)
-        alertView.addSubview(cancelButton)
-        alertView.addSubview(deleteButton)
-        
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(12)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        passwordCheckText.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().inset(24)
-        }
-        passwordCheckTextField.snp.makeConstraints {
-            $0.height.equalTo(47)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.top.equalTo(passwordCheckText.snp.bottom).offset(7)
-        }
-        cancelButton.snp.makeConstraints {
-            $0.height.equalTo(32)
-            $0.width.equalTo(81)
-            $0.top.equalTo(passwordCheckTextField.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().inset(48)
-        }
-        deleteButton.snp.makeConstraints {
-            $0.height.width.centerY.equalTo(cancelButton)
-            $0.trailing.equalToSuperview().inset(48)
-        }
-        
     
-        return alertView
-    }()//탈퇴 팝업. 탈퇴 버튼 클릭 시 표시
     let passwordCheckTextField = UITextField().then {
         $0.placeholder = "비밀번호를 입력해주세요"
         $0.isSecureTextEntry = true
@@ -124,7 +58,6 @@ class MyPageEditViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        alertView.isHidden = true//탈퇴 팝업 숨김처리
         
         setupView()
     }
@@ -189,44 +122,21 @@ class MyPageEditViewController: UIViewController {
         self.navigationController?.popViewController(animated: false)//화면전환
     }//수정 완료 버튼 클릭시
     @objc private func deleteAccountButtonTapped() {
+        
         dimmedView.isHidden = false
-        alertView.isHidden = false
+        let alertView = UIAlertController(title: "새싹루틴 회원을 탈퇴하시겠습니까?", message: "", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+        let confirmAction = UIAlertAction(title: "탈퇴", style: .destructive, handler: { _ in
+            self.deleteAccount()
+        })
+        alertView.addAction(cancelAction)
+        alertView.addAction(confirmAction)
         
-        passwordCheckTextField.layer.borderWidth = 0
-        self.passwordCheckTextField.text = ""
-        
-        //여기부터 레이아웃 잡기
-        guard let tabBarContainerView = self.tabBarController?.view else { return }
-        tabBarContainerView.addSubview(dimmedView)
-        dimmedView.addSubview(alertView)
-        
-        dimmedView.addSubview(alertView)
-        dimmedView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-        alertView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.height.equalTo(215)
-            $0.width.equalTo(280)
-        }
+        present(alertView, animated: false)
     }//회원 탈퇴 버튼 클릭 시
-    @objc private func dismissAlphaDarkView() {
-        print("취소버튼 클릭")
-        alertView.isHidden = true
-        dimmedView.isHidden = true
-        //배경 다시 밝게, 팝업창 숨김
-        dimmedView.removeFromSuperview()//매 탈퇴 버튼 클릭 시 뷰에 추가되면 메모리가 아파서 취소버튼 클릭 시 레이아웃 지워줌
-        alertView.removeFromSuperview()//위와 같음
-    }//탈퇴 팝업에 취소 버튼 클릭 시 실행
+    
     @objc private func deleteAccount() {
+        UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
         print("확인버튼 클릭")
-        if self.passwordCheckTextField.text == userInfo.userInformation.first?.password {
-            UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
-        } else {
-            print(self.passwordCheckTextField.text)
-            print("탈퇴 실패-비번 다름")
-            passwordCheckTextField.layer.borderColor = UIColor(named: "error")?.cgColor
-            passwordCheckTextField.layer.borderWidth = 1
-        }
     }//탈퇴 팝업 확인 버튼 클릭 시 실행
 }

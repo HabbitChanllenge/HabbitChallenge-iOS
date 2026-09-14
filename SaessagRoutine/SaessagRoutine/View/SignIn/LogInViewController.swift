@@ -10,7 +10,7 @@ import SnapKit
 import Then
 import Moya
 
-class LogInViewController: UIViewController {
+class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
     let provider = MoyaProvider<AuthAPI>(plugins:[MoyaLoggingPlugin()])
     let stackView = UIStackView().then {
         $0.axis = .vertical
@@ -40,18 +40,31 @@ class LogInViewController: UIViewController {
         $0.setTitleColor(UIColor(named: "gray600"), for: .normal)
         $0.addTarget(self, action: #selector(logInToSignUp), for: .touchUpInside)
         
-        let attributedString = NSMutableAttributedString(string: "가입하기")
+        let attributedString = NSMutableAttributedString(string: "회원가입")
         
         attributedString.addAttribute(.underlineStyle , value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: attributedString.length))
         $0.setAttributedTitle(attributedString, for: .normal)
-        $0.isEnabled = true
     }
     let errorMessage = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.textColor = UIColor(named: "error")
         $0.isHidden = true
     }
-    
+    let changePasswordButton = UIButton(type: .system).then {
+        $0.setTitleColor(UIColor(named: "gray600"), for: .normal)
+        
+        let attributedString = NSMutableAttributedString(string: "비밀번호 찾기")
+        
+        attributedString.addAttribute(.underlineStyle , value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: attributedString.length))
+        $0.setAttributedTitle(attributedString, for: .normal)
+        $0.addTarget(self, action: #selector(toPasswordChange), for: .touchUpInside)
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
@@ -68,6 +81,7 @@ class LogInViewController: UIViewController {
         view.addSubview(loginButton)
         view.addSubview(signUpText)
         view.addSubview(signUpButton)
+        view.addSubview(changePasswordButton)
         
         stackView.addArrangedSubview(emailTextField)
         stackView.addArrangedSubview(passwordTextField)
@@ -96,6 +110,10 @@ class LogInViewController: UIViewController {
             $0.bottom.equalToSuperview().inset(40)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(63)
+        }
+        changePasswordButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(24)
+            $0.top.equalTo(passwordTextField.snp.bottom).offset(6)
         }
     }
     @objc func logInToSignUp() {
@@ -155,5 +173,14 @@ class LogInViewController: UIViewController {
             loginButton.isEnabled = true
             loginButton.backgroundColor = UIColor(named: "main600")
         }
+    }
+    @objc private func toPasswordChange() {
+        let passwordChangeVC = PasswordChangeViewController()
+        navigationController?.pushViewController(passwordChangeVC, animated: true)
+    }
+}
+extension LogInViewController {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return (navigationController?.viewControllers.count ?? 0) > 1
     }
 }

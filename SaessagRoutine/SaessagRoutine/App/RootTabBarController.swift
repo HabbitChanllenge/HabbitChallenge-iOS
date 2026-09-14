@@ -35,7 +35,7 @@ final class RootTabBarController: UITabBarController {
         tabBar.standardAppearance = tabAppearance
         tabBar.tintColor = UIColor(named: "main800")
         if #available(iOS 15.0, *) {
-            tabBar.scrollEdgeAppearance = tabAppearance 
+            tabBar.scrollEdgeAppearance = tabAppearance
         }
     }
     private func setTabBarItem() {//탭바에서 각 버튼마다의 속성 설정
@@ -67,7 +67,20 @@ final class RootTabBarController: UITabBarController {
         navController.tabBarItem.title = title
         navController.tabBarItem.image?.withRenderingMode(.alwaysOriginal)
         navController.isNavigationBarHidden = true
+        navController.delegate = self
         
         return navController
+    }
+}
+extension RootTabBarController: UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+    
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        navigationController.interactivePopGestureRecognizer?.delegate = self
+        navigationController.interactivePopGestureRecognizer?.isEnabled = true
+    }
+    
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let selectedNav = selectedViewController as? UINavigationController else { return false }
+        return selectedNav.viewControllers.count > 0
     }
 }

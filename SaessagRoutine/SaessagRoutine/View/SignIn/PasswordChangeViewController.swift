@@ -159,6 +159,7 @@ final class PasswordChangeViewController: UIViewController {
         print("비밀번호 변경 버튼 클릭")
         let isPasswordSame = passwordTextField.textField.text == checkPasswordTextField.textField.text
         if isPasswordSame {//비밀번호 일치 시
+            UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
             navigationController?.popViewController(animated: true)
         } else {
             errorMessage.text = "비밀번호가 일치하지 않습니다"

@@ -127,7 +127,7 @@ class SignUpViewController: UIViewController {
             {
                 switch $0 {
                 case .success(let res):
-                    guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
+                    guard let data = try? res.map(signUpResponse.self) else { print("디코딩 실패"); return }
                     if data.statusCode == 201 {//예잉
                         print("회원가입 성공")
                         self.toLogin()

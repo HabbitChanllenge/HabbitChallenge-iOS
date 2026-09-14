@@ -12,8 +12,8 @@ import Alamofire
 enum AuthAPI {
     case login(email: String, password: String)
     case signup(userId: String, email: String, password: String)
-    case logout
-    case resign
+    case logout(token: String)
+    case resign(token: String)
 }
 extension AuthAPI: TargetType {
     var baseURL: URL {
@@ -56,7 +56,12 @@ extension AuthAPI: TargetType {
     }
     
     var headers: [String : String]? {
-        return nil
+        switch self {
+        case .logout(let token), .resign(let token):
+            return ["Authorization": "Bearer \(token)"]
+        default :
+            return nil
+        }
     }
 }
 
@@ -66,7 +71,11 @@ struct loginResponse : Codable, Equatable {//로그인 시 사용
     let type : String?
     let statusCode : Int
 }
-struct authResponse : Codable, Equatable {//회원가입, 로그아웃, 탈퇴시 사용
+struct signUpResponse : Codable, Equatable {//회원가입 시 사용
     let type : String
+    let statusCode : Int
+}
+struct outResponse : Codable, Equatable {//로그아웃, 회원 탈퇴시 사용
+    let message : String
     let statusCode : Int
 }

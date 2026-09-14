@@ -12,6 +12,7 @@ import Moya
 
 class MyPageViewContoller: UIViewController {
     let provider = MoyaProvider<UserAPI>()
+    let authProvider = MoyaProvider<AuthAPI>(plugins:[MoyaLoggingPlugin()])
     let editVC = MyPageEditViewController()
     let navBar = NavigationBarView(streak: "31")
     
@@ -101,7 +102,21 @@ class MyPageViewContoller: UIViewController {
         navigationController?.pushViewController(MyPageEditViewController(), animated: false)
     }
     @objc private func logoutButtonTapped() {
-        UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
+        authProvider.request(.logout(token: TokenManager.shared.token)) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(outResponse.self) else { print("디코딩 실패"); return }
+                if data.message == "success" {
+                    TokenManager.shared.token = ""
+                    UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
+                    print("로그아웃 성공")
+                } else {
+                    print("로그아웃 실패")
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
     private func updateUserInfo() {
         provider.request(.getUserInfo(token: TokenManager.shared.token)) {

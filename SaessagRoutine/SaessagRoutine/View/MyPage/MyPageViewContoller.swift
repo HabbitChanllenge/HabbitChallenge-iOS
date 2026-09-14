@@ -89,10 +89,10 @@ class MyPageViewContoller: UIViewController {
         }
         editSucsessMessage.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(textFiledStack.snp.bottom).offset(3)
+            $0.bottom.equalTo(editButton.snp.top).offset(-7)
         }
         editButton.snp.makeConstraints {
-            $0.top.equalTo(textFiledStack.snp.bottom).offset(36)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(25)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(63)
         }

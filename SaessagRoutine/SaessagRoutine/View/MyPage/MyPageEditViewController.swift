@@ -78,7 +78,7 @@ class MyPageEditViewController: UIViewController {
         }
         notAllFilled.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(textFiledStack.snp.bottom).offset(3)
+            $0.bottom.equalTo(editButton.snp.top).offset(-4)
         }
         
         editButton.snp.makeConstraints {

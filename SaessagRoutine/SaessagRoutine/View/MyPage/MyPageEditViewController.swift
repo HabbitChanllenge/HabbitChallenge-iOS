@@ -136,21 +136,39 @@ class MyPageEditViewController: UIViewController {
         
     }//수정 완료 버튼 클릭시
     @objc private func deleteAccountButtonTapped() {
-        let alertView = UIAlertController(title: "새싹루틴 회원을 탈퇴하시겠습니까?", message: "", preferredStyle: .alert)
+        let alertView = UIAlertController(title: "새싹루틴 회원을 탈퇴하시겠습니까?", message: "", preferredStyle: .alert).then {
+            $0.addTextField {
+                $0.placeholder = "비밀번호를 작성해 주세요."
+                $0.textContentType = .password
+            }
+        }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         let confirmAction = UIAlertAction(title: "탈퇴", style: .destructive, handler: { _ in
-            self.deleteAccount()
+            let password = alertView.textFields?.first?.text ?? ""
+            
+            self.deleteProvider.request(.resign(token: TokenManager.shared.token, password: password)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(outResponse.self) else { return }
+                    if data.statusCode == 200 {
+                        TokenManager.shared.token = ""
+                        UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+                    } else if data.statusCode == 401 {
+                        let alert = UIAlertController(title: "비밀번호를 확인해 주세요.", message: "", preferredStyle: .alert)
+                        alert.addAction(.init(title: "확인", style: .cancel))
+                        self.present(alert, animated: false)
+                    }
+                    
+                case .failure(let err):
+                    print(err)
+                }
+            }
         })
         alertView.addAction(cancelAction)
         alertView.addAction(confirmAction)
         
         present(alertView, animated: false)
     }//회원 탈퇴 버튼 클릭 시
-    
-    @objc private func deleteAccount() {
-        UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
-        print("확인버튼 클릭")
-    }//탈퇴 팝업 확인 버튼 클릭 시 실행
     @objc private func changePasswordButtonTapped() {
         print("비밀번호 변경 버튼 클릭")
         navigationController?.pushViewController(PasswordChangeViewController(), animated: true)

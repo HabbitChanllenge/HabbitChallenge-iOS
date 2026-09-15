@@ -13,7 +13,7 @@ enum AuthAPI {
     case login(email: String, password: String)
     case signup(userId: String, email: String, password: String)
     case logout(token: String)
-    case resign(token: String)
+    case resign(token: String, password: String)
 }
 extension AuthAPI: TargetType {
     var baseURL: URL {
@@ -50,14 +50,17 @@ extension AuthAPI: TargetType {
         case .signup(userId: let userId, email: let email, password: let password):
             let param: [String: String] = ["userId" : userId, "email" : email, "password" : password]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
-        case .logout, .resign:
+        case .logout:
             return .requestPlain
+        case .resign(_, let password):
+            let param: [String: String] = ["password" : password]
+            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .logout(let token), .resign(let token):
+        case .logout(let token), .resign(let token, _):
             return ["Authorization": "Bearer \(token)"]
         default :
             return nil

@@ -11,7 +11,8 @@ import Then
 import Moya
 
 class MyPageEditViewController: UIViewController {
-    let userInfo = UserData.shared
+    let provider = MoyaProvider<UserAPI>(plugins:[MoyaLoggingPlugin()])
+    let deleteProvider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     
     let navBar = NavigationBarView(streak: "31")
     
@@ -47,7 +48,20 @@ class MyPageEditViewController: UIViewController {
         $0.tintColor = UIColor(named: "gray600")
         $0.addTarget(self, action: #selector(changePasswordButtonTapped), for: .touchUpInside)
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        provider.request(.getUserInfo(token: TokenManager.shared.token)) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(getMypageInfo.self) else { print("디코딩 실패"); return }
+                if data.statusCode == 200 {
+                    self.textFiledStack.setInfo(id: data.name, email: data.email)
+                }
+            case .failure(let err):
+                print(err)
+            }
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -106,15 +120,20 @@ class MyPageEditViewController: UIViewController {
             return
         }
         //모두 다 채워져 있을 시
-        userInfo.updateUserInfo(email: emailT, id: idT)
-        
-        if let rootVC = self .navigationController?.viewControllers.first(where: { $0 is MyPageViewContoller }) as? MyPageViewContoller {
-            rootVC.editSucsessMessage.isHidden = false//수정 완료 메세지 표시
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                rootVC.editSucsessMessage.isHidden = true
-            }//1.2초 후에 수정 완료 메세지 숨기기
+        provider.request(.patchUserInfo(token: TokenManager.shared.token, userId: idT, email: emailT)) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(patchMypageInfo.self) else { print("디코딩 실패"); return }
+                if data.status == nil {
+                    TokenManager.shared.token = ""
+                    UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+                }
+            case .failure(let err):
+                print(err)
+            }
         }
-        self.navigationController?.popViewController(animated: false)//화면전환
+        
+        
     }//수정 완료 버튼 클릭시
     @objc private func deleteAccountButtonTapped() {
         let alertView = UIAlertController(title: "새싹루틴 회원을 탈퇴하시겠습니까?", message: "", preferredStyle: .alert)

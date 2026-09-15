@@ -106,7 +106,7 @@ class MyPageViewContoller: UIViewController {
             switch $0 {
             case .success(let res):
                 guard let data = try? res.map(outResponse.self) else { print("디코딩 실패"); return }
-                if data.message == "success" {
+                if data.statusCode == 200 {
                     TokenManager.shared.token = ""
                     UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
                     print("로그아웃 성공")

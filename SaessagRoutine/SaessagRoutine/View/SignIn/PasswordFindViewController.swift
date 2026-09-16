@@ -10,7 +10,7 @@ import Then
 import Moya
 import UIKit
 
-final class PasswordChangeViewController: UIViewController {
+final class PasswordFindViewController: UIViewController {
     let scrollView = UIScrollView()
     
     let stackView = UIStackView().then {

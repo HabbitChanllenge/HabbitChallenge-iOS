@@ -139,7 +139,7 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     @objc private func toPasswordChange() {
-        let passwordChangeVC = PasswordChangeViewController()
+        let passwordChangeVC = PasswordFindViewController()
         navigationController?.pushViewController(passwordChangeVC, animated: true)
     }
 }

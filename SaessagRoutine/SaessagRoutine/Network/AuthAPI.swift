@@ -14,6 +14,9 @@ enum AuthAPI {
     case signup(userId: String, email: String, password: String)
     case logout(token: String)
     case resign(token: String, password: String)
+    case checkEmail(email:String)
+    case checkVerifyCode(email:String, code:String)
+    case changePassword(email : String, newPassword : String)
 }
 extension AuthAPI: TargetType {
     var baseURL: URL {
@@ -30,15 +33,23 @@ extension AuthAPI: TargetType {
             return "/logout"
         case .resign:
             return "/resign"
+        case .checkEmail:
+            return "/password-reset/email"
+        case .checkVerifyCode:
+            return "/password-reset/verify"
+        case .changePassword:
+            return "/password-reset"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .login, .signup, .logout:
+        case .login, .signup, .logout, .checkEmail, .checkVerifyCode:
             return .post
         case .resign:
             return .delete
+        case .changePassword:
+            return .patch
         }
     }
     
@@ -47,13 +58,22 @@ extension AuthAPI: TargetType {
         case .login(let email, let password):
             let param: [String: String] = ["email" : email, "password" : password]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
-        case .signup(userId: let userId, email: let email, password: let password):
+        case .signup(let userId, let email, let password):
             let param: [String: String] = ["userId" : userId, "email" : email, "password" : password]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         case .logout:
             return .requestPlain
         case .resign(_, let password):
             let param: [String: String] = ["password" : password]
+            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
+        case .checkEmail(let email):
+            let param: [String: String] = ["email" : email]
+            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
+        case .checkVerifyCode(let email, let code):
+            let param: [String: String] = ["email" : email, "code" : code]
+            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
+        case .changePassword(let email, let newPassword):
+            let param: [String: String] = ["email" : email, "newPassword" : newPassword]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         }
     }
@@ -78,7 +98,12 @@ struct signUpResponse : Codable, Equatable {//회원가입 시 사용
     let type : String
     let statusCode : Int
 }
-struct outResponse : Codable, Equatable {//로그아웃, 회원 탈퇴시 사용
+struct outResponse : Codable, Equatable {//로그아웃, 회원 탈퇴, 인증번호 발송시 사용
+    let message : String
+    let statusCode : Int
+}
+struct changeResponse : Codable, Equatable {//인증코드 확인, 비밀번호 수정 시에 사용.
+    let type : String?
     let message : String
     let statusCode : Int
 }

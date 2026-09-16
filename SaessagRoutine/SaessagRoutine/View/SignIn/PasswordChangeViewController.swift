@@ -11,6 +11,7 @@ import Moya
 import UIKit
 
 final class PasswordChangeViewController: UIViewController {
+    let provider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     let scrollView = UIScrollView()
     
     let stackView = UIStackView().then {
@@ -137,11 +138,26 @@ final class PasswordChangeViewController: UIViewController {
             emailTextField.textField.layer.borderWidth = 1
             emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
         } else {//채워져 있을 때
-            emailSendButton.backgroundColor = UIColor(named: "main300")
-            emailTextField.textField.layer.borderWidth = 0
-            errorMessage.isHidden = true
+            provider.request(.checkEmail(email: (emailTextField.textField.text)!)) {//리퀘스트 보냄
+                switch $0 {
+                case .success(let res)://통신 성공 시
+                    guard let data = try? res.map(outResponse.self) else { print("디코딩 실패"); return }
+                    if data.statusCode == 200 {//성공시
+                        self.emailSendButton.backgroundColor = UIColor(named: "main300")
+                        self.emailTextField.textField.layer.borderWidth = 0
+                        self.errorMessage.isHidden = true
+                    } else if data.statusCode == 404 {//사용자 못 찾았을 때
+                        self.errorMessage.text = "사용자를 찾을 수 없습니다. 이메일 주소를 확인해 주세요."
+                        self.errorMessage.isHidden = false
+                        self.emailTextField.textField.layer.borderWidth = 1
+                        self.emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
-    }
+    }//인증번호 발송버튼 클릭 시
     @objc private func checkCode() {
         print("인증번호 확인 버튼 클릭")
         if verificationCodeTextField.textField.text?.isEmpty == true {//텍스트필드 비어있을 때

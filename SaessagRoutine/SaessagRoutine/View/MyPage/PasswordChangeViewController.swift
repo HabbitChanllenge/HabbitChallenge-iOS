@@ -23,23 +23,44 @@ class PasswordChangeViewController: UIViewController {
         $0.font = .systemFont(ofSize: 30, weight: .semibold)
     }
     
-    let beforePasswordTextField = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
-    let newPasswordTextField = LabeledTextFieldView(title: "새 비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
-    let newPasswordCheckTextField = LabeledTextFieldView(title: "새 비밀번호 확인", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
+    let beforePasswordTextField : LabeledTextFieldView = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
+    let newPasswordTextField : LabeledTextFieldView = LabeledTextFieldView(title: "새 비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
+    let newPasswordCheckTextField : LabeledTextFieldView = LabeledTextFieldView(title: "새 비밀번호 확인", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
+    let errorMessage = UILabel().then {
+        $0.textColor = UIColor(named: "error")
+        $0.font = .systemFont(ofSize: 15, weight: .medium)
+        $0.isHidden = true
+    }
     
+    let changeButton = UIButton(type: .system).then {
+        $0.setTitle("비밀번호 변경", for: .normal)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = UIColor(named: "main300")
+        $0.titleLabel?.font = .systemFont(ofSize: 23, weight: .semibold)
+        $0.layer.cornerRadius = 10
+        $0.isEnabled = false
+        $0.addTarget(self, action: #selector(changeButtonTapped), for: .touchUpInside)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
+        beforePasswordTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        newPasswordTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        newPasswordCheckTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
+        
         setup()
     }
     private func setup() {
         view.addSubview(navBar)
         view.addSubview(titleLabel)
         view.addSubview(stackView)
+        view.addSubview(changeButton)
         
         stackView.addArrangedSubview(beforePasswordTextField)
         stackView.addArrangedSubview(newPasswordTextField)
         stackView.addArrangedSubview(newPasswordCheckTextField)
+        stackView.addArrangedSubview(errorMessage)
         
         navBar.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
@@ -52,6 +73,26 @@ class PasswordChangeViewController: UIViewController {
         stackView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(59)
             $0.leading.trailing.equalToSuperview()
+        }
+        changeButton.snp.makeConstraints {
+            $0.height.equalTo(63)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview().inset(107)
+        }
+    }
+    @objc private func changeButtonTapped() {
+        print("변경하기 버튼 클릭")
+        
+    }
+    @objc private func buttonChange() {
+        let isEmpty = (beforePasswordTextField.textField.text?.isEmpty ?? true) || (newPasswordTextField.textField.text?.isEmpty ?? true) || (newPasswordCheckTextField.textField.text?.isEmpty ?? true)
+        
+        if !isEmpty {
+            changeButton.isEnabled = true
+            changeButton.backgroundColor = UIColor(named: "main600")
+        } else {
+            changeButton.isEnabled = false
+            changeButton.backgroundColor = UIColor(named: "main300")
         }
     }
 }

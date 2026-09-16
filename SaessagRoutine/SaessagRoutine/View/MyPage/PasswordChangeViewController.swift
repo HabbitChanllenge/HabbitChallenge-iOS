@@ -22,7 +22,7 @@ class PasswordChangeViewController: UIViewController {
         $0.text = "비밀번호 변경"
         $0.font = .systemFont(ofSize: 30, weight: .semibold)
     }
-    
+
     let beforePasswordTextField : LabeledTextFieldView = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
     let newPasswordTextField : LabeledTextFieldView = LabeledTextFieldView(title: "새 비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
     let newPasswordCheckTextField : LabeledTextFieldView = LabeledTextFieldView(title: "새 비밀번호 확인", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
@@ -41,6 +41,7 @@ class PasswordChangeViewController: UIViewController {
         $0.isEnabled = false
         $0.addTarget(self, action: #selector(changeButtonTapped), for: .touchUpInside)
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -80,9 +81,21 @@ class PasswordChangeViewController: UIViewController {
             $0.bottom.equalToSuperview().inset(107)
         }
     }
+    
     @objc private func changeButtonTapped() {
         print("변경하기 버튼 클릭")
-        
+        let isSame = newPasswordTextField.textField.text! == newPasswordCheckTextField.textField.text!
+        if isSame {
+            print("리퀘스트 보내깅 히히")
+            UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+        } else {
+            newPasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+            newPasswordTextField.textField.layer.borderWidth = 1
+            newPasswordCheckTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+            newPasswordCheckTextField.textField.layer.borderWidth = 1
+            errorMessage.text = "비밀번호가 일치하지 않습니다."
+            errorMessage.isHidden = false
+        }
     }
     @objc private func buttonChange() {
         let isEmpty = (beforePasswordTextField.textField.text?.isEmpty ?? true) || (newPasswordTextField.textField.text?.isEmpty ?? true) || (newPasswordCheckTextField.textField.text?.isEmpty ?? true)

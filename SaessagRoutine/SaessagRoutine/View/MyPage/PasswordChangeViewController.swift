@@ -11,6 +11,8 @@ import Then
 import Moya
 
 class PasswordChangeViewController: UIViewController {
+    let provider = MoyaProvider<UserAPI>(plugins: [MoyaLoggingPlugin()])
+    
     let navBar = NavigationBarView(streak: "44")
     let stackView = UIStackView().then {
         $0.axis = .vertical
@@ -86,9 +88,39 @@ class PasswordChangeViewController: UIViewController {
         print("변경하기 버튼 클릭")
         let isSame = newPasswordTextField.textField.text! == newPasswordCheckTextField.textField.text!
         if isSame {
-            print("리퀘스트 보내깅 히히")
-            UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+            provider.request(.changePassword(token: TokenManager.shared.token, oldPassword: beforePasswordTextField.textField.text!, newPassword: newPasswordTextField.textField.text!)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(patchMypageInfo.self) else { return }
+                    if data.statusCode == 200 {
+                        TokenManager.shared.token = ""
+                        UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+                        
+                    } else if data.statusCode == 400 {
+                        self.beforePasswordTextField.textField.layer.borderWidth = 0
+                        
+                        self.newPasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                        self.newPasswordTextField.textField.layer.borderWidth = 1
+                        
+                        self.errorMessage.text = "비밀번호는 8자-30자, 영문 대소문자, 숫자, 특수문자를 포함하여 작성새 주세요."
+                        self.errorMessage.isHidden = false
+                        
+                    } else if data.statusCode == 401 {
+                        self.newPasswordTextField.textField.layer.borderWidth = 0
+                        self.newPasswordCheckTextField.textField.layer.borderWidth = 0
+                        
+                        self.beforePasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                        self.beforePasswordTextField.textField.layer.borderWidth = 1
+                        
+                        self.errorMessage.text = "비밀번호가 일치하지 않습니다. 비밀번호를 확인해 주세요."
+                        self.errorMessage.isHidden = false
+                    }
+                case .failure(let err):
+                    print(err)
+                }
+            }//비밀번호만 주기
         } else {
+            beforePasswordTextField.textField.layer.borderWidth = 0
             newPasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
             newPasswordTextField.textField.layer.borderWidth = 1
             newPasswordCheckTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor

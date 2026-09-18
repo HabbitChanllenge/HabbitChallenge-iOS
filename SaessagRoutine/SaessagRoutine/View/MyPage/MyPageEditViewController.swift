@@ -124,7 +124,7 @@ class MyPageEditViewController: UIViewController {
             switch $0 {
             case .success(let res):
                 guard let data = try? res.map(patchMypageInfo.self) else { print("디코딩 실패"); return }
-                if data.status == nil {
+                if data.statusCode == 200 {
                     TokenManager.shared.token = ""
                     UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
                 }

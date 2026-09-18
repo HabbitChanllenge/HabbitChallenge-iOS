@@ -12,6 +12,7 @@ import Alamofire
 enum UserAPI {
     case getUserInfo(token:String)
     case patchUserInfo(token:String, userId:String, email:String)
+    case changePassword(token:String, oldPassword:String, newPassword:String)
 }
 
 extension UserAPI: TargetType {
@@ -27,7 +28,7 @@ extension UserAPI: TargetType {
         switch self {
         case .getUserInfo:
             return .get
-        case .patchUserInfo:
+        case .patchUserInfo, .changePassword:
             return .patch
         }
     }
@@ -38,6 +39,9 @@ extension UserAPI: TargetType {
             return .requestPlain
         case .patchUserInfo(_, let userId, let email):
             let param : [String: String] = ["userId": userId, "email": email]
+            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
+        case .changePassword(_ , let oldPassword, let newPassword):
+            let param : [String: String] = ["currentPassword": oldPassword, "newPassword": newPassword]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         }
     }
@@ -50,6 +54,9 @@ extension UserAPI: TargetType {
         case .patchUserInfo(let token, _, _):
             let header = ["Authorization": "Bearer \(token)"]
             return header
+        case .changePassword(token: let token, oldPassword: let oldPassword, newPassword: let newPassword):
+            let header = ["Authorization": "Bearer \(token)"]
+            return header
         }
     }
 }
@@ -60,6 +67,7 @@ struct getMypageInfo: Codable, Equatable {//마이페이지 조회 시 사용
     let statusCode : Int
 }
 struct patchMypageInfo: Codable, Equatable {// 마이페이지 수정시 사용
-    let status : Int?
+    let type : String?
+    let statusCode : Int?
     let message : String
 }

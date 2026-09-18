@@ -87,7 +87,8 @@ class PasswordChangeViewController: UIViewController {
     @objc private func changeButtonTapped() {
         print("변경하기 버튼 클릭")
         let isSame = newPasswordTextField.textField.text! == newPasswordCheckTextField.textField.text!
-        if isSame {
+        
+        if isSame {//새 비밀번호와 비밀번호 확인이 같을 때
             provider.request(.changePassword(token: TokenManager.shared.token, oldPassword: beforePasswordTextField.textField.text!, newPassword: newPasswordTextField.textField.text!)) {
                 switch $0 {
                 case .success(let res):
@@ -118,7 +119,7 @@ class PasswordChangeViewController: UIViewController {
                 case .failure(let err):
                     print(err)
                 }
-            }//비밀번호만 주기
+            }//여기까지 연동 관련
         } else {
             beforePasswordTextField.textField.layer.borderWidth = 0
             newPasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
@@ -127,7 +128,7 @@ class PasswordChangeViewController: UIViewController {
             newPasswordCheckTextField.textField.layer.borderWidth = 1
             errorMessage.text = "비밀번호가 일치하지 않습니다."
             errorMessage.isHidden = false
-        }
+        }//다를 때..
     }
     @objc private func buttonChange() {
         let isEmpty = (beforePasswordTextField.textField.text?.isEmpty ?? true) || (newPasswordTextField.textField.text?.isEmpty ?? true) || (newPasswordCheckTextField.textField.text?.isEmpty ?? true)

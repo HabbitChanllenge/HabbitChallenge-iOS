@@ -149,7 +149,7 @@ class MyPageEditViewController: UIViewController {
             self.deleteProvider.request(.resign(token: TokenManager.shared.token, password: password)) {
                 switch $0 {
                 case .success(let res):
-                    guard let data = try? res.map(outResponse.self) else { return }
+                    guard let data = try? res.map(authResponse.self) else { return }
                     if data.statusCode == 200 {
                         TokenManager.shared.token = ""
                         UIWindow.changeRootViewController(to: LogInViewController(), animated: true)

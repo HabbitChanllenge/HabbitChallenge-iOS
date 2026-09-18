@@ -31,7 +31,7 @@ final class PasswordFindViewController: UIViewController {
     }
     
     let titleText = UILabel().then {
-        $0.text = "비밀번호 변경"
+        $0.text = "비밀번호 찾기"
         $0.textColor = .black
         $0.font = .systemFont(ofSize: 30, weight: .semibold)
     }
@@ -141,7 +141,7 @@ final class PasswordFindViewController: UIViewController {
             provider.request(.checkEmail(email: (emailTextField.textField.text)!)) {//리퀘스트 보냄
                 switch $0 {
                 case .success(let res)://통신 성공 시
-                    guard let data = try? res.map(outResponse.self) else { print("디코딩 실패"); return }
+                    guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
                     if data.statusCode == 200 {//성공시
                         self.emailSendButton.backgroundColor = UIColor(named: "main300")
                         self.emailTextField.textField.layer.borderWidth = 0
@@ -166,17 +166,44 @@ final class PasswordFindViewController: UIViewController {
             verificationCodeTextField.textField.layer.borderWidth = 1
             verificationCodeTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
         } else {//채워져 있을 때
-            codeCheckButton.backgroundColor = UIColor(named: "main300")
-            verificationCodeTextField.textField.layer.borderWidth = 0
-            errorMessage.isHidden = true
+            provider.request(.checkVerifyCode(email: emailTextField.textField.text!, code: verificationCodeTextField.textField.text!)) {
+                switch $0 {
+                    case .success(let res):
+                        guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
+                        if data.statusCode == 200 {
+                            self.codeCheckButton.backgroundColor = UIColor(named: "main300")
+                            self.verificationCodeTextField.textField.layer.borderWidth = 0
+                            self.errorMessage.isHidden = true
+                        }
+                        else if data.statusCode == 400 {
+                            self.errorMessage.text = data.message
+                            self.errorMessage.isHidden = false
+                        }
+                case .failure(let err):
+                    print(err)
+                }
+            }
         }
-    }
+    }//인증 번호 확인 버튼 클릭 시
     @objc private func changePassword() {
         print("비밀번호 변경 버튼 클릭")
         let isPasswordSame = passwordTextField.textField.text == checkPasswordTextField.textField.text
         if isPasswordSame {//비밀번호 일치 시
-            UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
-            navigationController?.popViewController(animated: true)
+            provider.request(.changePassword(email: emailTextField.textField.text!, newPassword: passwordTextField.textField.text!)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
+                    if data.statusCode == 200 {
+                        UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+                        self.navigationController?.popViewController(animated: true)
+                    } else if data.statusCode == 400 {
+                        self.errorMessage.text = data.message
+                        self.errorMessage.isHidden = false
+                    }
+                case .failure(let err):
+                    print(err)
+                }
+            }
         } else {
             errorMessage.text = "비밀번호가 일치하지 않습니다"
             errorMessage.isHidden = false
@@ -187,7 +214,8 @@ final class PasswordFindViewController: UIViewController {
             checkPasswordTextField.textField.layer.borderWidth = 1
             checkPasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
         }
-    }
+    }//비밀번호 변경 버튼 클릭 시
+    
     @objc func buttonChange() {
         
         let isEmpty = (passwordTextField.textField.text?.isEmpty ?? true) || (checkPasswordTextField.textField.text?.isEmpty ?? true) || (verificationCodeTextField.textField.text?.isEmpty ?? true) || (emailTextField.textField.text?.isEmpty ?? true)

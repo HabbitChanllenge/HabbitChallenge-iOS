@@ -98,12 +98,9 @@ struct signUpResponse : Codable, Equatable {//회원가입 시 사용
     let type : String
     let statusCode : Int
 }
-struct outResponse : Codable, Equatable {//로그아웃, 회원 탈퇴, 인증번호 발송시 사용
-    let message : String
-    let statusCode : Int
-}
-struct changeResponse : Codable, Equatable {//인증코드 확인, 비밀번호 수정 시에 사용.
+struct authResponse : Codable, Equatable {//로그아웃, 회원 탈퇴, 인증번호 발송, 인증코드 확인, 비밀번호 수정 시 사용
+    let message : String?
     let type : String?
-    let message : String
     let statusCode : Int
 }
+

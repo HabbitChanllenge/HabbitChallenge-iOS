@@ -10,6 +10,7 @@
 		F203939C301B9DFB00E8BF0A /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = F203939B301B9DFB00E8BF0A /* Then */; };
 		F203939F301B9E1800E8BF0A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F203939E301B9E1800E8BF0A /* SnapKit */; };
 		F20393A2301BA1DC00E8BF0A /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = F20393A1301BA1DC00E8BF0A /* Moya */; };
+		F2EBBF9E305D4F7B0068D091 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F2EBBF9D305D4F7B0068D091 /* IQKeyboardManagerSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F203939C301B9DFB00E8BF0A /* Then in Frameworks */,
+				F2EBBF9E305D4F7B0068D091 /* IQKeyboardManagerSwift in Frameworks */,
 				F203939F301B9E1800E8BF0A /* SnapKit in Frameworks */,
 				F20393A2301BA1DC00E8BF0A /* Moya in Frameworks */,
 			);
@@ -90,6 +92,7 @@
 				F203939B301B9DFB00E8BF0A /* Then */,
 				F203939E301B9E1800E8BF0A /* SnapKit */,
 				F20393A1301BA1DC00E8BF0A /* Moya */,
+				F2EBBF9D305D4F7B0068D091 /* IQKeyboardManagerSwift */,
 			);
 			productName = SaessagRoutine;
 			productReference = F2039284301B8F4700E8BF0A /* SaessagRoutine.app */;
@@ -123,6 +126,7 @@
 				F203939A301B9DFB00E8BF0A /* XCRemoteSwiftPackageReference "Then" */,
 				F203939D301B9E1800E8BF0A /* XCRemoteSwiftPackageReference "SnapKit" */,
 				F20393A0301BA1DC00E8BF0A /* XCRemoteSwiftPackageReference "Moya" */,
+				F2EBBF9C305D4F7B0068D091 /* XCRemoteSwiftPackageReference "iqkeyboardmanager" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F2039285301B8F4700E8BF0A /* Products */;
@@ -162,7 +166,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3X48XL8HY6;
+				DEVELOPMENT_TEAM = 7323CJXSQ6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SaessagRoutine/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -193,7 +197,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3X48XL8HY6;
+				DEVELOPMENT_TEAM = 7323CJXSQ6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SaessagRoutine/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -384,6 +388,14 @@
 				minimumVersion = 15.0.3;
 			};
 		};
+		F2EBBF9C305D4F7B0068D091 /* XCRemoteSwiftPackageReference "iqkeyboardmanager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/iqkeyboardmanager";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -401,6 +413,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F20393A0301BA1DC00E8BF0A /* XCRemoteSwiftPackageReference "Moya" */;
 			productName = Moya;
+		};
+		F2EBBF9D305D4F7B0068D091 /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F2EBBF9C305D4F7B0068D091 /* XCRemoteSwiftPackageReference "iqkeyboardmanager" */;
+			productName = IQKeyboardManagerSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

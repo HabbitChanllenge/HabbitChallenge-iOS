@@ -18,9 +18,14 @@ final class LabeledTextFieldView: UIView {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.layer.cornerRadius = 10
         $0.backgroundColor = UIColor(named: "gray200")
-        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
-        $0.leftView = leftPaddingView
-        $0.leftViewMode = .always
+        $0.spellCheckingType = .no
+        
+        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))//15pt짜리 패딩
+        $0.leftView = leftPaddingView//왼쪽에 패딩 추가
+        
+        $0.leftViewMode = .always//왼쪽 정렬
+        
+        $0.autocapitalizationType = .none
     }
     let passwordSecureButton = UIButton(type: .system).then {
         var config = UIButton.Configuration.plain()
@@ -39,6 +44,8 @@ final class LabeledTextFieldView: UIView {
         textField.isSecureTextEntry = isPassword
         if !isPassword {
             passwordSecureButton.isHidden = true
+        } else {
+            textField.autocorrectionType = .no//자동완성 안되게 하는거
         }
     }
     required init?(coder: NSCoder) {

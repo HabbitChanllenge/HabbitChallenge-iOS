@@ -3,6 +3,7 @@ import SnapKit
 import Then
 
 final class VerificationCountView: UIView {
+    var onCountSelected: (() -> Void)?
 
     private let titleLabel = UILabel().then {
         $0.text = "주기당 인증횟수"
@@ -14,13 +15,13 @@ final class VerificationCountView: UIView {
 
     private let moreButton = UIButton().then {
         $0.setTitle("그 이상", for: .normal)
+        $0.titleLabel?.font = .systemFont(ofSize: 14)
+        $0.layer.cornerRadius = 12
+        $0.backgroundColor = UIColor(named: "main300")
         $0.setTitleColor(
             UIColor(named: "main800"),
             for: .normal
         )
-        $0.backgroundColor = UIColor(named: "main300")
-        $0.layer.cornerRadius = 12
-        $0.titleLabel?.font = .systemFont(ofSize: 12)
     }
 
     private let moreTextField = UITextField().then {
@@ -42,7 +43,6 @@ final class VerificationCountView: UIView {
         super.init(frame: frame)
 
         setupUI()
-        setupLayout()
         setupAction()
     }
 
@@ -51,16 +51,15 @@ final class VerificationCountView: UIView {
     }
 
     private func makeButton(_ title: String) -> UIButton {
-
         let button = UIButton().then {
             $0.setTitle(title, for: .normal)
+            $0.titleLabel?.font = .systemFont(ofSize: 14)
+            $0.layer.cornerRadius = 12
+            $0.backgroundColor = UIColor(named: "main300")
             $0.setTitleColor(
                 UIColor(named: "main800"),
                 for: .normal
             )
-            $0.backgroundColor = UIColor(named: "main300")
-            $0.layer.cornerRadius = 12
-            $0.titleLabel?.font = .systemFont(ofSize: 12)
         }
 
         button.addTarget(
@@ -119,56 +118,52 @@ final class VerificationCountView: UIView {
         addSubview(thirdRow)
         addSubview(moreContainer)
 
+        titleLabel.snp.makeConstraints {
+            $0.top.leading.equalToSuperview()
+            $0.height.equalTo(40)
+        }
+
         firstRow.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(20)
             $0.leading.equalToSuperview()
-            $0.height.equalTo(24)
+            $0.height.equalTo(44)
         }
 
         secondRow.snp.makeConstraints {
             $0.top.equalTo(firstRow.snp.bottom).offset(10)
             $0.leading.equalToSuperview()
-            $0.height.equalTo(24)
+            $0.height.equalTo(44)
         }
 
         thirdRow.snp.makeConstraints {
             $0.top.equalTo(secondRow.snp.bottom).offset(10)
             $0.leading.equalToSuperview()
-            $0.height.equalTo(24)
+            $0.height.equalTo(44)
         }
 
         countButtons.forEach {
             $0.snp.makeConstraints {
-                $0.width.equalTo(107)
-                $0.height.equalTo(24)
+                $0.width.equalTo(108)
+                $0.height.equalTo(44)
             }
         }
 
         moreContainer.snp.makeConstraints {
             $0.top.equalTo(thirdRow.snp.bottom).offset(10)
-            $0.leading.equalToSuperview()
-            $0.trailing.equalToSuperview()
-            $0.height.equalTo(24)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(44)
             $0.bottom.equalToSuperview()
         }
 
         moreButton.snp.makeConstraints {
-            $0.leading.top.bottom.equalToSuperview()
-            $0.width.equalTo(107)
+            $0.top.leading.bottom.equalToSuperview()
+            $0.width.equalTo(108)
         }
 
         moreTextField.snp.makeConstraints {
             $0.leading.equalTo(moreButton.snp.trailing).offset(8)
             $0.top.bottom.equalToSuperview()
             $0.trailing.equalToSuperview().inset(10)
-        }
-    }
-
-    private func setupLayout() {
-
-        titleLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
-            $0.height.equalTo(40)
         }
     }
 
@@ -200,9 +195,6 @@ final class VerificationCountView: UIView {
         sender.backgroundColor = UIColor(named: "main600")
         sender.setTitleColor(.white, for: .normal)
 
-        if sender == moreButton {
-            moreButton.backgroundColor = UIColor(named: "main600")
-            moreButton.setTitleColor(.white, for: .normal)
-        }
+        onCountSelected?()
     }
 }

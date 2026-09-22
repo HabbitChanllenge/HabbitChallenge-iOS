@@ -7,7 +7,7 @@ final class WeeklyDayView: UIView {
 
     private let titleLabel = UILabel().then {
         $0.text = "인증 요일"
-        $0.font = .systemFont(ofSize: 32, weight: .bold)
+        $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = UIColor(named: "gray900")
     }
 
@@ -27,7 +27,7 @@ final class WeeklyDayView: UIView {
         let button = UIButton().then {
             $0.setTitle(title, for: .normal)
             $0.titleLabel?.font = .systemFont(ofSize: 14)
-            $0.layer.cornerRadius = 12
+            $0.layer.cornerRadius = 15
             $0.backgroundColor = UIColor(named: "main300")
             $0.setTitleColor(
                 UIColor(named: "main800"),

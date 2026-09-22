@@ -6,16 +6,16 @@ final class HabitNameView: UIView {
 
     private let titleLabel = UILabel().then {
         $0.text = "습관명"
-        $0.font = .systemFont(ofSize: 32, weight: .bold)
+        $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = UIColor(named: "gray900")
     }
 
     let textField = UITextField().then {
         $0.placeholder = "습관의 이름을 입력해 주세요."
-        $0.font = .systemFont(ofSize: 18)
+        $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.textColor = UIColor(named: "gray900")
         $0.backgroundColor = UIColor(named: "gray200")
-        $0.layer.cornerRadius = 15
+        $0.layer.cornerRadius = 10
 
         $0.leftView = UIView(frame: CGRect(
             x: 0,
@@ -40,8 +40,9 @@ final class HabitNameView: UIView {
 
         textField.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.leading.trailing.bottom.equalToSuperview()
-            $0.height.equalTo(64)
+            $0.leading.equalToSuperview()
+            $0.width.equalTo(355)
+            $0.height.equalTo(50)
         }
     }
 

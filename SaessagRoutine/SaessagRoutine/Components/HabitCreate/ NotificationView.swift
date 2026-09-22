@@ -8,20 +8,20 @@ final class NotificationView: UIView {
 
     private let titleLabel = UILabel().then {
         $0.text = "알림 받기"
-        $0.font = .systemFont(ofSize: 32, weight: .bold)
+        $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = UIColor(named: "gray900")
     }
 
     private let offButton = UIButton().then {
         $0.setTitle("끄기", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 10
     }
 
     private let onButton = UIButton().then {
         $0.setTitle("켜기", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 10
     }
 
     override init(frame: CGRect) {

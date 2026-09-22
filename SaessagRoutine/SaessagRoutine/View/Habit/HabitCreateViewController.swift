@@ -171,7 +171,7 @@ final class HabitCreateViewController: UIViewController {
         habitNameView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
             $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(124)
+            $0.height.equalTo(111)
         }
         
         repeatCycleView.snp.makeConstraints {

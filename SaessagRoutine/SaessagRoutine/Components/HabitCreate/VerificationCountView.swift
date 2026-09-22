@@ -7,7 +7,7 @@ final class VerificationCountView: UIView {
 
     private let titleLabel = UILabel().then {
         $0.text = "주기당 인증횟수"
-        $0.font = .systemFont(ofSize: 32, weight: .bold)
+        $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = UIColor(named: "gray900")
     }
 
@@ -16,7 +16,7 @@ final class VerificationCountView: UIView {
     private let moreButton = UIButton().then {
         $0.setTitle("그 이상", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 15
         $0.backgroundColor = UIColor(named: "main300")
         $0.setTitleColor(
             UIColor(named: "main800"),
@@ -35,7 +35,7 @@ final class VerificationCountView: UIView {
 
     private let moreContainer = UIView().then {
         $0.backgroundColor = UIColor(named: "main300")
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 15
         $0.clipsToBounds = true
     }
 
@@ -54,7 +54,7 @@ final class VerificationCountView: UIView {
         let button = UIButton().then {
             $0.setTitle(title, for: .normal)
             $0.titleLabel?.font = .systemFont(ofSize: 14)
-            $0.layer.cornerRadius = 12
+            $0.layer.cornerRadius = 15
             $0.backgroundColor = UIColor(named: "main300")
             $0.setTitleColor(
                 UIColor(named: "main800"),

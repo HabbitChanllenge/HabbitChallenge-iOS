@@ -7,7 +7,7 @@ final class CategoryView: UIView {
 
     private let titleLabel = UILabel().then {
         $0.text = "카테고리"
-        $0.font = .systemFont(ofSize: 32, weight: .bold)
+        $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = UIColor(named: "gray900")
     }
 
@@ -17,7 +17,7 @@ final class CategoryView: UIView {
             $0.setTitle("기타", for: .normal)
             $0.setTitleColor(UIColor(named: "main800"), for: .normal)
             $0.backgroundColor = UIColor(named: "main300")
-            $0.layer.cornerRadius = 12
+            $0.layer.cornerRadius = 15
             $0.titleLabel?.font = .systemFont(ofSize: 15)
         }
 
@@ -31,7 +31,7 @@ final class CategoryView: UIView {
 
     private let etcContainer = UIView().then {
         $0.backgroundColor = UIColor(named: "main300")
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 15
         $0.clipsToBounds = true
     }
 
@@ -51,7 +51,7 @@ final class CategoryView: UIView {
         let button = UIButton().then {
             $0.setTitle(title, for: .normal)
             $0.titleLabel?.font = .systemFont(ofSize: 14)
-            $0.layer.cornerRadius = 12
+            $0.layer.cornerRadius = 15
             $0.backgroundColor = UIColor(named: "main300")
             $0.setTitleColor(
                 UIColor(named: "main800"),

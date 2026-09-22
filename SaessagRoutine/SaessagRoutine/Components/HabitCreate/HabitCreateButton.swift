@@ -4,11 +4,11 @@ import Then
 
 final class HabitCreateButton: UIView {
 
-    let createButton = UIButton().then {
+    let createButton = UIButton(type: .system).then {
         $0.setTitle("생성하기", for: .normal)
         $0.setTitleColor(.white, for: .normal)
         $0.backgroundColor = UIColor(named: "main400")
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 10
         $0.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
         $0.isEnabled = false
     }

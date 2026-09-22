@@ -8,20 +8,20 @@ final class RepeatCycleView: UIView {
 
     private let titleLabel = UILabel().then {
         $0.text = "반복 주기"
-        $0.font = .systemFont(ofSize: 32, weight: .bold)
+        $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = UIColor(named: "gray900")
     }
 
     private let dayButton = UIButton().then {
         $0.setTitle("하루", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 15
     }
 
     private let weekButton = UIButton().then {
         $0.setTitle("일주일", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 15
     }
 
     override init(frame: CGRect) {

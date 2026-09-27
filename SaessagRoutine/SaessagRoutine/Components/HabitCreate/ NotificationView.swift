@@ -12,16 +12,18 @@ final class NotificationView: UIView {
         $0.textColor = UIColor(named: "gray900")
     }
 
-    private let offButton = UIButton().then {
+    private let offButton = UIButton(type: .system).then {
         $0.setTitle("끄기", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 14)
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         $0.layer.cornerRadius = 10
+        $0.addTarget(self, action: #selector(didTapOff), for: .touchUpInside)
     }
 
-    private let onButton = UIButton().then {
+    private let onButton = UIButton(type: .system).then {
         $0.setTitle("켜기", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 14)
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         $0.layer.cornerRadius = 10
+        $0.addTarget(self, action: #selector(didTapOn), for: .touchUpInside)
     }
 
     override init(frame: CGRect) {
@@ -32,38 +34,27 @@ final class NotificationView: UIView {
         addSubview(onButton)
 
         titleLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
-            $0.height.equalTo(40)
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().inset(24)
         }
 
         offButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
+            $0.leading.equalToSuperview().inset(24)
             $0.width.equalTo(169)
             $0.height.equalTo(44)
         }
 
         onButton.snp.makeConstraints {
-            $0.top.equalTo(offButton)
-            $0.leading.equalTo(offButton.snp.trailing).offset(15)
-            $0.width.equalTo(169)
-            $0.height.equalTo(44)
+            $0.centerY.equalTo(offButton)
+            $0.leading.equalTo(offButton.snp.trailing).offset(16)
+            $0.width.equalTo(offButton)
+            $0.height.equalTo(offButton)
+            $0.bottom.equalToSuperview()
         }
 
         updateButton(offButton, selected: false)
         updateButton(onButton, selected: true)
-
-        offButton.addTarget(
-            self,
-            action: #selector(didTapOff),
-            for: .touchUpInside
-        )
-
-        onButton.addTarget(
-            self,
-            action: #selector(didTapOn),
-            for: .touchUpInside
-        )
     }
 
     private func updateButton(
@@ -76,8 +67,7 @@ final class NotificationView: UIView {
         )
 
         button.setTitleColor(
-            UIColor(named: "main800"),
-            for: .normal
+            selected ? .white : UIColor(named: "main800"), for: .normal,
         )
     }
 

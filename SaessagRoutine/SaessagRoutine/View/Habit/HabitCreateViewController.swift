@@ -8,9 +8,11 @@ final class HabitCreateViewController: UIViewController {
     private let topBar = NavigationBarView(streak: "31")
     
     private let scrollView = UIScrollView()
-    
-    private let contentView = UIView()
-    
+    private let stackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 19
+    }
+        
     private let habitNameView = HabitNameView()
     private let repeatCycleView = RepeatCycleView()
     private let categoryView = CategoryView()
@@ -38,29 +40,23 @@ final class HabitCreateViewController: UIViewController {
     }
     
     private func setupCycleAction() {
-
         repeatCycleView.onCycleChanged = { [weak self] isWeekly in
-
             guard let self else { return }
 
             self.isCycleSelected = true
 
-            self.verificationCountView.isHidden = isWeekly
-            self.weeklyDayView.isHidden = !isWeekly
+            self.verificationCountView.isHidden = isWeekly//인증 횟수 선택 숨김 여부
+            self.weeklyDayView.isHidden = !isWeekly//인증 요일 선택 숨김 여부
 
-            if isWeekly {
-                self.isVerificationSelected = false
-            } else {
-                self.isWeekDaySelected = false
-            }
+            self.isVerificationSelected = !isWeekly
+            self.isWeekDaySelected = isWeekly
+            //선택 됐었던 값 초기화
 
             self.updateCreateButton()
-            self.updateLayoutForCycle(isWeekly: isWeekly)
-        }
+        }//하루에서 일주일으로, 일주일에서 하루로 인증 주기 바꿨을 때 실행 클로저
     }
     
     private func setupSelectionAction() {
-
         categoryView.onCategorySelected = { [weak self] in
             self?.isCategorySelected = true
             self?.updateCreateButton()
@@ -101,114 +97,36 @@ final class HabitCreateViewController: UIViewController {
         habitCreateButton.setEnabled(isComplete)
     }
     
-    private func updateLayoutForCycle(isWeekly: Bool) {
-
-        if isWeekly {
-
-            weeklyDayView.snp.remakeConstraints {
-                $0.top.equalTo(categoryView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(220)
-            }
-
-            notificationView.snp.remakeConstraints {
-                $0.top.equalTo(weeklyDayView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(104)
-            }
-
-        } else {
-
-            verificationCountView.snp.remakeConstraints {
-                $0.top.equalTo(categoryView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(266)
-            }
-
-            notificationView.snp.remakeConstraints {
-                $0.top.equalTo(verificationCountView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(104)
-            }
-        }
-    }
-    
     private func setupUI() {
         view.addSubview(topBar)
         view.addSubview(scrollView)
         
-        scrollView.addSubview(contentView)
+        scrollView.addSubview(stackView)
         
-        contentView.addSubview(habitNameView)
-        contentView.addSubview(repeatCycleView)
-        contentView.addSubview(categoryView)
-        contentView.addSubview(verificationCountView)
-        contentView.addSubview(weeklyDayView)
-        contentView.addSubview(notificationView)
-        contentView.addSubview(habitCreateButton)
+        stackView.addArrangedSubview(habitNameView)
+        stackView.addArrangedSubview(repeatCycleView)
+        stackView.addArrangedSubview(categoryView)
+        stackView.addArrangedSubview(verificationCountView)
+        stackView.addArrangedSubview(weeklyDayView)
+        stackView.addArrangedSubview(notificationView)
+        stackView.addArrangedSubview(habitCreateButton)
         
         weeklyDayView.isHidden = true
     }
     
     
     private func setupLayout() {
-        
         topBar.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.height.equalTo(101)
         }
-        
         scrollView.snp.makeConstraints {
-            $0.top.equalTo(topBar.snp.bottom)
+            $0.top.equalTo(topBar.snp.bottom).offset(4)
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-        
-        contentView.snp.makeConstraints {
+        stackView.snp.makeConstraints {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
-            $0.width.equalTo(scrollView.frameLayoutGuide)
+            $0.leading.trailing.equalTo(scrollView.frameLayoutGuide)
         }
-        
-        habitNameView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(111)
-        }
-        
-        repeatCycleView.snp.makeConstraints {
-            $0.top.equalTo(habitNameView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(104)
-        }
-        
-        categoryView.snp.makeConstraints {
-            $0.top.equalTo(repeatCycleView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(212)
-        }
-        
-        verificationCountView.snp.makeConstraints {
-            $0.top.equalTo(categoryView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(266)
-        }
-        
-        weeklyDayView.snp.makeConstraints {
-            $0.top.equalTo(categoryView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(220)
-        }
-        
-        notificationView.snp.makeConstraints {
-            $0.top.equalTo(verificationCountView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(104)
-        }
-        
-        habitCreateButton.snp.makeConstraints {
-            $0.top.equalTo(notificationView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(80)
-            $0.bottom.equalToSuperview().inset(20)
-        }
-    }
+    }//레이아웃 잡기
 }

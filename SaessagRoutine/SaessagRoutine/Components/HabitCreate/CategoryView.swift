@@ -13,20 +13,19 @@ final class CategoryView: UIView {
 
     private var categoryButtons: [UIButton] = []
 
-    private let etcButton = UIButton().then {
+    private let etcButton = UIButton(type: .system).then {
             $0.setTitle("기타", for: .normal)
             $0.setTitleColor(UIColor(named: "main800"), for: .normal)
             $0.backgroundColor = UIColor(named: "main300")
             $0.layer.cornerRadius = 15
-            $0.titleLabel?.font = .systemFont(ofSize: 15)
+            $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         }
 
     private let etcTextField = UITextField().then {
         $0.placeholder = "카테고리 입력"
         $0.font = .systemFont(ofSize: 12)
-        $0.textColor = UIColor(named: "main800")
+        $0.textColor = UIColor(named: "gray900")
         $0.backgroundColor = UIColor(named: "main300")
-        $0.borderStyle = .none
     }
 
     private let etcContainer = UIView().then {
@@ -48,9 +47,9 @@ final class CategoryView: UIView {
     }
 
     private func makeButton(_ title: String) -> UIButton {
-        let button = UIButton().then {
+        let button = UIButton(type: .system).then {
             $0.setTitle(title, for: .normal)
-            $0.titleLabel?.font = .systemFont(ofSize: 14)
+            $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
             $0.layer.cornerRadius = 15
             $0.backgroundColor = UIColor(named: "main300")
             $0.setTitleColor(
@@ -107,30 +106,31 @@ final class CategoryView: UIView {
         addSubview(etcContainer)
 
         firstRow.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
+            $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(44)
         }
 
         secondRow.snp.makeConstraints {
-            $0.top.equalTo(firstRow.snp.bottom).offset(10)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(firstRow.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(44)
         }
 
         // 청결 108 x 44
         cleaningButton.snp.makeConstraints {
-            $0.top.equalTo(secondRow.snp.bottom).offset(10)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(secondRow.snp.bottom).offset(16)
+            $0.leading.equalToSuperview().inset(24)
             $0.width.equalTo(108)
             $0.height.equalTo(44)
         }
 
         // 기타 + 입력창
         etcContainer.snp.makeConstraints {
-            $0.top.equalTo(secondRow.snp.bottom).offset(10)
-            $0.leading.equalTo(cleaningButton.snp.trailing).offset(20)
-            $0.trailing.equalToSuperview()
+            $0.top.equalTo(cleaningButton)
+            $0.leading.equalTo(cleaningButton.snp.trailing).offset(16)
+            $0.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview()
             $0.height.equalTo(44)
         }
 
@@ -150,12 +150,14 @@ final class CategoryView: UIView {
             $0.leading.equalTo(etcButton.snp.trailing).offset(8)
             $0.top.bottom.equalToSuperview()
             $0.trailing.equalToSuperview().inset(10)
+            $0.bottom.equalToSuperview()
         }
     }
 
     private func setupLayout() {
         titleLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().inset(24)
             $0.height.equalTo(40)
         }
     }

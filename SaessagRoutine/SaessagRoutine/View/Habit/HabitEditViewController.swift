@@ -15,9 +15,11 @@ final class HabitEditViewController: UIViewController {
     private let topBar = NavigationBarView(streak: "31")
 
     private let scrollView = UIScrollView()
-
-    private let contentView = UIView()
-
+    private let stackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 19
+    }
+    
     private let habitNameView = HabitNameView()
     private let repeatCycleView = RepeatCycleView()
     private let categoryView = CategoryView()
@@ -42,7 +44,7 @@ final class HabitEditViewController: UIViewController {
         )
         $0.setAttributedTitle(attributedString, for: .normal)
         $0.tintColor = UIColor(named: "gray600")
-        $0.titleLabel?.font = .systemFont(ofSize: 14)
+        $0.titleLabel?.font = .systemFont(ofSize: 15)
     }
 
     private var isCycleSelected = true
@@ -58,12 +60,14 @@ final class HabitEditViewController: UIViewController {
 
         habitEditButton.createButton.setTitle("수정하기", for: .normal)
         habitEditButton.setEnabled(true)
+        
+        habitEditButton.createButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)//수정 버튼 연결
+        deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)//삭제버튼 연결
 
         setupUI()
         setupLayout()
         setupCycleAction()
         setupSelectionAction()
-        setupEditAction()
     }
 
     private func setupCycleAction() {
@@ -82,13 +86,10 @@ final class HabitEditViewController: UIViewController {
             } else {
                 self.isWeekDaySelected = false
             }
-
-            self.updateLayoutForCycle(isWeekly: isWeekly)
         }
     }
 
     private func setupSelectionAction() {
-
         categoryView.onCategorySelected = { [weak self] in
             self?.isCategorySelected = true
         }
@@ -106,30 +107,10 @@ final class HabitEditViewController: UIViewController {
         }
     }
 
-    private func setupEditAction() {
-
-        habitEditButton.createButton.addTarget(
-            self,
-            action: #selector(editButtonTapped),
-            for: .touchUpInside
-        )
-
-        deleteButton.addTarget(
-            self,
-            action: #selector(deleteButtonTapped),
-            for: .touchUpInside
-        )
-    }
-
     @objc private func editButtonTapped() {
 
-        let authenticationSelected: Bool
-
-        if weeklyDayView.isHidden {
-            authenticationSelected = isVerificationSelected
-        } else {
-            authenticationSelected = isWeekDaySelected
-        }
+        let authenticationSelected: Bool = weeklyDayView.isHidden ? isVerificationSelected : isWeekDaySelected
+        let isWeekly = !weeklyDayView.isHidden
 
         let isComplete =
             isCycleSelected &&
@@ -148,53 +129,21 @@ final class HabitEditViewController: UIViewController {
         // 습관 삭제 로직 연결 예정
     }
 
-    private func updateLayoutForCycle(isWeekly: Bool) {
-
-        if isWeekly {
-
-            weeklyDayView.snp.remakeConstraints {
-                $0.top.equalTo(categoryView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(220)
-            }
-
-            notificationView.snp.remakeConstraints {
-                $0.top.equalTo(weeklyDayView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(104)
-            }
-
-        } else {
-
-            verificationCountView.snp.remakeConstraints {
-                $0.top.equalTo(categoryView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(266)
-            }
-
-            notificationView.snp.remakeConstraints {
-                $0.top.equalTo(verificationCountView.snp.bottom).offset(18)
-                $0.leading.trailing.equalToSuperview().inset(15)
-                $0.height.equalTo(104)
-            }
-        }
-    }
-
     private func setupUI() {
         view.addSubview(topBar)
         view.addSubview(scrollView)
 
-        scrollView.addSubview(contentView)
+        scrollView.addSubview(stackView)
+        scrollView.addSubview(deleteButton)
 
-        contentView.addSubview(habitNameView)
-        contentView.addSubview(repeatCycleView)
-        contentView.addSubview(categoryView)
-        contentView.addSubview(verificationCountView)
-        contentView.addSubview(weeklyDayView)
-        contentView.addSubview(notificationView)
-        contentView.addSubview(errorMessageLabel)
-        contentView.addSubview(habitEditButton)
-        contentView.addSubview(deleteButton)
+        stackView.addArrangedSubview(habitNameView)
+        stackView.addArrangedSubview(repeatCycleView)
+        stackView.addArrangedSubview(categoryView)
+        stackView.addArrangedSubview(verificationCountView)
+        stackView.addArrangedSubview(weeklyDayView)
+        stackView.addArrangedSubview(notificationView)
+        stackView.addArrangedSubview(errorMessageLabel)
+        stackView.addArrangedSubview(habitEditButton)
 
         weeklyDayView.isHidden = true
     }
@@ -205,68 +154,19 @@ final class HabitEditViewController: UIViewController {
             $0.top.leading.trailing.equalToSuperview()
             $0.height.equalTo(101)
         }
-
         scrollView.snp.makeConstraints {
-            $0.top.equalTo(topBar.snp.bottom)
+            $0.top.equalTo(topBar.snp.bottom).offset(4)
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-
-        contentView.snp.makeConstraints {
-            $0.edges.equalTo(scrollView.contentLayoutGuide)
-            $0.width.equalTo(scrollView.frameLayoutGuide)
+        stackView.snp.makeConstraints {
+            $0.top.equalTo(scrollView.contentLayoutGuide)
+            $0.leading.trailing.equalTo(scrollView.frameLayoutGuide)
+            $0.bottom.equalTo(scrollView.contentLayoutGuide).inset(58)
         }
-
-        habitNameView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(16)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(111)
-        }
-
-        repeatCycleView.snp.makeConstraints {
-            $0.top.equalTo(habitNameView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(104)
-        }
-
-        categoryView.snp.makeConstraints {
-            $0.top.equalTo(repeatCycleView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(212)
-        }
-
-        verificationCountView.snp.makeConstraints {
-            $0.top.equalTo(categoryView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(266)
-        }
-
-        weeklyDayView.snp.makeConstraints {
-            $0.top.equalTo(categoryView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(220)
-        }
-
-        notificationView.snp.makeConstraints {
-            $0.top.equalTo(verificationCountView.snp.bottom).offset(18)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(104)
-        }
-
-        errorMessageLabel.snp.makeConstraints {
-            $0.top.equalTo(notificationView.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().inset(15)
-        }
-
-        habitEditButton.snp.makeConstraints {
-            $0.top.equalTo(errorMessageLabel.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(15)
-            $0.height.equalTo(80)
-        }
-
         deleteButton.snp.makeConstraints {
-            $0.top.equalTo(habitEditButton.snp.bottom).offset(12)
-            $0.trailing.equalToSuperview().inset(15)
-            $0.bottom.equalToSuperview().inset(20)
+            $0.trailing.equalTo(stackView).inset(24)
+            $0.top.equalTo(stackView.snp.bottom).offset(16)
+            $0.bottom.equalToSuperview().inset(24)
         }
     }
 }

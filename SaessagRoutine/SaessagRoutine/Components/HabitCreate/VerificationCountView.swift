@@ -13,9 +13,9 @@ final class VerificationCountView: UIView {
 
     private var countButtons: [UIButton] = []
 
-    private let moreButton = UIButton().then {
+    private let moreButton = UIButton(type: .system).then {
         $0.setTitle("그 이상", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 14)
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         $0.layer.cornerRadius = 15
         $0.backgroundColor = UIColor(named: "main300")
         $0.setTitleColor(
@@ -26,8 +26,8 @@ final class VerificationCountView: UIView {
 
     private let moreTextField = UITextField().then {
         $0.placeholder = "숫자로만 입력해 주세요. 예) 12"
-        $0.font = .systemFont(ofSize: 12)
-        $0.textColor = UIColor(named: "main800")
+        $0.font = .systemFont(ofSize: 12, weight: .regular)
+        $0.textColor = UIColor(named: "gray900")
         $0.backgroundColor = UIColor(named: "main300")
         $0.keyboardType = .numberPad
         $0.borderStyle = .none
@@ -51,23 +51,14 @@ final class VerificationCountView: UIView {
     }
 
     private func makeButton(_ title: String) -> UIButton {
-        let button = UIButton().then {
+        let button = UIButton(type: .system).then {
             $0.setTitle(title, for: .normal)
-            $0.titleLabel?.font = .systemFont(ofSize: 14)
+            $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
             $0.layer.cornerRadius = 15
             $0.backgroundColor = UIColor(named: "main300")
-            $0.setTitleColor(
-                UIColor(named: "main800"),
-                for: .normal
-            )
+            $0.setTitleColor(UIColor(named: "main800"), for: .normal)
+            $0.addTarget(self,action: #selector(countTapped(_:)),for: .touchUpInside)
         }
-
-        button.addTarget(
-            self,
-            action: #selector(countTapped(_:)),
-            for: .touchUpInside
-        )
-
         countButtons.append(button)
 
         return button
@@ -85,7 +76,7 @@ final class VerificationCountView: UIView {
             ]
         ).then {
             $0.axis = .horizontal
-            $0.spacing = 20
+            $0.spacing = 16
         }
 
         let secondRow = UIStackView(
@@ -96,7 +87,7 @@ final class VerificationCountView: UIView {
             ]
         ).then {
             $0.axis = .horizontal
-            $0.spacing = 20
+            $0.spacing = 16
         }
 
         let thirdRow = UIStackView(
@@ -107,7 +98,7 @@ final class VerificationCountView: UIView {
             ]
         ).then {
             $0.axis = .horizontal
-            $0.spacing = 20
+            $0.spacing = 16
         }
 
         moreContainer.addSubview(moreButton)
@@ -119,25 +110,25 @@ final class VerificationCountView: UIView {
         addSubview(moreContainer)
 
         titleLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
-            $0.height.equalTo(40)
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().inset(24)
         }
 
         firstRow.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
+            $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(44)
         }
 
         secondRow.snp.makeConstraints {
-            $0.top.equalTo(firstRow.snp.bottom).offset(10)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(firstRow.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(44)
         }
 
         thirdRow.snp.makeConstraints {
-            $0.top.equalTo(secondRow.snp.bottom).offset(10)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(secondRow.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(44)
         }
 
@@ -149,8 +140,8 @@ final class VerificationCountView: UIView {
         }
 
         moreContainer.snp.makeConstraints {
-            $0.top.equalTo(thirdRow.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(thirdRow.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(44)
             $0.bottom.equalToSuperview()
         }

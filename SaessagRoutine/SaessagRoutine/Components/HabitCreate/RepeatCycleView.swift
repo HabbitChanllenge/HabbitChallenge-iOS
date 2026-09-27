@@ -12,15 +12,15 @@ final class RepeatCycleView: UIView {
         $0.textColor = UIColor(named: "gray900")
     }
 
-    private let dayButton = UIButton().then {
+    private let dayButton = UIButton(type: .system).then {
         $0.setTitle("하루", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 14)
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         $0.layer.cornerRadius = 15
     }
 
-    private let weekButton = UIButton().then {
+    private let weekButton = UIButton(type: .system).then {
         $0.setTitle("일주일", for: .normal)
-        $0.titleLabel?.font = .systemFont(ofSize: 14)
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         $0.layer.cornerRadius = 15
     }
 
@@ -42,22 +42,24 @@ final class RepeatCycleView: UIView {
         addSubview(weekButton)
 
         titleLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().inset(24)
             $0.height.equalTo(40)
         }
 
         dayButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
+            $0.leading.equalToSuperview().inset(24)
             $0.width.equalTo(88)
             $0.height.equalTo(44)
         }
 
         weekButton.snp.makeConstraints {
             $0.top.equalTo(dayButton)
-            $0.leading.equalTo(dayButton.snp.trailing).offset(20)
-            $0.width.equalTo(88)
+            $0.leading.equalTo(dayButton.snp.trailing).offset(16)
+            $0.width.equalTo(96)
             $0.height.equalTo(44)
+            $0.bottom.equalToSuperview()
         }
 
         updateButton(dayButton, selected: true)

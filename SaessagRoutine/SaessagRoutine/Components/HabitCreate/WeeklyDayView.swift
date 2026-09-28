@@ -18,7 +18,6 @@ final class WeeklyDayView: UIView {
 
         setupUI()
     }
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -29,27 +28,14 @@ final class WeeklyDayView: UIView {
             $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
             $0.layer.cornerRadius = 15
             $0.backgroundColor = UIColor(named: "main300")
-            $0.setTitleColor(
-                UIColor(named: "main800"),
-                for: .normal
-            )
+            $0.setTitleColor(UIColor(named: "main800"), for: .normal)
+            $0.addTarget(self, action: #selector(dayTapped(_:)), for: .touchUpInside)
         }
-
-        button.addTarget(
-            self,
-            action: #selector(dayTapped(_:)),
-            for: .touchUpInside
-        )
-
         dayButtons.append(button)
-
         return button
     }
 
     private func setupUI() {
-
-        addSubview(titleLabel)
-
         let firstRow = UIStackView(
             arrangedSubviews: [
                 makeButton("월요일"),
@@ -80,7 +66,8 @@ final class WeeklyDayView: UIView {
             $0.axis = .horizontal
             $0.spacing = 16
         }
-
+        
+        addSubview(titleLabel)
         addSubview(firstRow)
         addSubview(secondRow)
         addSubview(thirdRow)
@@ -95,13 +82,11 @@ final class WeeklyDayView: UIView {
             $0.leading.equalToSuperview().inset(24)
             $0.height.equalTo(44)
         }
-
         secondRow.snp.makeConstraints {
             $0.top.equalTo(firstRow.snp.bottom).offset(16)
             $0.leading.equalToSuperview().inset(24)
             $0.height.equalTo(44)
         }
-
         thirdRow.snp.makeConstraints {
             $0.top.equalTo(secondRow.snp.bottom).offset(16)
             $0.leading.equalToSuperview().inset(24)
@@ -119,27 +104,28 @@ final class WeeklyDayView: UIView {
 
     @objc private func dayTapped(_ sender: UIButton) {
 
-        let isSelected =
-            sender.backgroundColor == UIColor(named: "main600")
+        let isSelected = sender.backgroundColor == UIColor(named: "main600")
 
-        if isSelected {
+        if isSelected {//선택 됐었음 -> 선택 안됨으로 바뀜
             sender.backgroundColor = UIColor(named: "main300")
-            sender.setTitleColor(
-                UIColor(named: "main800"),
-                for: .normal
-            )
-        } else {
+            sender.setTitleColor(UIColor(named: "main800"), for: .normal)
+            
+            let text = sender.currentTitle ?? ""
+            let index = weekNumber(rawValue: text)?.number
+            HabitCreateManager.shared.repeatDay?.removeAll(where: {$0 == index})
+        } else {//선택 안됐었음. -> 선택으로 바뀜
             sender.backgroundColor = UIColor(named: "main600")
-            sender.setTitleColor(
-                .white,
-                for: .normal
-            )
+            sender.setTitleColor(.white, for: .normal)
+            
+            let text = sender.currentTitle ?? ""
+            guard let index = weekNumber(rawValue: text)?.number else { return }
+            if HabitCreateManager.shared.repeatDay == nil { HabitCreateManager.shared.repeatDay = [] }
+            HabitCreateManager.shared.repeatDay?.append(index)
         }
 
         let hasSelectedDay = dayButtons.contains {
             $0.backgroundColor == UIColor(named: "main600")
         }
-
         onDaySelected?(hasSelectedDay)
     }
 }

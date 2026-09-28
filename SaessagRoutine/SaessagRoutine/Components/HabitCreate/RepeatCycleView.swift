@@ -81,36 +81,24 @@ final class RepeatCycleView: UIView {
         )
     }
 
-    private func updateButton(
-        _ button: UIButton,
-        selected: Bool
-    ) {
-
-        button.backgroundColor = UIColor(
-            named: selected ? "main600" : "main300"
-        )
-
-        button.setTitleColor(
-            UIColor(
-                named: selected ? "gray100" : "main800"
-            ),
-            for: .normal
-        )
+    private func updateButton(_ button: UIButton,selected: Bool) {
+        button.backgroundColor = UIColor(named: selected ? "main600" : "main300")
+        button.setTitleColor(UIColor(named: selected ? "gray100" : "main800"),for: .normal)
     }
 
     @objc private func didTapDay() {
-
         updateButton(dayButton, selected: true)
         updateButton(weekButton, selected: false)
 
         onCycleChanged?(false)
+        HabitCreateManager.shared.isWeekly = false
     }
 
     @objc private func didTapWeek() {
-
         updateButton(dayButton, selected: false)
         updateButton(weekButton, selected: true)
 
         onCycleChanged?(true)
+        HabitCreateManager.shared.isWeekly = true
     }
 }

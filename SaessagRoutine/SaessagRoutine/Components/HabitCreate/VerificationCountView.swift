@@ -18,10 +18,8 @@ final class VerificationCountView: UIView {
         $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         $0.layer.cornerRadius = 15
         $0.backgroundColor = UIColor(named: "main300")
-        $0.setTitleColor(
-            UIColor(named: "main800"),
-            for: .normal
-        )
+        $0.setTitleColor(UIColor(named: "main800"), for: .normal)
+        $0.addTarget(self, action: #selector(countTapped(_:)), for: .touchUpInside)
     }
 
     private let moreTextField = UITextField().then {
@@ -31,6 +29,7 @@ final class VerificationCountView: UIView {
         $0.backgroundColor = UIColor(named: "main300")
         $0.keyboardType = .numberPad
         $0.borderStyle = .none
+        $0.addTarget(self, action: #selector(countEditingChanged), for: .editingChanged)
     }
 
     private let moreContainer = UIView().then {
@@ -43,9 +42,7 @@ final class VerificationCountView: UIView {
         super.init(frame: frame)
 
         setupUI()
-        setupAction()
     }
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -63,7 +60,6 @@ final class VerificationCountView: UIView {
 
         return button
     }
-
     private func setupUI() {
 
         addSubview(titleLabel)
@@ -157,18 +153,8 @@ final class VerificationCountView: UIView {
             $0.trailing.equalToSuperview().inset(10)
         }
     }
-
-    private func setupAction() {
-
-        moreButton.addTarget(
-            self,
-            action: #selector(countTapped(_:)),
-            for: .touchUpInside
-        )
-    }
-
+    
     @objc private func countTapped(_ sender: UIButton) {
-
         countButtons.forEach {
             $0.backgroundColor = UIColor(named: "main300")
             $0.setTitleColor(
@@ -176,16 +162,32 @@ final class VerificationCountView: UIView {
                 for: .normal
             )
         }
-
         moreButton.backgroundColor = UIColor(named: "main300")
         moreButton.setTitleColor(
             UIColor(named: "main800"),
             for: .normal
         )
+        //모든 버튼들 다 선택 안됨 UI로 교체
 
         sender.backgroundColor = UIColor(named: "main600")
         sender.setTitleColor(.white, for: .normal)
-
+        //선택 된 버튼만 선택됨 UI로 교체
+        
+        var count = 0
+        
+        if sender.titleLabel?.text == "그 이상" {
+            count = Int(moreTextField.text ?? "")!
+        } else {
+            count = Int(sender.currentTitle?.replacingOccurrences(of: "번", with: "") ?? "") ?? 0
+        }
+        HabitCreateManager.shared.repeatCount = count
+        //기타 버튼 클릭 시 카테고리 텍스트를 텍스트필드의 텍스트로 변경. 아닐 시 카테고리 텍스트를 버튼 텍스트로 변경
+        
         onCountSelected?()
+    }
+    @objc private func countEditingChanged(_ sender: UITextField) {
+        if moreButton.backgroundColor == UIColor(named: "main600") {
+            HabitCreateManager.shared.repeatCount = Int(moreTextField.text ?? "") ?? 0
+        }
     }
 }

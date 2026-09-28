@@ -26,6 +26,7 @@ final class CategoryView: UIView {
         $0.font = .systemFont(ofSize: 12)
         $0.textColor = UIColor(named: "gray900")
         $0.backgroundColor = UIColor(named: "main300")
+        $0.addTarget(self, action: #selector(etcTextFieldDidChange), for: .editingChanged)
     }
 
     private let etcContainer = UIView().then {
@@ -171,7 +172,15 @@ final class CategoryView: UIView {
     }
 
     @objc private func categoryTapped(_ sender: UIButton) {
-
+        var category = ""
+        if sender.titleLabel?.text == "기타" {
+            category = etcTextField.text ?? ""
+        } else {
+            category = (sender.titleLabel?.text)!
+        }
+        HabitCreateManager.shared.category = category
+        //기타 버튼 클릭 시 카테고리 텍스트를 텍스트필드의 텍스트로 변경. 아닐 시 카테고리 텍스트를 버튼 텍스트로 변경
+        
         categoryButtons.forEach {
             $0.backgroundColor = UIColor(named: "main300")
             $0.setTitleColor(
@@ -179,16 +188,22 @@ final class CategoryView: UIView {
                 for: .normal
             )
         }
-
         etcButton.backgroundColor = UIColor(named: "main300")
         etcButton.setTitleColor(
             UIColor(named: "main800"),
             for: .normal
         )
-
+        //다른 버튼들 배경색, 글씨 색 다 선택 안됨으로 바꿈
+        
         sender.backgroundColor = UIColor(named: "main600")
         sender.setTitleColor(.white, for: .normal)
+        //클릭된 버튼만 배경색, 글씨색 선택됨으로 바꿈
 
         onCategorySelected?()
+    }
+    @objc private func etcTextFieldDidChange() {
+        if etcButton.backgroundColor == UIColor(named: "main600") {
+            HabitCreateManager.shared.category = etcTextField.text ?? ""
+        }
     }
 }

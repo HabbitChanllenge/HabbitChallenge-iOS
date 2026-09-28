@@ -24,7 +24,17 @@ final class HabitNameView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        setupLayout()
+        
+        guard let text = HabitCreateManager.shared.name else { return }
+        textField.text = text
+    }
 
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    private func setupLayout() {
         addSubview(titleLabel)
         addSubview(textField)
 
@@ -32,16 +42,11 @@ final class HabitNameView: UIView {
             $0.top.equalToSuperview()
             $0.leading.equalToSuperview().inset(24)
         }
-
         textField.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(19)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(50)
             $0.bottom.equalToSuperview()
         }
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

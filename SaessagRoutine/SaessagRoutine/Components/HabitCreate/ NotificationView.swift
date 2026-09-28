@@ -28,53 +28,20 @@ final class NotificationView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        addSubview(titleLabel)
-        addSubview(offButton)
-        addSubview(onButton)
-
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview().inset(24)
-        }
-
-        offButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
-            $0.leading.equalToSuperview().inset(24)
-            $0.width.equalTo(169)
-            $0.height.equalTo(44)
-        }
-
-        onButton.snp.makeConstraints {
-            $0.centerY.equalTo(offButton)
-            $0.leading.equalTo(offButton.snp.trailing).offset(16)
-            $0.width.equalTo(offButton)
-            $0.height.equalTo(offButton)
-            $0.bottom.equalToSuperview()
-        }
-
-        updateButton(offButton, selected: false)
-        updateButton(onButton, selected: true)
+        
+        HabitCreateManager.shared.isAlarm ? didTapOn() : didTapOff()
     }
 
-    private func updateButton(
-        _ button: UIButton,
-        selected: Bool
-    ) {
-
-        button.backgroundColor = UIColor(
-            named: selected ? "main600" : "gray200"
-        )
-
-        button.setTitleColor(
-            selected ? .white : UIColor(named: "main800"), for: .normal,
-        )
+    private func updateButton(_ button: UIButton, selected: Bool) {
+        button.backgroundColor = UIColor(named: selected ? "main600" : "gray200")
+        button.setTitleColor(selected ? .white : UIColor(named: "main800"), for: .normal)
     }
 
     @objc private func didTapOff() {
-
         updateButton(offButton, selected: true)
         updateButton(onButton, selected: false)
+        
+        HabitCreateManager.shared.isAlarm = false
 
         onNotificationSelected?()
     }
@@ -83,10 +50,34 @@ final class NotificationView: UIView {
 
         updateButton(offButton, selected: false)
         updateButton(onButton, selected: true)
+        
+        HabitCreateManager.shared.isAlarm = true
 
         onNotificationSelected?()
     }
+    private func setupLayout() {
+        addSubview(titleLabel)
+        addSubview(offButton)
+        addSubview(onButton)
 
+        titleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().inset(24)
+        }
+        offButton.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
+            $0.leading.equalToSuperview().inset(24)
+            $0.width.equalTo(169)
+            $0.height.equalTo(44)
+        }
+        onButton.snp.makeConstraints {
+            $0.centerY.equalTo(offButton)
+            $0.leading.equalTo(offButton.snp.trailing).offset(16)
+            $0.width.equalTo(offButton)
+            $0.height.equalTo(offButton)
+            $0.bottom.equalToSuperview()
+        }
+    }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

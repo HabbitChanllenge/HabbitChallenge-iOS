@@ -9,7 +9,6 @@ final class HabitNameView: UIView {
         $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = .black
     }
-
     let textField = UITextField().then {
         $0.placeholder = "습관의 이름을 입력해 주세요."
         $0.font = .systemFont(ofSize: 15, weight: .regular)
@@ -20,6 +19,7 @@ final class HabitNameView: UIView {
         $0.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
 
         $0.leftViewMode = .always
+        $0.addTarget(self, action: #selector(textChanger), for: .editingChanged)
     }
 
     override init(frame: CGRect) {
@@ -48,5 +48,8 @@ final class HabitNameView: UIView {
             $0.height.equalTo(50)
             $0.bottom.equalToSuperview()
         }
+    }
+    @objc private func textChanger() {
+        HabitCreateManager.shared.name = textField.text
     }
 }

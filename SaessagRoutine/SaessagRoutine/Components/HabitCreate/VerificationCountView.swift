@@ -11,7 +11,7 @@ final class VerificationCountView: UIView {
         $0.textColor = UIColor(named: "gray900")
     }
 
-    private var countButtons: [UIButton] = []
+    var countButtons: [UIButton] = []
 
     private let moreButton = UIButton(type: .system).then {
         $0.setTitle("그 이상", for: .normal)
@@ -176,7 +176,7 @@ final class VerificationCountView: UIView {
         var count = 0
         
         if sender.titleLabel?.text == "그 이상" {
-            count = Int(moreTextField.text ?? "")!
+            count = Int(moreTextField.text ?? "") ?? 0
         } else {
             count = Int(sender.currentTitle?.replacingOccurrences(of: "번", with: "") ?? "") ?? 0
         }

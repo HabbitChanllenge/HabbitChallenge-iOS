@@ -15,7 +15,14 @@ class HabitCreateManager {
     var category: String?
     var repeatCount: Int?
     var repeatDay: [Int]?
-    var isAlarm: Bool = true
+    
+    func reset() {
+        name = nil
+        isWeekly = false
+        category = nil
+        repeatDay = []
+        repeatCount = nil
+    }
 }
 enum weekNumber : String {
     case monday = "월요일"

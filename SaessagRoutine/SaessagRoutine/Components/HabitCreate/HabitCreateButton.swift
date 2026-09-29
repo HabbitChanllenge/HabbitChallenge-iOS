@@ -17,7 +17,6 @@ final class HabitCreateButton: UIView {
         super.init(frame: frame)
 
         addSubview(createButton)
-
         createButton.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.leading.trailing.equalToSuperview().inset(24)
@@ -32,9 +31,6 @@ final class HabitCreateButton: UIView {
 
     func setEnabled(_ enabled: Bool) {
         createButton.isEnabled = enabled
-
-        createButton.backgroundColor = UIColor(
-            named: enabled ? "main600" : "main400"
-        )
+        createButton.backgroundColor = UIColor(named: enabled ? "main600" : "main400")
     }
 }

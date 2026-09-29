@@ -68,17 +68,8 @@ final class RepeatCycleView: UIView {
 
     private func setupAction() {
 
-        dayButton.addTarget(
-            self,
-            action: #selector(didTapDay),
-            for: .touchUpInside
-        )
-
-        weekButton.addTarget(
-            self,
-            action: #selector(didTapWeek),
-            for: .touchUpInside
-        )
+        dayButton.addTarget(self, action: #selector(didTapDay), for: .touchUpInside)
+        weekButton.addTarget(self, action: #selector(didTapWeek), for: .touchUpInside)
     }
 
     private func updateButton(_ button: UIButton,selected: Bool) {
@@ -92,6 +83,8 @@ final class RepeatCycleView: UIView {
 
         onCycleChanged?(false)
         HabitCreateManager.shared.isWeekly = false
+        HabitCreateManager.shared.repeatDay = nil
+        WeeklyDayView().dayButtons.forEach{ $0.backgroundColor = UIColor(named: "main300") }
     }
 
     @objc private func didTapWeek() {
@@ -100,5 +93,6 @@ final class RepeatCycleView: UIView {
 
         onCycleChanged?(true)
         HabitCreateManager.shared.isWeekly = true
+        HabitCreateManager.shared.repeatCount = nil
     }
 }

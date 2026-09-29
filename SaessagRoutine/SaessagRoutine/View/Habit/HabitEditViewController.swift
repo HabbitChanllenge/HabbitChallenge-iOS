@@ -11,6 +11,7 @@ import Then
 import Moya
 
 final class HabitEditViewController: UIViewController {
+    private let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
 
     private let topBar = NavigationBarView(streak: "31")
 
@@ -24,7 +25,6 @@ final class HabitEditViewController: UIViewController {
     private let repeatCycleView = RepeatCycleView()
     private let categoryView = CategoryView()
     private let verificationCountView = VerificationCountView()
-    private let notificationView = NotificationView()
     private let habitEditButton = HabitCreateButton()
     private let weeklyDayView = WeeklyDayView()
 
@@ -101,10 +101,6 @@ final class HabitEditViewController: UIViewController {
         weeklyDayView.onDaySelected = { [weak self] selected in
             self?.isWeekDaySelected = selected
         }
-
-        notificationView.onNotificationSelected = { [weak self] in
-            self?.isNotificationSelected = true
-        }
     }
 
     @objc private func editButtonTapped() {
@@ -141,7 +137,6 @@ final class HabitEditViewController: UIViewController {
         stackView.addArrangedSubview(categoryView)
         stackView.addArrangedSubview(verificationCountView)
         stackView.addArrangedSubview(weeklyDayView)
-        stackView.addArrangedSubview(notificationView)
         stackView.addArrangedSubview(errorMessageLabel)
         stackView.addArrangedSubview(habitEditButton)
 

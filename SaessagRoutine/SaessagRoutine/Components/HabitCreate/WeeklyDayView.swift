@@ -11,7 +11,7 @@ final class WeeklyDayView: UIView {
         $0.textColor = UIColor(named: "gray900")
     }
 
-    private var dayButtons: [UIButton] = []
+    var dayButtons: [UIButton] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)

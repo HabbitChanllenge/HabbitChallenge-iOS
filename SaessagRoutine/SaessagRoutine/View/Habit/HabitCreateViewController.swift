@@ -6,7 +6,7 @@ import Moya
 final class HabitCreateViewController: UIViewController {
     private let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
     
-    private let topBar = NavigationBarView(streak: "31")
+    private let topBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
     
     private let scrollView = UIScrollView()
     private let stackView = UIStackView().then {

@@ -14,7 +14,7 @@ class MyPageViewContoller: UIViewController {
     let provider = MoyaProvider<UserAPI>()
     let authProvider = MoyaProvider<AuthAPI>(plugins:[MoyaLoggingPlugin()])
     let editVC = MyPageEditViewController()
-    let navBar = NavigationBarView(streak: "31")
+    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
     
     let profileImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill

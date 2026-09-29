@@ -13,7 +13,7 @@ import Moya
 class HomeViewController: UIViewController {
     let habitList: [Habit] = MockHabitCard.habit
 
-    let navBar = NavigationBarView(streak: "31")
+    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
     
     let scrollView = UIScrollView()
     let wholeStack = UIStackView().then {

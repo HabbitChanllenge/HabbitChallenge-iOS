@@ -5,7 +5,7 @@ import Moya
 
 class RankingViewController: UIViewController {
     
-    let navBar = NavigationBarView(streak: "31")
+    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
     private let topRankingView = TopRankingView()
     
     private let scrollView = UIScrollView()

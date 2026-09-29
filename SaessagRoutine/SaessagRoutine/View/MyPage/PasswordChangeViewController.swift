@@ -13,7 +13,7 @@ import Moya
 class PasswordChangeViewController: UIViewController {
     let provider = MoyaProvider<UserAPI>(plugins: [MoyaLoggingPlugin()])
     
-    let navBar = NavigationBarView(streak: "44")
+    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
     let stackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 24

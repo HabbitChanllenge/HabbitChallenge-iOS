@@ -130,6 +130,7 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
                     TokenManager.shared.token = data.accessToken!
                     
                     let homeVC = RootTabBarController()
+                    self.getStreak()
                     self.navigationController?.pushViewController(homeVC, animated: false)
                     UIWindow.changeRootViewController(to: homeVC, animated: true)
                 } else if data.statusCode == 401 {
@@ -177,6 +178,18 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
     @objc private func toPasswordChange() {
         let passwordChangeVC = PasswordFindViewController()
         navigationController?.pushViewController(passwordChangeVC, animated: true)
+    }
+    private func getStreak() {
+        let rProvider = MoyaProvider<StreakAPI>(plugins: [MoyaLoggingPlugin()])
+        rProvider.request(.getStreak) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(Streak.self) else { print("스트릭 가져오기 디코딩 실패"); return }
+                StreakManager.shared.allStreak = data.allStreak
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 extension LogInViewController {

@@ -13,7 +13,7 @@ import Moya
 class HabitViewController: UIViewController {
     var habitList: [Habit] = MockHabitCard.habit
     
-    let topBar = NavigationBarView(streak: "20")
+    let topBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
     let createButton = UIButton(type: .system).then {
         $0.imageView?.contentMode = .scaleAspectFit
         $0.setImage(UIImage(systemName: "plus"), for: .normal)

@@ -14,7 +14,7 @@ class MyPageEditViewController: UIViewController {
     let provider = MoyaProvider<UserAPI>(plugins:[MoyaLoggingPlugin()])
     let deleteProvider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     
-    let navBar = NavigationBarView(streak: "31")
+    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
     
     let profileImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill

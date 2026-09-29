@@ -52,14 +52,14 @@ extension HabitAPI : TargetType {
     var task: Moya.Task {
         switch self {
         case .dayCreateHabit(let periodType, let name, let categorys, let totalRepeat):
-            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "totalRepeat" : totalRepeat, "alarm" : alarm]
+            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "totalRepeat" : totalRepeat]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
             
         case .getHabits, .deleteHabit:
             return .requestPlain
             
         case .weekCreateHabit(let periodType, let name, let categorys, let dayOfWeek):
-            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "dayOfWeek" : dayOfWeek, "alarm" : alarm]
+            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "dayOfWeek" : dayOfWeek]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
             
         case .patchHabit(_, let name, let categorys, let totalRepeat, let dayOfWeek):

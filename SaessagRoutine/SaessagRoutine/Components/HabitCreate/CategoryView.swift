@@ -178,7 +178,7 @@ final class CategoryView: UIView {
         } else {
             category = (sender.titleLabel?.text)!
         }
-        HabitCreateManager.shared.category = category
+        HabitManager.shared.category = category
         //기타 버튼 클릭 시 카테고리 텍스트를 텍스트필드의 텍스트로 변경. 아닐 시 카테고리 텍스트를 버튼 텍스트로 변경
         
         categoryButtons.forEach {
@@ -203,7 +203,7 @@ final class CategoryView: UIView {
     }
     @objc private func etcTextFieldDidChange() {
         if etcButton.backgroundColor == UIColor(named: "main600") {
-            HabitCreateManager.shared.category = etcTextField.text ?? ""
+            HabitManager.shared.category = etcTextField.text ?? ""
         }
     }
 }

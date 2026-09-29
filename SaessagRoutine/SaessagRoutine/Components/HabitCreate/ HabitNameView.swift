@@ -27,7 +27,7 @@ final class HabitNameView: UIView {
         
         setupLayout()
         
-        guard let text = HabitCreateManager.shared.name else { return }
+        guard let text = HabitManager.shared.name else { return }
         textField.text = text
     }
 
@@ -50,6 +50,6 @@ final class HabitNameView: UIView {
         }
     }
     @objc private func textChanger() {
-        HabitCreateManager.shared.name = textField.text
+        HabitManager.shared.name = textField.text
     }
 }

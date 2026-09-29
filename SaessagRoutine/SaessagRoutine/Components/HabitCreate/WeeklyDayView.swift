@@ -112,15 +112,15 @@ final class WeeklyDayView: UIView {
             
             let text = sender.currentTitle ?? ""
             let index = weekNumber(rawValue: text)?.number
-            HabitCreateManager.shared.repeatDay?.removeAll(where: {$0 == index})
+            HabitManager.shared.repeatDay?.removeAll(where: {$0 == index})
         } else {//선택 안됐었음. -> 선택으로 바뀜
             sender.backgroundColor = UIColor(named: "main600")
             sender.setTitleColor(.white, for: .normal)
             
             let text = sender.currentTitle ?? ""
             guard let index = weekNumber(rawValue: text)?.number else { return }
-            if HabitCreateManager.shared.repeatDay == nil { HabitCreateManager.shared.repeatDay = [] }
-            HabitCreateManager.shared.repeatDay?.append(index)
+            if HabitManager.shared.repeatDay == nil { HabitManager.shared.repeatDay = [] }
+            HabitManager.shared.repeatDay?.append(index)
         }
 
         let hasSelectedDay = dayButtons.contains {

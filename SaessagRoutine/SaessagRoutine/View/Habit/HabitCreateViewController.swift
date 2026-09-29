@@ -13,7 +13,7 @@ final class HabitCreateViewController: UIViewController {
         $0.axis = .vertical
         $0.spacing = 19
     }
-        
+
     private let habitNameView = HabitNameView()
     private let repeatCycleView = RepeatCycleView()
     private let categoryView = CategoryView()
@@ -21,15 +21,16 @@ final class HabitCreateViewController: UIViewController {
     private let habitCreateButton : HabitCreateButton = HabitCreateButton()
     private let weeklyDayView = WeeklyDayView()
     private let errorMassage = UIButton().then {
-        $0.isEnabled = false
         $0.isHidden = true
         $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .regular)
         $0.contentHorizontalAlignment = .leading
+        $0.isUserInteractionEnabled = false
+        
         var config = UIButton.Configuration.plain()
         config.contentInsets.leading = 24
         $0.configuration = config
         $0.setTitle("", for: .normal)
-        $0.titleLabel?.textColor = UIColor(named: "error")
+        $0.setTitleColor(UIColor(named: "error"), for: .normal)
     }
     
     private var isCycleSelected = true
@@ -142,7 +143,7 @@ final class HabitCreateViewController: UIViewController {
     }//레이아웃 잡기
     @objc private func createButtonTapped() {
         print("버튼 연동 성공")
-        let manager = HabitCreateManager.shared
+        let manager = HabitManager.shared
         if manager.isWeekly {
             provider.request(.weekCreateHabit(periodType: "week", name: manager.name ?? "", categorys: manager.category ?? "", dayOfWeek: manager.repeatDay ?? [])) {
                 switch $0 {
@@ -169,7 +170,7 @@ final class HabitCreateViewController: UIViewController {
                 case .success(let res):
                     guard let data = try? res.map(response.self) else { return }
                     if data.statusCode == 200 {
-                        HabitCreateManager.shared.reset()
+                        HabitManager.shared.reset()
                         self.navigationController?.popViewController(animated: true)
                     } else if data.statusCode == 400 {
                         self.errorMassage.setTitle("잘못된 형식입니다.", for: .normal)

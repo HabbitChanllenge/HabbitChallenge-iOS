@@ -180,14 +180,14 @@ final class VerificationCountView: UIView {
         } else {
             count = Int(sender.currentTitle?.replacingOccurrences(of: "번", with: "") ?? "") ?? 0
         }
-        HabitCreateManager.shared.repeatCount = count
+        HabitManager.shared.repeatCount = count
         //기타 버튼 클릭 시 카테고리 텍스트를 텍스트필드의 텍스트로 변경. 아닐 시 카테고리 텍스트를 버튼 텍스트로 변경
         
         onCountSelected?()
     }
     @objc private func countEditingChanged(_ sender: UITextField) {
         if moreButton.backgroundColor == UIColor(named: "main600") {
-            HabitCreateManager.shared.repeatCount = Int(moreTextField.text ?? "") ?? 0
+            HabitManager.shared.repeatCount = Int(moreTextField.text ?? "") ?? 0
         }
     }
 }

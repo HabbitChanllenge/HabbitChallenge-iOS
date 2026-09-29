@@ -60,7 +60,7 @@ class HabitViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setLayout()
-        HabitCreateManager.shared.reset()
+        HabitManager.shared.reset()
         if habitList.count == 0 {
             noHabitCard.isHidden = false
             habitProgressCard.isHidden = true

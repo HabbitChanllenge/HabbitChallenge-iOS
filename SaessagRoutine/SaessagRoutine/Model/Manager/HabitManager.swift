@@ -14,6 +14,7 @@ class HabitManager {
     var totalHabits: Int = 0
     var didHabits: Int = 0
     
+    var id: Int = 0
     var name: String?
     var isWeekly: Bool = false
     var category: String?

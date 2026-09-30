@@ -122,7 +122,28 @@ final class HabitEditViewController: UIViewController {
     }
 
     @objc private func deleteButtonTapped() {
-        // 습관 삭제 로직 연결 예정
+        let alert = UIAlertController(title: "삭제하시겠습니까?", message: "", preferredStyle: .alert)
+        let delete = UIAlertAction(title: "삭제", style: .destructive) {_ in 
+            self.provider.request(.deleteHabit(habitId: HabitManager.shared.id)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(response.self) else { return }
+                    if data.statusCode == 200 {
+                        self.navigationController?.popViewController(animated: true)
+                    } else if data.statusCode == 401 {
+                        let alert = UIAlertController(title: "로그인이 필요합니다.", message: "", preferredStyle: .alert)
+                        let cansle = UIAlertAction(title: "확인", style: .cancel)
+                        self.present(alert, animated: true)
+                    }
+                case .failure:
+                    print("failure")
+                }
+            }
+        }
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        alert.addAction(cancel)
+        alert.addAction(delete)
+        present(alert, animated: true)
     }
 
     private func setupUI() {

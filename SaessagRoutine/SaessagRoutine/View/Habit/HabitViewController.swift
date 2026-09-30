@@ -126,6 +126,7 @@ class HabitViewController: UIViewController {
             self.navigationController?.pushViewController(HabitEditViewController(), animated: false)
             print("수정버튼 탭. id: \(id)")
         }
+        
         card.onStatusChanged = {
             self.habitProgressCard.updateBar()
         }

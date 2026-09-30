@@ -82,7 +82,7 @@ final class RepeatCycleView: UIView {
         updateButton(weekButton, selected: false)
 
         onCycleChanged?(false)
-        HabitManager.shared.isWeekly = false
+        HabitManager.shared.periodType = "day"
         HabitManager.shared.repeatDay = nil
         WeeklyDayView().dayButtons.forEach{ $0.backgroundColor = UIColor(named: "main300") }
     }
@@ -92,7 +92,7 @@ final class RepeatCycleView: UIView {
         updateButton(weekButton, selected: true)
 
         onCycleChanged?(true)
-        HabitManager.shared.isWeekly = true
+        HabitManager.shared.periodType = "week"
         HabitManager.shared.repeatCount = nil
     }
 }

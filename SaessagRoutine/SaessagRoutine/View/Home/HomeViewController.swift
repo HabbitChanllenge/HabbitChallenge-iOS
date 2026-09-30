@@ -11,6 +11,7 @@ import Then
 import Moya
 
 class HomeViewController: UIViewController {
+    let hProvider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
     let habitList: [Habit] = MockHabitCard.habit
 
     let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
@@ -103,31 +104,38 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
+        API()
         setLayout()
-        
-        HabitManager.shared.totalHabits = habitList.count
-        
-        if habitList.count == 0 {
-            noHabitCard.isHidden = false
-        } else {
-            noHabitCard.isHidden = true
-            for i in 0..<3 {
-                setHabitCards(id: i)
-            }
-            progressCard.updateBar()
-        }
     }
     private func setHabitCards(id: Int) {
-        let card : HabitCardView = HabitCardView(
-            titleText: habitList[id].name,
-            days: habitList[id].streak,
-            times: habitList[id].totalRepeat,
-            didTimes: habitList[id].didRepeat,
-            category: habitList[id].category,
-            cycle: habitList[id].periodType,
-            day: habitList[id].dayOfWeek
+        let manager = HabitManager.shared
+        
+        var dayStr = ""
+        manager.repeatDay?.forEach {
+            switch $0 {
+            case 1: dayStr += "월요일 "
+            case 2: dayStr += "화요일 "
+            case 3: dayStr += "수요일 "
+            case 4: dayStr += "목요일 "
+            case 5: dayStr += "금요일 "
+            case 6: dayStr += "토요일 "
+            case 7: dayStr += "일요일 "
+            default : break
+            }
+        }
+        //요일 문자열 설정
+        
+        let card = HabitCardView(
+            id: manager.id,
+            titleText: manager.name!,
+            days: manager.didDays,
+            times: manager.repeatCount!,
+            didTimes: manager.didDays,
+            category: manager.category!,
+            cycle: manager.periodType!,
+            day: dayStr
         )
+        
         card.onStatusChanged = {
             let homeVC = self
             self.progressCard.updateBar()
@@ -210,6 +218,39 @@ class HomeViewController: UIViewController {
                 if let nav = tabBarController.selectedViewController as? UINavigationController {
                     nav.pushViewController(HabitCreateViewController(),animated: false)
                 }
+            }
+        }
+    }
+    private func API() {
+        hProvider.request(.getHabits) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(habitInfoResponse.self) else { return }
+                var manager = HabitManager.shared
+                manager.totalHabits = data.habits.count//전체 습관 수 저장
+                
+                guard manager.totalHabits > 0 else {
+                    self.noHabitCard.isHidden = false
+                    return
+                }
+                self.noHabitCard.isHidden = true
+                
+                for i in 0..<data.habits.count {
+                    var habit = data.habits[i]
+                    
+                    manager.name = habit.name
+                    manager.category = habit.categorys.first
+                    manager.didCount = habit.completedCount
+                    manager.id = habit.habitId
+                    manager.periodType = habit.periodType
+                    habit.dayOfWeek?.forEach {
+                        manager.repeatDay?.append(Int($0))
+                    }
+                    
+                }
+                
+            case .failure(let err):
+                print(err)
             }
         }
     }

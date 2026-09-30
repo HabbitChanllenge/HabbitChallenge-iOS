@@ -11,6 +11,8 @@ import Then
 import Moya
 
 class HabitViewController: UIViewController {
+    let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
+    
     var habitList: [Habit] = MockHabitCard.habit
     
     let topBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
@@ -59,20 +61,43 @@ class HabitViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        API()
         setLayout()
-        HabitManager.shared.reset()
-        if habitList.count == 0 {
-            noHabitCard.isHidden = false
-            habitProgressCard.isHidden = true
-        }//습관 없을 시
-        else {
-            noHabitCard.isHidden = true
-    
-            for i in 0..<habitList.count {
-                createCard(id: i)
+    }
+    private func API() {
+        provider.request(.getHabits) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(habitInfoResponse.self) else { return }
+                var manager = HabitManager.shared
+                manager.totalHabits = data.habits.count//전체 습관 수 저장
+                
+                guard manager.totalHabits > 0 else {
+                    self.noHabitCard.isHidden = false
+                    self.habitProgressCard.isHidden = true
+                    return
+                }
+                self.habitProgressCard.isHidden = false
+                self.noHabitCard.isHidden = true
+                
+                for i in 0..<data.habits.count {
+                    var habit = data.habits[i]
+                    
+                    manager.name = habit.name
+                    manager.category = habit.categorys.first
+                    manager.didCount = habit.completedCount
+                    manager.id = habit.habitId
+                    manager.periodType = habit.periodType
+                    habit.dayOfWeek?.forEach {
+                        manager.repeatDay?.append(Int($0))
+                    }
+                    
+                }
+                
+            case .failure(let err):
+                print(err)
             }
-            habitProgressCard.isHidden = false
-        }//습관 있을 시
+        }
     }
     private func setLayout() {
         view.addSubview(topBar)
@@ -112,14 +137,32 @@ class HabitViewController: UIViewController {
     }//생성 버튼 클릭 시 습관 생성 화면으로 이동
     
     private func createCard(id : Int) {
+        let manager = HabitManager.shared
+        
+        var dayStr = ""
+        manager.repeatDay?.forEach {
+            switch $0 {
+            case 1: dayStr += "월요일 "
+            case 2: dayStr += "화요일 "
+            case 3: dayStr += "수요일 "
+            case 4: dayStr += "목요일 "
+            case 5: dayStr += "금요일 "
+            case 6: dayStr += "토요일 "
+            case 7: dayStr += "일요일 "
+            default : break
+            }
+        }
+        //요일 문자열 설정
+        
         let card = HabitCardView(
-            titleText: habitList[id].name,
-            days: habitList[id].streak,
-            times: habitList[id].totalRepeat,
-            didTimes: habitList[id].didRepeat,
-            category: habitList[id].category,
-            cycle: habitList[id].periodType,
-            day: habitList[id].dayOfWeek
+            id: manager.id,
+            titleText: manager.name!,
+            days: manager.didDays,
+            times: manager.repeatCount!,
+            didTimes: manager.didDays,
+            category: manager.category!,
+            cycle: manager.periodType!,
+            day: dayStr
         )
         cardStackView.addArrangedSubview(card)
         card.onPatchButtonTapped = {

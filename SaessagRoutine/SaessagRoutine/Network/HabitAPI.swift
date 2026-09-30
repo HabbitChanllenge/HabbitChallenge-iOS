@@ -77,7 +77,6 @@ extension HabitAPI : TargetType {
     }
 }
 struct habitInfoResponse: Codable {//습관 보기 때 사용
-    let status : String
     let habits: [habitInfo]
 }
 struct habitInfo : Codable {//습관 보기 시 사용.

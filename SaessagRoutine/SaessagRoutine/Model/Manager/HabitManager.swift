@@ -15,15 +15,18 @@ class HabitManager {
     var didHabits: Int = 0
     
     var id: Int = 0
-    var name: String?
-    var isWeekly: Bool = false
-    var category: String?
-    var repeatCount: Int?
-    var repeatDay: [Int]?
+    var name: String? //습관 이름
+    var periodType: String? //하루인지 일주일인지. day와 week로 들어옴
+    var category: String? //카테고리
+    var repeatCount: Int? //하루에 몇번 하는지. 하루 습관 할 때만 사용
+    var repeatDay: [Int]? //무슨 요일에 하는지. 일주일 습관 할 때만 사용
+    
+    var didDays = 44 //몇 일, 몇 주 표시. 카드 제작 때 사용
+    var didCount: Int = 0 
     
     func reset() {
         name = nil
-        isWeekly = false
+        periodType = nil
         category = nil
         repeatDay = []
         repeatCount = nil

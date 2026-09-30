@@ -86,9 +86,10 @@ final class HabitCardView: UIView {
         $0.isHidden = true
     }//펼쳤을 때 중간에 가로 선
     
-    init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : [String]?) {
+    init(id: Int, titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : String?) {
         super.init(frame: .zero)
         self.didTimes = didTimes
+        
         onStatusChanged?()
         setAttributes(titleText, days, times, didTimes, category, cycle, day)
         setupLayout()
@@ -97,9 +98,9 @@ final class HabitCardView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String, _ day: [String]?) {
+    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String, _ day: String?) {
         self.times = times
-        let cycle = (cycle == "day") ? "매일" : (weekdays(rawValue: day?.first ?? "")?.rawValue ?? "매주")
+        let cycle = (cycle == "day") ? "매일" : day ?? "매주"
         titleLabel.text = titleText
         categoryLabel.text = category
         timesLabel.text = "\(cycle) \(didTimes)/\(times)"

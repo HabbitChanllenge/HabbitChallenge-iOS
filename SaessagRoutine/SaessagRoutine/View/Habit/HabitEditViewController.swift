@@ -46,8 +46,8 @@ final class HabitEditViewController: UIViewController {
         $0.tintColor = UIColor(named: "gray600")
         $0.titleLabel?.font = .systemFont(ofSize: 15)
     }
-
-    private var isCycleSelected = true
+    
+    private var isNameFilled: Bool = false
     private var isCategorySelected = false
     private var isVerificationSelected = false
     private var isWeekDaySelected = false
@@ -76,8 +76,6 @@ final class HabitEditViewController: UIViewController {
 
             guard let self else { return }
 
-            self.isCycleSelected = true
-
             self.verificationCountView.isHidden = isWeekly
             self.weeklyDayView.isHidden = !isWeekly
 
@@ -90,6 +88,9 @@ final class HabitEditViewController: UIViewController {
     }
 
     private func setupSelectionAction() {
+        habitNameView.nameEditing = { [weak self] isNil in
+            self?.isNameFilled = !isNil
+        }
         categoryView.onCategorySelected = { [weak self] in
             self?.isCategorySelected = true
         }
@@ -109,11 +110,11 @@ final class HabitEditViewController: UIViewController {
         let isWeekly = !weeklyDayView.isHidden
 
         let isComplete =
-            isCycleSelected &&
+            isNameFilled &&
             isCategorySelected &&
             authenticationSelected &&
             isNotificationSelected
-
+        
         errorMessageLabel.isHidden = isComplete
 
         if isComplete {

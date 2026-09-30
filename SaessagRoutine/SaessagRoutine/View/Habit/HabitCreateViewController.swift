@@ -33,7 +33,7 @@ final class HabitCreateViewController: UIViewController {
         $0.setTitleColor(UIColor(named: "error"), for: .normal)
     }
     
-    private var isCycleSelected = true
+    private var isNameFilled: Bool = false
     private var isCategorySelected = false
     private var isVerificationSelected = false
     private var isWeekDaySelected = false
@@ -55,8 +55,6 @@ final class HabitCreateViewController: UIViewController {
         repeatCycleView.onCycleChanged = { [weak self] isWeekly in
             guard let self else { return }
 
-            self.isCycleSelected = true
-
             self.verificationCountView.isHidden = isWeekly//인증 횟수 선택 숨김 여부
             self.weeklyDayView.isHidden = !isWeekly//인증 요일 선택 숨김 여부
 
@@ -71,12 +69,17 @@ final class HabitCreateViewController: UIViewController {
                 $0.setTitleColor(UIColor(named: "main800"), for: .normal)
             }
             //선택 됐었던 값 초기화
+            
             self.setupSelectionAction()
             self.updateCreateButton()
         }//하루에서 일주일으로, 일주일에서 하루로 인증 주기 바꿨을 때 실행 클로저
     }
     
     private func setupSelectionAction() {
+        habitNameView.nameEditing = { [weak self] isNil in
+            self?.isNameFilled = !isNil
+            self?.updateCreateButton()
+        }
         categoryView.onCategorySelected = { [weak self] in
             self?.isCategorySelected = true
             self?.updateCreateButton()
@@ -101,7 +104,7 @@ final class HabitCreateViewController: UIViewController {
         }
 
         let isComplete =
-            isCycleSelected &&
+            isNameFilled &&
             isCategorySelected &&
             authenticationSelected &&
             isNotificationSelected
@@ -144,7 +147,9 @@ final class HabitCreateViewController: UIViewController {
     @objc private func createButtonTapped() {
         print("버튼 연동 성공")
         let manager = HabitManager.shared
-        if manager.isWeekly {
+        guard manager.name != nil else { print("이름 비어있음"); return }
+        
+        if manager.periodType == "week" {
             provider.request(.weekCreateHabit(periodType: "week", name: manager.name ?? "", categorys: manager.category ?? "", dayOfWeek: manager.repeatDay ?? [])) {
                 switch $0 {
                 case .success(let res):

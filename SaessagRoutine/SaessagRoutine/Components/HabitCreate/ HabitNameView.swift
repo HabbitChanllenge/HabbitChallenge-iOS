@@ -3,7 +3,8 @@ import SnapKit
 import Then
 
 final class HabitNameView: UIView {
-
+    var nameEditing: ((Bool) -> Void)?
+    
     private let titleLabel = UILabel().then {
         $0.text = "습관명"
         $0.font = .systemFont(ofSize: 25, weight: .semibold)
@@ -16,7 +17,7 @@ final class HabitNameView: UIView {
         $0.backgroundColor = UIColor(named: "gray200")
         $0.layer.cornerRadius = 10
 
-        $0.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
+        $0.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
 
         $0.leftViewMode = .always
         $0.addTarget(self, action: #selector(textChanger), for: .editingChanged)
@@ -51,5 +52,12 @@ final class HabitNameView: UIView {
     }
     @objc private func textChanger() {
         HabitManager.shared.name = textField.text
+        let isNil : Bool
+        if textField.text?.isEmpty ?? true {
+            isNil = true
+        } else {
+            isNil = false
+        }
+        nameEditing?(isNil)
     }
 }

@@ -61,6 +61,7 @@ class HabitViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        print("습관 뷰 로드")
         API()
         setLayout()
     }
@@ -68,13 +69,17 @@ class HabitViewController: UIViewController {
         provider.request(.getHabits) {
             switch $0 {
             case .success(let res):
-                guard let data = try? res.map(habitInfoResponse.self) else { return }
+                guard let data = try? res.map(habitInfoResponse.self)
+                else {
+                    self.noHabitCard.isHidden = false
+                    self.habitProgressCard.isHidden = true
+                    return
+                }
                 var manager = HabitManager.shared
                 manager.totalHabits = data.habits.count//전체 습관 수 저장
                 
                 guard manager.totalHabits > 0 else {
-                    self.noHabitCard.isHidden = false
-                    self.habitProgressCard.isHidden = true
+                    
                     return
                 }
                 self.habitProgressCard.isHidden = false

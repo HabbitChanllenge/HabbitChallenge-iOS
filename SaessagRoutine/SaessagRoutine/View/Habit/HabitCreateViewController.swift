@@ -156,7 +156,7 @@ final class HabitCreateViewController: UIViewController {
                     guard let data = try? res.map(response.self) else { return }
                     if data.statusCode == 200 {
                         self.navigationController?.popViewController(animated: true)
-                        print("생성 성공 야호")
+                        print("습관 생성 성공 야호")
                         manager.reset()
                     } else if data.statusCode == 400 {
                         self.errorMassage.setTitle("잘못된 형식입니다.", for: .normal)

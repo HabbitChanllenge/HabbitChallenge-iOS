@@ -50,7 +50,7 @@ class MyPageEditViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        provider.request(.getUserInfo(token: TokenManager.shared.token)) {
+        provider.request(.getUserInfo) {
             switch $0 {
             case .success(let res):
                 guard let data = try? res.map(getMypageInfo.self) else { print("디코딩 실패"); return }
@@ -120,7 +120,7 @@ class MyPageEditViewController: UIViewController {
             return
         }
         //모두 다 채워져 있을 시
-        provider.request(.patchUserInfo(token: TokenManager.shared.token, userId: idT, email: emailT)) {
+        provider.request(.patchUserInfo(userId: idT, email: emailT)) {
             switch $0 {
             case .success(let res):
                 guard let data = try? res.map(patchMypageInfo.self) else { print("디코딩 실패"); return }

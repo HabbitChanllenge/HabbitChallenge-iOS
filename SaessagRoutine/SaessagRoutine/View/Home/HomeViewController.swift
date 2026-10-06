@@ -225,10 +225,10 @@ class HomeViewController: UIViewController {
         hProvider.request(.getHabits) {
             switch $0 {
             case .success(let res):
-                guard let data = try? res.map(habitInfoResponse.self) else { return }
+                guard let data = try? res.map([habitInfo].self) else { return }
                 var manager = HabitManager.shared
-                manager.totalHabits = data.habits.count//전체 습관 수 저장
-                let cnt = (data.habits.count >= 3) ? 3 : data.habits.count
+                manager.totalHabits = data.count//전체 습관 수 저장
+                let cnt = (data.count >= 3) ? 3 : data.count
                 guard manager.totalHabits > 0 else {
                     self.noHabitCard.isHidden = false
                     return
@@ -236,14 +236,16 @@ class HomeViewController: UIViewController {
                 self.noHabitCard.isHidden = true
                 
                 for i in 0..<cnt {
-                    var habit = data.habits[i]
+                    var habit = data[i]
                     
                     manager.name = habit.name
                     manager.category = habit.categorys.first
                     manager.didCount = habit.completedCount
-                    manager.id = habit.habitId
+                    manager.id = habit.habit_id
+                    manager.didDays = habit.streak
                     manager.periodType = habit.periodType
-                    habit.dayOfWeek?.forEach {
+                    manager.repeatCount = habit.totalRepeat
+                    habit.weekOfDay?.forEach {
                         manager.repeatDay?.append(Int($0))
                     }
                     self.setHabitCards(id: i)

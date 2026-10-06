@@ -10,9 +10,9 @@ import Moya
 import Alamofire
 
 enum UserAPI {
-    case getUserInfo(token:String)
-    case patchUserInfo(token:String, userId:String, email:String)
-    case changePassword(token:String, oldPassword:String, newPassword:String)
+    case getUserInfo
+    case patchUserInfo(userId:String, email:String)
+    case changePassword(oldPassword:String, newPassword:String)
 }
 
 extension UserAPI: TargetType {
@@ -37,27 +37,17 @@ extension UserAPI: TargetType {
         switch self {
         case .getUserInfo:
             return .requestPlain
-        case .patchUserInfo(_, let userId, let email):
+        case .patchUserInfo(let userId, let email):
             let param : [String: String] = ["userId": userId, "email": email]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
-        case .changePassword(_ , let oldPassword, let newPassword):
+        case .changePassword(let oldPassword, let newPassword):
             let param : [String: String] = ["currentPassword": oldPassword, "newPassword": newPassword]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
         }
     }
     
     var headers: [String : String]? {
-        switch self {
-        case .getUserInfo(let token):
-            let header = ["Authorization": "Bearer \(token)"]
-            return header
-        case .patchUserInfo(let token, _, _):
-            let header = ["Authorization": "Bearer \(token)"]
-            return header
-        case .changePassword(token: let token, oldPassword: let oldPassword, newPassword: let newPassword):
-            let header = ["Authorization": "Bearer \(token)"]
-            return header
-        }
+        return ["Authorization": "Bearer \(TokenManager.shared.token)"]
     }
 }
 struct getMypageInfo: Codable, Equatable {//마이페이지 조회 시 사용

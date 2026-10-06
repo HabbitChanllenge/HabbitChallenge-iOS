@@ -89,7 +89,7 @@ class PasswordChangeViewController: UIViewController {
         let isSame = newPasswordTextField.textField.text! == newPasswordCheckTextField.textField.text!
         
         if isSame {//새 비밀번호와 비밀번호 확인이 같을 때
-            provider.request(.changePassword(token: TokenManager.shared.token, oldPassword: beforePasswordTextField.textField.text!, newPassword: newPasswordTextField.textField.text!)) {
+            provider.request(.changePassword(oldPassword: beforePasswordTextField.textField.text!, newPassword: newPasswordTextField.textField.text!)) {
                 switch $0 {
                 case .success(let res):
                     guard let data = try? res.map(patchMypageInfo.self) else { return }

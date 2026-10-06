@@ -57,46 +57,48 @@ class HabitViewController: UIViewController {
         }
         return card
     }()
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        API()
+        setLayout()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        print("습관 뷰 로드")
-        API()
-        setLayout()
     }
     private func API() {
         provider.request(.getHabits) {
             switch $0 {
             case .success(let res):
-                guard let data = try? res.map(habitInfoResponse.self)
+                guard let data = try? res.map([habitInfo].self)
                 else {
+                    print("디코딩 실패. 습관 없을 수 있음")
                     self.noHabitCard.isHidden = false
                     self.habitProgressCard.isHidden = true
                     return
                 }
-                var manager = HabitManager.shared
-                manager.totalHabits = data.habits.count//전체 습관 수 저장
                 
-                guard manager.totalHabits > 0 else {
-                    
-                    return
-                }
-                self.habitProgressCard.isHidden = false
                 self.noHabitCard.isHidden = true
+                self.habitProgressCard.isHidden = false
                 
-                for i in 0..<data.habits.count {
-                    var habit = data.habits[i]
+                var manager = HabitManager.shared
+                manager.totalHabits = data.count//전체 습관 수 저장
+                
+                
+                for i in 0..<data.count {
+                    var habit = data[i]
                     
                     manager.name = habit.name
                     manager.category = habit.categorys.first
                     manager.didCount = habit.completedCount
-                    manager.id = habit.habitId
+                    manager.id = habit.habit_id
                     manager.periodType = habit.periodType
-                    habit.dayOfWeek?.forEach {
+                    manager.didDays = habit.streak
+                    habit.weekOfDay?.forEach {
                         manager.repeatDay?.append(Int($0))
                     }
-                    
+                    self.createCard(id: i)
                 }
                 
             case .failure(let err):
@@ -170,6 +172,7 @@ class HabitViewController: UIViewController {
             day: dayStr
         )
         cardStackView.addArrangedSubview(card)
+        
         card.onPatchButtonTapped = {
             self.navigationController?.pushViewController(HabitEditViewController(), animated: false)
             print("수정버튼 탭. id: \(id)")

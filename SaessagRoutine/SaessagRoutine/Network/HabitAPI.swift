@@ -15,7 +15,7 @@ enum HabitAPI {
     case getHabits
     case deleteHabit(habitId : Int)
     case verifyHabit(habitId : Int, completedCount : Int, complated : Bool)
-    case patchHabit(habitId : Int, name : String, categorys : [String], totalRepeat : Int, dayOfWeek: [Int])
+    case patchHabit(habitId : Int, name : String, categorys : String, totalRepeat : Int, dayOfWeek: [Int])
 }
 extension HabitAPI : TargetType {
     
@@ -59,7 +59,7 @@ extension HabitAPI : TargetType {
             return .requestPlain
             
         case .weekCreateHabit(let periodType, let name, let categorys, let dayOfWeek):
-            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "dayOfWeek" : dayOfWeek]
+            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "weekOfDay" : dayOfWeek]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
             
         case .patchHabit(_, let name, let categorys, let totalRepeat, let dayOfWeek):
@@ -76,18 +76,16 @@ extension HabitAPI : TargetType {
         return ["Authorization": "Bearer \(TokenManager.shared.token)"]
     }
 }
-struct habitInfoResponse: Codable {//습관 보기 때 사용
-    let habits: [habitInfo]
-}
 struct habitInfo : Codable {//습관 보기 시 사용.
-    let habitId: Int
+    let habit_id: Int
     let periodType : String
     let name: String
     let categorys: [String]
     let totalRepeat: Int?
-    let dayOfWeek: [Int]?
+    let weekOfDay: [Int]?
     let completedCount: Int
     let completed : Bool
+    let streak: Int
 }
 struct response : Codable {//습관 삭제, 수정, 인증, 생성시 사용
     let statusCode : Int?

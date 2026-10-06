@@ -119,7 +119,7 @@ class MyPageViewContoller: UIViewController {
         }
     }
     private func updateUserInfo() {
-        provider.request(.getUserInfo(token: TokenManager.shared.token)) {
+        provider.request(.getUserInfo) {
             switch $0 {
             case .success(let response):
                 if response.statusCode == 200 {

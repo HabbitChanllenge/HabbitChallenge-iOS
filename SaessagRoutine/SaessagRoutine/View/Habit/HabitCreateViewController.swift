@@ -154,7 +154,7 @@ final class HabitCreateViewController: UIViewController {
                 switch $0 {
                 case .success(let res):
                     guard let data = try? res.map(response.self) else { return }
-                    if data.statusCode == 200 {
+                    if data.statusCode == 201 {
                         self.navigationController?.popViewController(animated: true)
                         print("습관 생성 성공 야호")
                         manager.reset()
@@ -174,7 +174,7 @@ final class HabitCreateViewController: UIViewController {
                 switch $0 {
                 case .success(let res):
                     guard let data = try? res.map(response.self) else { return }
-                    if data.statusCode == 200 {
+                    if data.statusCode == 201 {
                         HabitManager.shared.reset()
                         self.navigationController?.popViewController(animated: true)
                     } else if data.statusCode == 400 {

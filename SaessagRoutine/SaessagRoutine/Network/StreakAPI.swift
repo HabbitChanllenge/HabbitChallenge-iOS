@@ -21,9 +21,9 @@ extension StreakAPI: TargetType {
     var path: String {
         switch self {
         case .getStreak:
-            return "/streak/allStreak"
+            return "/streaks/allStreak"
         case .getRank:
-            return "/streak/rank"
+            return "/streaks/rank"
         }
     }
     
@@ -43,12 +43,8 @@ extension StreakAPI: TargetType {
 struct Streak : Codable{//스트릭 보기 시 사용
     let allStreak: Int
 }
-struct Rank: Codable {//랭킹보기 시 사용
-    let status : Int
-    let data : [RankData]?
-}
 struct RankData: Codable {//랭킹 보기 시 사용
     let rank : Int
-    let name : String
-    let streak: Int
+    let userName : String
+    let allStreak: Int
 }

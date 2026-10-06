@@ -53,6 +53,7 @@ class SignUpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         setupLayout()
         buttonChange()
         //buttonChange 함수 초기 호출 해서 기본값 잡기

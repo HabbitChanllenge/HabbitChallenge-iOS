@@ -72,9 +72,11 @@ final class PasswordFindViewController: UIViewController {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.isHidden = true
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         setup()
         
         emailTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)

@@ -13,7 +13,7 @@ import Moya
 class PasswordChangeViewController: UIViewController {
     let provider = MoyaProvider<UserAPI>(plugins: [MoyaLoggingPlugin()])
     
-    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
+    let navBar = NavigationBarView()
     let stackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 24
@@ -43,7 +43,10 @@ class PasswordChangeViewController: UIViewController {
         $0.isEnabled = false
         $0.addTarget(self, action: #selector(changeButtonTapped), for: .touchUpInside)
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white

@@ -52,18 +52,18 @@ extension HabitAPI : TargetType {
     var task: Moya.Task {
         switch self {
         case .dayCreateHabit(let periodType, let name, let categorys, let totalRepeat):
-            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "totalRepeat" : totalRepeat]
+            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categories" : [categorys], "totalRepeat" : totalRepeat]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
             
         case .getHabits, .deleteHabit:
             return .requestPlain
             
         case .weekCreateHabit(let periodType, let name, let categorys, let dayOfWeek):
-            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categorys" : [categorys], "weekOfDay" : dayOfWeek]
+            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categories" : [categorys], "dayOfWeek" : dayOfWeek]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
             
         case .patchHabit(_, let name, let categorys, let totalRepeat, let dayOfWeek):
-            let param : [String : Any] = ["name" : name, "categorys" : [categorys], "totalRepeat" : totalRepeat, "dayOfWeek" : dayOfWeek, "alarm" : alarm]
+            let param : [String : Any] = ["name" : name, "categories" : [categorys], "totalRepeat" : totalRepeat, "dayOfWeek" : dayOfWeek, "alarm" : alarm]
             return .requestParameters(parameters: param, encoding: JSONEncoding.default)
             
         case .verifyHabit(_, let completedCount, let complated):
@@ -76,13 +76,13 @@ extension HabitAPI : TargetType {
         return ["Authorization": "Bearer \(TokenManager.shared.token)"]
     }
 }
-struct habitInfo : Codable {//습관 보기 시 사용.
+struct habitInfo : Codable, Equatable {//습관 보기 시 사용.
     let habit_id: Int
     let periodType : String
     let name: String
-    let categorys: [String]
+    let categories: [String]
     let totalRepeat: Int?
-    let weekOfDay: [Int]?
+    let dayOfWeek: [Int]?
     let completedCount: Int
     let completed : Bool
     let streak: Int

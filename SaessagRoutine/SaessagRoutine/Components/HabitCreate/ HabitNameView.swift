@@ -23,12 +23,10 @@ final class HabitNameView: UIView {
         $0.addTarget(self, action: #selector(textChanger), for: .editingChanged)
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    init(_ text : String) {
+        super.init(frame: .zero)
         setupLayout()
         
-        guard let text = HabitManager.shared.name else { return }
         textField.text = text
     }
 

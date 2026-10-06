@@ -17,9 +17,9 @@ final class NavigationBarView: UIView {//쓸 화면 내에서 자체적으로 �
         $0.font = .systemFont(ofSize: 25, weight: .semibold)
         $0.textColor = UIColor(named: "main700")
     }//전체 스트릭 텍스트
-    init(streak : String) {
+    init() {
         super.init(frame: .zero)
-        streakLabel.text = "\(streak)일"
+        streakLabel.text = "\(StreakManager.shared.allStreak)일"
         setup()
     }
     required init?(coder: NSCoder) {

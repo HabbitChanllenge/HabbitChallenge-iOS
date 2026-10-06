@@ -64,11 +64,14 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         navigationController?.setNavigationBarHidden(true, animated: animated)
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        
+        logInButtonChange()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        
         setupLayout()
-        logInButtonChange()
         emailTextField.textField.addTarget(self, action: #selector(logInButtonChange), for: .editingChanged)
         passwordTextField.textField.addTarget(self, action: #selector(logInButtonChange), for: .editingChanged)
     }

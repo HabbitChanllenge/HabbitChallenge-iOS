@@ -4,40 +4,34 @@ import Then
 
 final class TopRankingView: UIView {
     
-    private let firstNameLabel = UILabel().then {
-        $0.text = "seoyun_1444"
+    let firstNameLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textAlignment = .center
     }
 
-    private let firstDayLabel = UILabel().then {
-        $0.text = "365일"
+    let firstDayLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textColor = UIColor(named: "main900")
         $0.textAlignment = .center
     }
 
     private let secondNameLabel = UILabel().then {
-        $0.text = "seoyun_2444"
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textAlignment = .center
     }
 
     private let secondDayLabel = UILabel().then {
-        $0.text = "277일"
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textColor = UIColor(named: "main900")
         $0.textAlignment = .center
     }
 
     private let thirdNameLabel = UILabel().then {
-        $0.text = "seoyun_3444"
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textAlignment = .center
     }
 
     private let thirdDayLabel = UILabel().then {
-        $0.text = "244일"
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textColor = UIColor(named: "main900")
         $0.textAlignment = .center
@@ -172,20 +166,13 @@ final class TopRankingView: UIView {
         }
     }
     
-    func configure(
-        firstName: String,
-        firstDays: Int,
-        secondName: String,
-        secondDays: Int,
-        thirdName: String,
-        thirdDays: Int
-    ) {
+    func configure( firstName: String, firstDays: Int, secondName: String, secondDays: Int, thirdName: String, thirdDays: Int) {
         firstNameLabel.text = firstName
         firstDayLabel.text = "\(firstDays)일"
-        
+                
         secondNameLabel.text = secondName
         secondDayLabel.text = "\(secondDays)일"
-        
+                
         thirdNameLabel.text = thirdName
         thirdDayLabel.text = "\(thirdDays)일"
     }

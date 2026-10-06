@@ -111,7 +111,7 @@ final class HabitCardView: UIView {
         }
         patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
-        let isCompleted = (didTimes >= times)
+        let isCompleted = HabitManager.shared.isCompleted
         if isCompleted {//달성시
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")

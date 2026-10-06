@@ -13,7 +13,7 @@ import Moya
 final class HabitEditViewController: UIViewController {
     private let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
 
-    private let topBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
+    private let topBar = NavigationBarView()
 
     private let scrollView = UIScrollView()
     private let stackView = UIStackView().then {
@@ -21,7 +21,7 @@ final class HabitEditViewController: UIViewController {
         $0.spacing = 19
     }
     
-    private let habitNameView = HabitNameView()
+    private let habitNameView = HabitNameView("")
     private let repeatCycleView = RepeatCycleView()
     private let categoryView = CategoryView()
     private let verificationCountView = VerificationCountView()
@@ -52,10 +52,13 @@ final class HabitEditViewController: UIViewController {
     private var isVerificationSelected = false
     private var isWeekDaySelected = false
     private var isNotificationSelected = true
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        topBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .white
 
         habitEditButton.createButton.setTitle("수정하기", for: .normal)

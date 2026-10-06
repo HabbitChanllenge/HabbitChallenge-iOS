@@ -22,9 +22,13 @@ class HabitManager {
     var repeatDay: [Int]? //무슨 요일에 하는지. 일주일 습관 할 때만 사용
     
     var didDays = 44 //몇 일, 몇 주 표시. 카드 제작 때 사용
-    var didCount: Int = 0 
+    var didCount: Int = 0
+    var isCompleted: Bool = false
     
     func reset() {
+        isCompleted = false
+        totalHabits = 0
+        didHabits = 0
         name = nil
         periodType = nil
         category = nil

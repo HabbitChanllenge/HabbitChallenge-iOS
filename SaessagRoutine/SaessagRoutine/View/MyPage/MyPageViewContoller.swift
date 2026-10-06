@@ -11,10 +11,10 @@ import Then
 import Moya
 
 class MyPageViewContoller: UIViewController {
-    let provider = MoyaProvider<UserAPI>()
+    let provider = MoyaProvider<UserAPI>(plugins:[MoyaLoggingPlugin()])
     let authProvider = MoyaProvider<AuthAPI>(plugins:[MoyaLoggingPlugin()])
     let editVC = MyPageEditViewController()
-    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
+    let navBar = NavigationBarView()
     
     let profileImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill
@@ -48,11 +48,12 @@ class MyPageViewContoller: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        
+        navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
         updateUserInfo()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         setupView()
     }
     

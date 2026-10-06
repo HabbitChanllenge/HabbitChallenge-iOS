@@ -14,7 +14,7 @@ class MyPageEditViewController: UIViewController {
     let provider = MoyaProvider<UserAPI>(plugins:[MoyaLoggingPlugin()])
     let deleteProvider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     
-    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
+    let navBar = NavigationBarView()
     
     let profileImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill
@@ -50,6 +50,8 @@ class MyPageEditViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
         provider.request(.getUserInfo) {
             switch $0 {
             case .success(let res):
@@ -64,6 +66,8 @@ class MyPageEditViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        
         setupView()
     }
     

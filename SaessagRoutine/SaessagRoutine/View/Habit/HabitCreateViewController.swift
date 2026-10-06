@@ -6,7 +6,7 @@ import Moya
 final class HabitCreateViewController: UIViewController {
     private let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
     
-    private let topBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
+    private let topBar = NavigationBarView()
     
     private let scrollView = UIScrollView()
     private let stackView = UIStackView().then {
@@ -14,7 +14,7 @@ final class HabitCreateViewController: UIViewController {
         $0.spacing = 19
     }
 
-    private let habitNameView = HabitNameView()
+    private let habitNameView = HabitNameView("")
     private let repeatCycleView = RepeatCycleView()
     private let categoryView = CategoryView()
     private let verificationCountView = VerificationCountView()
@@ -39,16 +39,21 @@ final class HabitCreateViewController: UIViewController {
     private var isWeekDaySelected = false
     private var isNotificationSelected = true
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        HabitManager.shared.reset()
+        
+        topBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+        updateCreateButton()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
         habitCreateButton.createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
-
         setupLayout()
         setupCycleAction()
         setupSelectionAction()
-        updateCreateButton()
     }
     
     private func setupCycleAction() {

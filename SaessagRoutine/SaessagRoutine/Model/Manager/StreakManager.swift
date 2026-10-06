@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 class StreakManager {
     static let shared = StreakManager()
     private init(){}

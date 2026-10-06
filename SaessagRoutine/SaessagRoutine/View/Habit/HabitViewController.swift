@@ -12,10 +12,8 @@ import Moya
 
 class HabitViewController: UIViewController {
     let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
-    
-    var habitList: [Habit] = MockHabitCard.habit
-    
-    let topBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
+        
+    let topBar = NavigationBarView()
     let createButton = UIButton(type: .system).then {
         $0.imageView?.contentMode = .scaleAspectFit
         $0.setImage(UIImage(systemName: "plus"), for: .normal)
@@ -60,44 +58,56 @@ class HabitViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        topBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
         API()
-        setLayout()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        setLayout()
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        HabitManager.shared.reset()
     }
     private func API() {
         provider.request(.getHabits) {
             switch $0 {
             case .success(let res):
-                guard let data = try? res.map([habitInfo].self)
-                else {
-                    print("디코딩 실패. 습관 없을 수 있음")
+                guard let data = try? res.map([habitInfo].self) else { print("디코딩 실패"); return }
+                if data == [] {
+                    self.cardStackView.subviews.forEach { $0.removeFromSuperview() }
+                    
+                    self.cardStackView.addArrangedSubview(self.habitProgressCard)
+                    self.cardStackView.addArrangedSubview(self.noHabitCard)
+                    
                     self.noHabitCard.isHidden = false
                     self.habitProgressCard.isHidden = true
+                    
                     return
-                }
-                
+                }//습관 없을 때
                 self.noHabitCard.isHidden = true
                 self.habitProgressCard.isHidden = false
                 
-                var manager = HabitManager.shared
+                let manager = HabitManager.shared
                 manager.totalHabits = data.count//전체 습관 수 저장
                 
                 self.cardStackView.subviews.forEach { $0.removeFromSuperview() }
                 self.cardStackView.addArrangedSubview(self.habitProgressCard)
                 
                 for i in 0..<data.count {
-                    var habit = data[i]
+                    let habit = data[i]
                     
                     manager.name = habit.name
-                    manager.category = habit.categorys.first
+                    manager.category = habit.categories.first
                     manager.didCount = habit.completedCount
                     manager.id = habit.habit_id
                     manager.periodType = habit.periodType
                     manager.didDays = habit.streak
-                    habit.weekOfDay?.forEach {
+                    manager.repeatCount = habit.totalRepeat
+                    manager.isCompleted = habit.completed
+                    habit.dayOfWeek?.forEach {
                         manager.repeatDay?.append(Int($0))
                     }
                     self.createCard(id: i)

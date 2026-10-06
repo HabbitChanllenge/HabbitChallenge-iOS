@@ -12,9 +12,9 @@ import Moya
 
 class HomeViewController: UIViewController {
     let hProvider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
-    let habitList: [Habit] = MockHabitCard.habit
-
-    let navBar = NavigationBarView(streak: String(StreakManager.shared.allStreak))
+    let rProvider = MoyaProvider<StreakAPI>(plugins: [MoyaLoggingPlugin()])
+    
+    let navBar : NavigationBarView = NavigationBarView()
     
     let scrollView = UIScrollView()
     let wholeStack = UIStackView().then {
@@ -100,13 +100,21 @@ class HomeViewController: UIViewController {
         return card
     }()
     var progressCard : HabitProgressCardView = HabitProgressCardView()
-    
+    //--------------------------------------------------------------------------
+    override func viewWillAppear(_ animated: Bool) {
+        navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+        API()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        API()
         setLayout()
     }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        HabitManager.shared.reset()
+    }
+    //---------------------------------------------------------------------------
     private func setHabitCards(id: Int) {
         let manager = HabitManager.shared
         
@@ -152,6 +160,7 @@ class HomeViewController: UIViewController {
                 }
             }
         }
+        manager.reset()
     }//습관 카드 생성 함수
     private func setLayout() {
         view.addSubview(navBar)
@@ -227,10 +236,13 @@ class HomeViewController: UIViewController {
             case .success(let res):
                 guard let data = try? res.map([habitInfo].self) else { return }
                 var manager = HabitManager.shared
-                manager.totalHabits = data.count//전체 습관 수 저장
+                self.habitStack.subviews.forEach{ $0.removeFromSuperview() }
+                
                 let cnt = (data.count >= 3) ? 3 : data.count
                 guard manager.totalHabits > 0 else {
+                    self.habitStack.addArrangedSubview(self.noHabitCard)
                     self.noHabitCard.isHidden = false
+                    
                     return
                 }
                 self.noHabitCard.isHidden = true
@@ -239,13 +251,14 @@ class HomeViewController: UIViewController {
                     var habit = data[i]
                     
                     manager.name = habit.name
-                    manager.category = habit.categorys.first
+                    manager.category = habit.categories.first
                     manager.didCount = habit.completedCount
                     manager.id = habit.habit_id
                     manager.didDays = habit.streak
                     manager.periodType = habit.periodType
                     manager.repeatCount = habit.totalRepeat
-                    habit.weekOfDay?.forEach {
+                    manager.isCompleted = habit.completed
+                    habit.dayOfWeek?.forEach {
                         manager.repeatDay?.append(Int($0))
                     }
                     self.setHabitCards(id: i)
@@ -253,6 +266,27 @@ class HomeViewController: UIViewController {
                 
             case .failure(let err):
                 print(err)
+            }
+        }
+        
+        rProvider.request(.getRank) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map([RankData].self) else { return }
+                if data.count >= 3 {//유저가 3명보다 많거나 3명일 시
+                    self.top3RankCard.configure(firstName: data[0].userName, firstDays: data[0].allStreak, secondName: data[1].userName, secondDays: data[1].allStreak, thirdName: data[2].userName, thirdDays: data[2].allStreak)
+                } else {//3명보다 적을 시
+                    self.top3RankCard.firstNameLabel.text = data[0].userName
+                    self.top3RankCard.firstDayLabel.text = "\(data[0].allStreak)일"
+                    //1등은 무조건 있으니까 일단 설정
+                    if data.count == 2 {
+                        self.top3RankCard.firstNameLabel.text = data[1].userName
+                        self.top3RankCard.firstDayLabel.text = "\(data[1].allStreak)일"
+                    }
+                    return//이 밑은 3명 이상일 때에만 실행 할거다.
+                }
+            case .failure(let err):
+                return
             }
         }
     }

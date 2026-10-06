@@ -85,6 +85,8 @@ class HabitViewController: UIViewController {
                 var manager = HabitManager.shared
                 manager.totalHabits = data.count//전체 습관 수 저장
                 
+                self.cardStackView.subviews.forEach { $0.removeFromSuperview() }
+                self.cardStackView.addArrangedSubview(self.habitProgressCard)
                 
                 for i in 0..<data.count {
                     var habit = data[i]

@@ -134,6 +134,7 @@ final class HabitEditViewController: UIViewController {
                     } else if data.statusCode == 401 {
                         let alert = UIAlertController(title: "로그인이 필요합니다.", message: "", preferredStyle: .alert)
                         let cansle = UIAlertAction(title: "확인", style: .cancel)
+                        alert.addAction(cansle)
                         self.present(alert, animated: true)
                     }
                 case .failure:

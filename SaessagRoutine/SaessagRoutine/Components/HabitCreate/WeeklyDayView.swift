@@ -4,6 +4,8 @@ import Then
 
 final class WeeklyDayView: UIView {
     var onDaySelected: ((Bool) -> Void)?
+    private(set) var selectedDays: Set<Int> = []
+    var dayButtons: [UIButton] = []
 
     private let titleLabel = UILabel().then {
         $0.text = "인증 요일"
@@ -11,15 +13,23 @@ final class WeeklyDayView: UIView {
         $0.textColor = UIColor(named: "gray900")
     }
 
-    var dayButtons: [UIButton] = []
-
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         setupUI()
     }
+
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError("init(coder: ) has not been implemented")
+    }
+
+    func configure(selectedDays: [Int]) {
+        self.selectedDays = Set(selectedDays)
+        dayButtons.forEach { button in
+            let day = weekNumber(rawValue: button.currentTitle ?? "")?.number
+            let selected = day.map(self.selectedDays.contains) ?? false
+            button.backgroundColor = UIColor(named: selected ? "main600" : "main300")
+            button.setTitleColor(selected ? .white : UIColor(named: "main800"), for: .normal)
+        }
     }
 
     private func makeButton(_ title: String) -> UIButton {
@@ -36,96 +46,26 @@ final class WeeklyDayView: UIView {
     }
 
     private func setupUI() {
-        let firstRow = UIStackView(
-            arrangedSubviews: [
-                makeButton("월요일"),
-                makeButton("화요일"),
-                makeButton("수요일")
-            ]
-        ).then {
-            $0.axis = .horizontal
-            $0.spacing = 16
-        }
-
-        let secondRow = UIStackView(
-            arrangedSubviews: [
-                makeButton("목요일"),
-                makeButton("금요일"),
-                makeButton("토요일")
-            ]
-        ).then {
-            $0.axis = .horizontal
-            $0.spacing = 16
-        }
-
-        let thirdRow = UIStackView(
-            arrangedSubviews: [
-                makeButton("일요일")
-            ]
-        ).then {
-            $0.axis = .horizontal
-            $0.spacing = 16
-        }
-        
-        addSubview(titleLabel)
-        addSubview(firstRow)
-        addSubview(secondRow)
-        addSubview(thirdRow)
-
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview().inset(24)
-        }
-
-        firstRow.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
-            $0.leading.equalToSuperview().inset(24)
-            $0.height.equalTo(44)
-        }
-        secondRow.snp.makeConstraints {
-            $0.top.equalTo(firstRow.snp.bottom).offset(16)
-            $0.leading.equalToSuperview().inset(24)
-            $0.height.equalTo(44)
-        }
-        thirdRow.snp.makeConstraints {
-            $0.top.equalTo(secondRow.snp.bottom).offset(16)
-            $0.leading.equalToSuperview().inset(24)
-            $0.height.equalTo(44)
-            $0.bottom.equalToSuperview()
-        }
-
-        dayButtons.forEach {
-            $0.snp.makeConstraints {
-                $0.width.equalTo(108)
-                $0.height.equalTo(44)
-            }
-        }
+        let firstRow = UIStackView(arrangedSubviews: [makeButton("월요일"), makeButton("화요일"), makeButton("수요일")]).then { $0.axis = .horizontal; $0.spacing = 16 }
+        let secondRow = UIStackView(arrangedSubviews: [makeButton("목요일"), makeButton("금요일"), makeButton("토요일")]).then { $0.axis = .horizontal; $0.spacing = 16 }
+        let thirdRow = UIStackView(arrangedSubviews: [makeButton("일요일")]).then { $0.axis = .horizontal; $0.spacing = 16 }
+        [titleLabel, firstRow, secondRow, thirdRow].forEach(addSubview)
+        titleLabel.snp.makeConstraints { $0.top.equalToSuperview(); $0.leading.equalToSuperview().inset(24) }
+        firstRow.snp.makeConstraints { $0.top.equalTo(titleLabel.snp.bottom).offset(19); $0.leading.equalToSuperview().inset(24); $0.height.equalTo(44) }
+        secondRow.snp.makeConstraints { $0.top.equalTo(firstRow.snp.bottom).offset(16); $0.leading.equalToSuperview().inset(24); $0.height.equalTo(44) }
+        thirdRow.snp.makeConstraints { $0.top.equalTo(secondRow.snp.bottom).offset(16); $0.leading.equalToSuperview().inset(24); $0.height.equalTo(44); $0.bottom.equalToSuperview() }
+        dayButtons.forEach { $0.snp.makeConstraints { $0.width.equalTo(108); $0.height.equalTo(44) } }
     }
 
     @objc private func dayTapped(_ sender: UIButton) {
-
-        let isSelected = sender.backgroundColor == UIColor(named: "main600")
-
-        if isSelected {//선택 됐었음 -> 선택 안됨으로 바뀜
-            sender.backgroundColor = UIColor(named: "main300")
-            sender.setTitleColor(UIColor(named: "main800"), for: .normal)
-            
-            let text = sender.currentTitle ?? ""
-            let index = weekNumber(rawValue: text)?.number
-            HabitManager.shared.repeatDay?.removeAll(where: {$0 == index})
-        } else {//선택 안됐었음. -> 선택으로 바뀜
-            sender.backgroundColor = UIColor(named: "main600")
-            sender.setTitleColor(.white, for: .normal)
-            
-            let text = sender.currentTitle ?? ""
-            guard let index = weekNumber(rawValue: text)?.number else { return }
-            if HabitManager.shared.repeatDay == nil { HabitManager.shared.repeatDay = [] }
-            HabitManager.shared.repeatDay?.append(index)
+        guard let day = weekNumber(rawValue: sender.currentTitle ?? "")?.number else { return }
+        if selectedDays.contains(day) {
+            selectedDays.remove(day)
+        } else {
+            selectedDays.insert(day)
         }
-
-        let hasSelectedDay = dayButtons.contains {
-            $0.backgroundColor == UIColor(named: "main600")
-        }
-        onDaySelected?(hasSelectedDay)
+        configure(selectedDays: Array(selectedDays))
+        HabitManager.shared.repeatDay = selectedDays.sorted()
+        onDaySelected?(!selectedDays.isEmpty)
     }
 }

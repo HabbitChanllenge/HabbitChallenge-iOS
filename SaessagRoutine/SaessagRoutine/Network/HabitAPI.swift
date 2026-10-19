@@ -1,25 +1,19 @@
-//
-//  File.swift
-//  SaessagRoutine
-//
-//  Created by Seoyun Jin on 9/4/26.
-//
-
 import Foundation
 import Moya
 import Alamofire
 
 enum HabitAPI {
-    case dayCreateHabit(periodType : String, name : String, categorys : String, totalRepeat : Int)
-    case weekCreateHabit(periodType : String, name : String, categorys : String, dayOfWeek: [Int])
+    case dayCreateHabit(periodType: String, name: String, categorys: String, totalRepeat: Int)
+    case weekCreateHabit(periodType: String, name: String, categorys: String, dayOfWeek: [Int])
     case getHabits
-    case deleteHabit(habitId : Int)
-    case verifyHabit(habitId : Int, completedCount : Int, complated : Bool)
-    case patchHabit(habitId : Int, name : String, categorys : String, totalRepeat : Int, dayOfWeek: [Int])
+    case deleteHabit(habitId: Int)
+    case verifyHabit(habitId: Int, completedCount: Int, complated: Bool)
+    case patchHabit(habitId: Int, request: HabitUpdateRequest)
 }
-extension HabitAPI : TargetType {
-    
-    var baseURL: URL { return Secrets.baseURL }
+
+extension HabitAPI: TargetType {
+    var baseURL: URL { Secrets.baseURL }
+
     var path: String {
         switch self {
         case .dayCreateHabit:
@@ -28,14 +22,13 @@ extension HabitAPI : TargetType {
             return "/habits/week"
         case .getHabits:
             return "/habits"
-        case .deleteHabit(let habitId):
-            return "/habits/\(habitId)"
-        case .patchHabit(let habitId, _, _, _, _):
+        case .deleteHabit(let habitId), .patchHabit(let habitId, _):
             return "/habits/\(habitId)"
         case .verifyHabit(let habitId, _, _):
             return "/habit/\(habitId)"
         }
     }
+
     var method: Moya.Method {
         switch self {
         case .dayCreateHabit, .weekCreateHabit, .verifyHabit:
@@ -48,46 +41,51 @@ extension HabitAPI : TargetType {
             return .delete
         }
     }
-    
+
     var task: Moya.Task {
         switch self {
         case .dayCreateHabit(let periodType, let name, let categorys, let totalRepeat):
-            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categories" : [categorys], "totalRepeat" : totalRepeat]
-            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
-            
+            return .requestParameters(parameters: ["periodType": periodType, "name": name, "categories": [categorys], "totalRepeat": totalRepeat], encoding: JSONEncoding.default)
+        case .weekCreateHabit(let periodType, let name, let categorys, let dayOfWeek):
+            return .requestParameters(parameters: ["periodType": periodType, "name": name, "categories": [categorys], "dayOfWeek": dayOfWeek], encoding: JSONEncoding.default)
         case .getHabits, .deleteHabit:
             return .requestPlain
-            
-        case .weekCreateHabit(let periodType, let name, let categorys, let dayOfWeek):
-            let param : [String : Any] = ["periodType" : periodType, "name" : name, "categories" : [categorys], "dayOfWeek" : dayOfWeek]
-            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
-            
-        case .patchHabit(_, let name, let categorys, let totalRepeat, let dayOfWeek):
-            let param : [String : Any] = ["name" : name, "categories" : [categorys], "totalRepeat" : totalRepeat, "dayOfWeek" : dayOfWeek, "alarm" : alarm]
-            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
-            
+        case .patchHabit(_, let request):
+            return .requestJSONEncodable(request)
         case .verifyHabit(_, let completedCount, let complated):
-            let param : [String : Any] = ["completedCount" : completedCount, "complated" : complated]
-            return .requestParameters(parameters: param, encoding: JSONEncoding.default)
+            return .requestParameters(parameters: ["completedCount": completedCount, "complated": complated], encoding: JSONEncoding.default)
         }
     }
-    
-    var headers: [String : String]? {
-        return ["Authorization": "Bearer \(TokenManager.shared.token)"]
+
+    var headers: [String: String]? {
+        ["Authorization": "Bearer \(TokenManager.shared.token)"]
     }
 }
-struct habitInfo : Codable, Equatable {//습관 보기 시 사용.
+
+struct habitInfo: Codable, Equatable {
     let habit_id: Int
-    let periodType : String
+    let periodType: String
     let name: String
     let categories: [String]
     let totalRepeat: Int?
     let dayOfWeek: [Int]?
     let completedCount: Int
-    let completed : Bool
+    let completed: Bool
     let streak: Int
 }
-struct response : Codable {//습관 삭제, 수정, 인증, 생성시 사용
-    let statusCode : Int?
+
+struct HabitUpdateRequest: Encodable {
+    let name: String?
+    let categories: [String]?
+    let totalRepeat: Int?
+    let dayOfWeek: [Int]?
+
+    var hasChanges: Bool {
+        name != nil || categories != nil || totalRepeat != nil || dayOfWeek != nil
+    }
+}
+
+struct response: Codable {
+    let statusCode: Int?
     let message: String
 }

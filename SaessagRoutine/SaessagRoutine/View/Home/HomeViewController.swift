@@ -115,11 +115,10 @@ class HomeViewController: UIViewController {
         HabitManager.shared.reset()
     }
     //---------------------------------------------------------------------------
-    private func setHabitCards(id: Int) {
-        let manager = HabitManager.shared
+    private func setHabitCards(habit: habitInfo) {
         
         var dayStr = ""
-        manager.repeatDay?.forEach {
+        habit.dayOfWeek?.forEach {
             switch $0 {
             case 1: dayStr += "월요일 "
             case 2: dayStr += "화요일 "
@@ -134,33 +133,33 @@ class HomeViewController: UIViewController {
         //요일 문자열 설정
         
         let card = HabitCardView(
-            id: manager.id,
-            titleText: manager.name!,
-            days: manager.didDays,
-            times: manager.repeatCount!,
-            didTimes: manager.didDays,
-            category: manager.category!,
-            cycle: manager.periodType!,
+            id: habit.habit_id,
+            titleText: habit.name,
+            days: habit.streak,
+            times: habit.totalRepeat ?? 0,
+            didTimes: habit.completedCount,
+            category: habit.categories.first ?? "",
+            cycle: habit.periodType,
             day: dayStr
         )
         
         card.onStatusChanged = {
+            //습관 인증 API 연동
             let homeVC = self
             self.progressCard.updateBar()
         }
         habitStack.addArrangedSubview(card)
-        card.onPatchButtonTapped = {[weak self] in//수정버튼 클릭 시 실행 클로저
-            guard let self = self,
-            let tabBarController = self.tabBarController else { return }
+        
+        card.onPatchButtonTapped = { _ in//수정버튼 클릭 시 실행 클로저
+            guard let tabBarController = self.tabBarController else { return }
             tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
             
             DispatchQueue.main.async {
                 if let nav = tabBarController.selectedViewController as? UINavigationController {
-                    nav.pushViewController(HabitEditViewController(),animated: false)
+                    nav.pushViewController(HabitEditViewController(habit: habit), animated: false)
                 }
             }
         }
-        manager.reset()
     }//습관 카드 생성 함수
     private func setLayout() {
         view.addSubview(navBar)
@@ -235,11 +234,10 @@ class HomeViewController: UIViewController {
             switch $0 {
             case .success(let res):
                 guard let data = try? res.map([habitInfo].self) else { return }
-                var manager = HabitManager.shared
-                self.habitStack.subviews.forEach{ $0.removeFromSuperview() }
+                self.habitStack.subviews.forEach{ $0.removeFromSuperview() }//스택 초기화
                 
                 let cnt = (data.count >= 3) ? 3 : data.count
-                guard manager.totalHabits > 0 else {
+                guard !data.isEmpty else {
                     self.habitStack.addArrangedSubview(self.noHabitCard)
                     self.noHabitCard.isHidden = false
                     
@@ -247,21 +245,8 @@ class HomeViewController: UIViewController {
                 }
                 self.noHabitCard.isHidden = true
                 
-                for i in 0..<cnt {
-                    var habit = data[i]
-                    
-                    manager.name = habit.name
-                    manager.category = habit.categories.first
-                    manager.didCount = habit.completedCount
-                    manager.id = habit.habit_id
-                    manager.didDays = habit.streak
-                    manager.periodType = habit.periodType
-                    manager.repeatCount = habit.totalRepeat
-                    manager.isCompleted = habit.completed
-                    habit.dayOfWeek?.forEach {
-                        manager.repeatDay?.append(Int($0))
-                    }
-                    self.setHabitCards(id: i)
+                for habit in data.prefix(cnt) {
+                    self.setHabitCards(habit: habit)
                 }
                 
             case .failure(let err):

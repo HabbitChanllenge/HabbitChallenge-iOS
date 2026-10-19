@@ -23,6 +23,8 @@ final class HabitCardView: UIView {
     var cardHeight = 116
     var times = 0
     var didTimes = 0
+    let id: Int
+    let days: Int
     
     // 수정함: 습관 달성 상태나 체크박스가 변경되었음을 HomeViewController에 알리기 위한 클로저 추가
     var onStatusChanged: (() -> ())?
@@ -79,7 +81,7 @@ final class HabitCardView: UIView {
         $0.layer.cornerRadius = 10
         $0.addTarget(self, action: #selector(verificationButtonTapped), for: .touchUpInside)
     }//인증버튼
-    var onPatchButtonTapped: (() -> Void)?
+    var onPatchButtonTapped: ((Int) -> Void)?
     
     let lineView = UIView().then {
         $0.backgroundColor = UIColor(named: "gray600")
@@ -87,8 +89,11 @@ final class HabitCardView: UIView {
     }//펼쳤을 때 중간에 가로 선
     
     init(id: Int, titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : String?) {
-        super.init(frame: .zero)
+        self.id = id
+        self.days = days
         self.didTimes = didTimes
+        super.init(frame: .zero)
+        
         
         onStatusChanged?()
         setAttributes(titleText, days, times, didTimes, category, cycle, day)
@@ -181,7 +186,7 @@ final class HabitCardView: UIView {
     }//레이아웃 잡기
     
     @objc func patchButtonTapped() {
-        onPatchButtonTapped?()//클로저 사용
+        onPatchButtonTapped?(self.id)//클로저 사용
     }//수정 버튼 클릭 시
 
     @objc func verificationButtonTapped() {

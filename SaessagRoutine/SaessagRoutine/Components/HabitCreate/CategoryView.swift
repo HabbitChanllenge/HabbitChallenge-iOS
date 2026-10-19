@@ -4,6 +4,7 @@ import Then
 
 final class CategoryView: UIView {
     var onCategorySelected: (() -> Void)?
+    private(set) var selectedCategory: String?
 
     private let titleLabel = UILabel().then {
         $0.text = "카테고리"
@@ -12,23 +13,17 @@ final class CategoryView: UIView {
     }
 
     private var categoryButtons: [UIButton] = []
-
     private let etcButton = UIButton(type: .system).then {
-            $0.setTitle("기타", for: .normal)
-            $0.setTitleColor(UIColor(named: "main800"), for: .normal)
-            $0.backgroundColor = UIColor(named: "main300")
-            $0.layer.cornerRadius = 15
-            $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
-        }
-
+        $0.setTitle("기타", for: .normal)
+        $0.layer.cornerRadius = 15
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
+    }
     private let etcTextField = UITextField().then {
         $0.placeholder = "카테고리 입력"
         $0.font = .systemFont(ofSize: 12)
-        $0.textColor = UIColor(named: "gray900")
         $0.backgroundColor = UIColor(named: "main300")
         $0.addTarget(self, action: #selector(etcTextFieldDidChange), for: .editingChanged)
     }
-
     private let etcContainer = UIView().then {
         $0.backgroundColor = UIColor(named: "main300")
         $0.layer.cornerRadius = 15
@@ -37,9 +32,7 @@ final class CategoryView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         setupUI()
-        setupLayout()
         setupAction()
     }
 
@@ -47,163 +40,79 @@ final class CategoryView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func configure(category: String) {
+        selectedCategory = category
+        if let button = categoryButtons.first(where: { $0.currentTitle == category }) {
+            applySelection(button)
+        } else {
+            etcTextField.text = category
+            applySelection(etcButton)
+        }
+    }
+
     private func makeButton(_ title: String) -> UIButton {
         let button = UIButton(type: .system).then {
             $0.setTitle(title, for: .normal)
             $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
             $0.layer.cornerRadius = 15
-            $0.backgroundColor = UIColor(named: "main300")
-            $0.setTitleColor(
-                UIColor(named: "main800"),
-                for: .normal
-            )
         }
-
-        button.addTarget(
-            self,
-            action: #selector(categoryTapped(_:)),
-            for: .touchUpInside
-        )
-
+        button.addTarget(self, action: #selector(categoryTapped(_:)), for: .touchUpInside)
         categoryButtons.append(button)
-
         return button
     }
 
     private func setupUI() {
-
         addSubview(titleLabel)
-
-        let firstRow = UIStackView(
-            arrangedSubviews: [
-                makeButton("생활"),
-                makeButton("운동"),
-                makeButton("공부")
-            ]
-        ).then {
-            $0.axis = .horizontal
-            $0.spacing = 20
+        let firstRow = UIStackView(arrangedSubviews: [makeButton("생활"), makeButton("운동"), makeButton("공부")]).then {
+            $0.axis = .horizontal; $0.spacing = 20
         }
-
-        let secondRow = UIStackView(
-            arrangedSubviews: [
-                makeButton("식습관"),
-                makeButton("마음건강"),
-                makeButton("재정관리")
-            ]
-        ).then {
-            $0.axis = .horizontal
-            $0.spacing = 20
+        let secondRow = UIStackView(arrangedSubviews: [makeButton("식습관"), makeButton("마음건강"), makeButton("재정관리")]).then {
+            $0.axis = .horizontal; $0.spacing = 20
         }
-
         let cleaningButton = makeButton("청결")
-
         etcContainer.addSubview(etcButton)
         etcContainer.addSubview(etcTextField)
+        [firstRow, secondRow, cleaningButton, etcContainer].forEach(addSubview)
 
-        addSubview(firstRow)
-        addSubview(secondRow)
-        addSubview(cleaningButton)
-        addSubview(etcContainer)
-
-        firstRow.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(19)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.height.equalTo(44)
-        }
-
-        secondRow.snp.makeConstraints {
-            $0.top.equalTo(firstRow.snp.bottom).offset(16)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.height.equalTo(44)
-        }
-
-        // 청결 108 x 44
-        cleaningButton.snp.makeConstraints {
-            $0.top.equalTo(secondRow.snp.bottom).offset(16)
-            $0.leading.equalToSuperview().inset(24)
-            $0.width.equalTo(108)
-            $0.height.equalTo(44)
-        }
-
-        // 기타 + 입력창
-        etcContainer.snp.makeConstraints {
-            $0.top.equalTo(cleaningButton)
-            $0.leading.equalTo(cleaningButton.snp.trailing).offset(16)
-            $0.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview()
-            $0.height.equalTo(44)
-        }
-
-        categoryButtons.forEach {
-            $0.snp.makeConstraints {
-                $0.width.equalTo(108)
-                $0.height.equalTo(44)
-            }
-        }
-
-        etcButton.snp.makeConstraints {
-            $0.top.leading.bottom.equalToSuperview()
-            $0.width.equalTo(108)
-        }
-
-        etcTextField.snp.makeConstraints {
-            $0.leading.equalTo(etcButton.snp.trailing).offset(8)
-            $0.top.bottom.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(10)
-            $0.bottom.equalToSuperview()
-        }
-    }
-
-    private func setupLayout() {
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview().inset(24)
-            $0.height.equalTo(40)
-        }
+        titleLabel.snp.makeConstraints { $0.top.equalToSuperview(); $0.leading.equalToSuperview().inset(24); $0.height.equalTo(40) }
+        firstRow.snp.makeConstraints { $0.top.equalTo(titleLabel.snp.bottom).offset(19); $0.leading.trailing.equalToSuperview().inset(24); $0.height.equalTo(44) }
+        secondRow.snp.makeConstraints { $0.top.equalTo(firstRow.snp.bottom).offset(16); $0.leading.trailing.equalToSuperview().inset(24); $0.height.equalTo(44) }
+        cleaningButton.snp.makeConstraints { $0.top.equalTo(secondRow.snp.bottom).offset(16); $0.leading.equalToSuperview().inset(24); $0.width.equalTo(108); $0.height.equalTo(44) }
+        etcContainer.snp.makeConstraints { $0.top.equalTo(cleaningButton); $0.leading.equalTo(cleaningButton.snp.trailing).offset(16); $0.trailing.equalToSuperview().inset(24); $0.height.equalTo(44); $0.bottom.equalToSuperview() }
+        categoryButtons.forEach { $0.snp.makeConstraints { $0.width.equalTo(108); $0.height.equalTo(44) } }
+        etcButton.snp.makeConstraints { $0.top.leading.bottom.equalToSuperview(); $0.width.equalTo(108) }
+        etcTextField.snp.makeConstraints { $0.leading.equalTo(etcButton.snp.trailing).offset(8); $0.top.bottom.equalToSuperview(); $0.trailing.equalToSuperview().inset(10) }
+        resetAppearance()
     }
 
     private func setupAction() {
-        etcButton.addTarget(
-            self,
-            action: #selector(categoryTapped(_:)),
-            for: .touchUpInside
-        )
+        etcButton.addTarget(self, action: #selector(categoryTapped(_:)), for: .touchUpInside)
+    }
+
+    private func resetAppearance() {
+        (categoryButtons + [etcButton]).forEach {
+            $0.backgroundColor = UIColor(named: "main300")
+            $0.setTitleColor(UIColor(named: "main800"), for: .normal)
+        }
+    }
+
+    private func applySelection(_ button: UIButton) {
+        resetAppearance()
+        button.backgroundColor = UIColor(named: "main600")
+        button.setTitleColor(.white, for: .normal)
     }
 
     @objc private func categoryTapped(_ sender: UIButton) {
-        var category = ""
-        if sender.titleLabel?.text == "기타" {
-            category = etcTextField.text ?? ""
-        } else {
-            category = (sender.titleLabel?.text)!
-        }
+        let category = sender == etcButton ? (etcTextField.text ?? "") : (sender.currentTitle ?? "")
+        selectedCategory = category
         HabitManager.shared.category = category
-        //기타 버튼 클릭 시 카테고리 텍스트를 텍스트필드의 텍스트로 변경. 아닐 시 카테고리 텍스트를 버튼 텍스트로 변경
-        
-        categoryButtons.forEach {
-            $0.backgroundColor = UIColor(named: "main300")
-            $0.setTitleColor(
-                UIColor(named: "main800"),
-                for: .normal
-            )
-        }
-        etcButton.backgroundColor = UIColor(named: "main300")
-        etcButton.setTitleColor(
-            UIColor(named: "main800"),
-            for: .normal
-        )
-        //다른 버튼들 배경색, 글씨 색 다 선택 안됨으로 바꿈
-        
-        sender.backgroundColor = UIColor(named: "main600")
-        sender.setTitleColor(.white, for: .normal)
-        //클릭된 버튼만 배경색, 글씨색 선택됨으로 바꿈
-
+        applySelection(sender)
         onCategorySelected?()
     }
+
     @objc private func etcTextFieldDidChange() {
-        if etcButton.backgroundColor == UIColor(named: "main600") {
-            HabitManager.shared.category = etcTextField.text ?? ""
-        }
+        guard etcButton.backgroundColor == UIColor(named: "main600") else { return }
+        selectedCategory = etcTextField.text ?? ""
+        HabitManager.shared.category = selectedCategory
     }
 }

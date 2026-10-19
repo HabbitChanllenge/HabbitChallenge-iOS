@@ -8,7 +8,7 @@ enum HabitAPI {
     case getHabits
     case deleteHabit(habitId: Int)
     case verifyHabit(habitId: Int, completedCount: Int, complated: Bool)
-    case patchHabit(habitId: Int, request: HabitUpdateRequest)
+    case patchHabit(habitId: Int, periodType: String, name: String, categorys: String, totalRepeat: Int?, dayOfWeek: [Int]?)
 }
 
 extension HabitAPI: TargetType {
@@ -22,8 +22,10 @@ extension HabitAPI: TargetType {
             return "/habits/week"
         case .getHabits:
             return "/habits"
-        case .deleteHabit(let habitId), .patchHabit(let habitId, _):
+        case .deleteHabit(let habitId):
             return "/habits/\(habitId)"
+        case .patchHabit(let habitId, _, _, _, _, _):
+            return "/habits/update/\(habitId)"
         case .verifyHabit(let habitId, _, _):
             return "/habit/\(habitId)"
         }
@@ -50,8 +52,20 @@ extension HabitAPI: TargetType {
             return .requestParameters(parameters: ["periodType": periodType, "name": name, "categories": [categorys], "dayOfWeek": dayOfWeek], encoding: JSONEncoding.default)
         case .getHabits, .deleteHabit:
             return .requestPlain
-        case .patchHabit(_, let request):
-            return .requestJSONEncodable(request)
+        case .patchHabit(_, let periodType, let name, let categorys, let totalRepeat, let dayOfWeek):
+            var parameters: [String: Any] = [
+                "periodType": periodType,
+                "name": name,
+                "categories": [categorys]
+            ]
+
+            if let totalRepeat {
+                parameters["totalRepeat"] = totalRepeat
+            }
+            if let dayOfWeek {
+                parameters["dayOfWeek"] = dayOfWeek
+            }
+            return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
         case .verifyHabit(_, let completedCount, let complated):
             return .requestParameters(parameters: ["completedCount": completedCount, "complated": complated], encoding: JSONEncoding.default)
         }
@@ -72,17 +86,6 @@ struct habitInfo: Codable, Equatable {
     let completedCount: Int
     let completed: Bool
     let streak: Int
-}
-
-struct HabitUpdateRequest: Encodable {
-    let name: String?
-    let categories: [String]?
-    let totalRepeat: Int?
-    let dayOfWeek: [Int]?
-
-    var hasChanges: Bool {
-        name != nil || categories != nil || totalRepeat != nil || dayOfWeek != nil
-    }
 }
 
 struct response: Codable {

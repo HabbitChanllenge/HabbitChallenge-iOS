@@ -103,21 +103,18 @@ final class HabitEditViewController: UIViewController {
             return
         }
 
-        let request = HabitUpdateRequest(
-            name: name == habit.name ? nil : name,
-            categories: category == habit.categories.first ? nil : [category],
-            totalRepeat: isWeekly || repeatCount == habit.totalRepeat ? nil : repeatCount,
-            dayOfWeek: isWeekly && selectedDays != (habit.dayOfWeek ?? []).sorted() ? selectedDays : nil
-        )
-
         errorMessageLabel.isHidden = true
 
-        guard request.hasChanges else {
-            navigationController?.popViewController(animated: true)
-            return
-        }
-
-        provider.request(.patchHabit(habitId: habit.habit_id, request: request)) { [weak self] result in
+        provider.request(
+            .patchHabit(
+                habitId: habit.habit_id,
+                periodType: isWeekly ? "week" : "day",
+                name: name,
+                categorys: category,
+                totalRepeat: isWeekly ? nil : repeatCount,
+                dayOfWeek: isWeekly ? selectedDays : nil
+            )
+        ) { [weak self] result in
             guard let self else { return }
             switch result {
             case .success(let networkResponse):

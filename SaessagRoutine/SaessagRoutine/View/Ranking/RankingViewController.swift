@@ -85,7 +85,7 @@ class RankingViewController: UIViewController {
                 
                 for i in 4..<count+1 {
                     let row : RowRankingView = RowRankingView()
-                    row.configure(rank: i, name: data[i].userName, days: data[i].allStreak)
+                    row.configure(rank: i, name: data[i-1].userName, days: data[i-1].allStreak)
                     self.rankingStackView.addArrangedSubview(row)
                 }//4등부터 포문 돌아가면서 추가.
             case .failure(let error):

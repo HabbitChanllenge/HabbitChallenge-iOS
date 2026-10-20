@@ -105,22 +105,13 @@ final class HabitEditViewController: UIViewController {
 
         errorMessageLabel.isHidden = true
 
-        provider.request(
-            .patchHabit(
-                habitId: habit.habit_id,
-                periodType: isWeekly ? "week" : "day",
-                name: name,
-                categorys: category,
-                totalRepeat: isWeekly ? nil : repeatCount,
-                dayOfWeek: isWeekly ? selectedDays : nil
-            )
-        ) { [weak self] result in
-            guard let self else { return }
-            switch result {
+        provider.request(.patchHabit(habitId: habit.habit_id, periodType: isWeekly ? "week" : "day", name: name, categorys: category, totalRepeat: isWeekly ? nil : repeatCount, dayOfWeek: isWeekly ? selectedDays : nil)) {
+            switch $0 {
             case .success(let networkResponse):
                 guard let data = try? networkResponse.map(response.self) else { return }
                 if data.statusCode == 200 {
                     self.navigationController?.popViewController(animated: true)
+                    
                 } else {
                     self.errorMessageLabel.text = data.message
                     self.errorMessageLabel.isHidden = false

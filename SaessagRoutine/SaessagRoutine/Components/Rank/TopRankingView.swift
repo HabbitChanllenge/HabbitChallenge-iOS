@@ -15,12 +15,12 @@ final class TopRankingView: UIView {
         $0.textAlignment = .center
     }
 
-    private let secondNameLabel = UILabel().then {
+    let secondNameLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textAlignment = .center
     }
 
-    private let secondDayLabel = UILabel().then {
+    let secondDayLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.textColor = UIColor(named: "main900")
         $0.textAlignment = .center

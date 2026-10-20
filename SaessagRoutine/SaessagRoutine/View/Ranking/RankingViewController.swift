@@ -67,7 +67,15 @@ class RankingViewController: UIViewController {
                 self.rankingStackView.subviews.forEach { $0.removeFromSuperview() }
                 if count >= 3 {//유저가 3명보다 많거나 3명일 시
                     self.topRankingView.configure(firstName: data[0].userName, firstDays: data[0].allStreak, secondName: data[1].userName, secondDays: data[1].allStreak, thirdName: data[2].userName, thirdDays: data[2].allStreak)
-                } else {//3명보다 적을 시
+                } else if count == 2 {//3명보다 적을 시
+                    self.topRankingView.firstNameLabel.text = data[0].userName
+                    self.topRankingView.firstDayLabel.text = "\(data[0].allStreak)일"
+                    
+                    self.topRankingView.secondNameLabel.text = data[1].userName
+                    self.topRankingView.secondDayLabel.text = "\(data[1].allStreak)일"
+                    
+                    return
+                } else {
                     self.topRankingView.firstNameLabel.text = data[0].userName
                     self.topRankingView.firstDayLabel.text = "\(data[0].allStreak)일"
                     //1등은 무조건 있으니까 일단 설정

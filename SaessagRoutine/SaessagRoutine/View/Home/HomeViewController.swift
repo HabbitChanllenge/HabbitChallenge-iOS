@@ -260,14 +260,19 @@ class HomeViewController: UIViewController {
                 guard let data = try? res.map([RankData].self) else { return }
                 if data.count >= 3 {//유저가 3명보다 많거나 3명일 시
                     self.top3RankCard.configure(firstName: data[0].userName, firstDays: data[0].allStreak, secondName: data[1].userName, secondDays: data[1].allStreak, thirdName: data[2].userName, thirdDays: data[2].allStreak)
+                } else if data.count == 2 {//3명보다 적을 시
+                    self.top3RankCard.firstNameLabel.text = data[0].userName
+                    self.top3RankCard.firstDayLabel.text = "\(data[0].allStreak)일"
+                    
+                    self.top3RankCard.secondNameLabel.text = data[1].userName
+                    self.top3RankCard.secondDayLabel.text = "\(data[1].allStreak)일"
+                    
+                    return
                 } else {//3명보다 적을 시
                     self.top3RankCard.firstNameLabel.text = data[0].userName
                     self.top3RankCard.firstDayLabel.text = "\(data[0].allStreak)일"
                     //1등은 무조건 있으니까 일단 설정
-                    if data.count == 2 {
-                        self.top3RankCard.firstNameLabel.text = data[1].userName
-                        self.top3RankCard.firstDayLabel.text = "\(data[1].allStreak)일"
-                    }
+                   
                     return//이 밑은 3명 이상일 때에만 실행 할거다.
                 }
             case .failure(let err):

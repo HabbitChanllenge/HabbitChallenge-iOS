@@ -55,6 +55,8 @@ final class HabitViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        HabitManager.shared.reset()
         topBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
         fetchHabits()
     }

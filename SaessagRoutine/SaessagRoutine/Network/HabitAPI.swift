@@ -27,17 +27,17 @@ extension HabitAPI: TargetType {
         case .patchHabit(let habitId, _, _, _, _, _):
             return "/habits/update/\(habitId)"
         case .verifyHabit(let habitId, _):
-            return "/habit/\(habitId)"
+            return "/habits/\(habitId)"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .dayCreateHabit, .weekCreateHabit, .verifyHabit:
+        case .dayCreateHabit, .weekCreateHabit:
             return .post
         case .getHabits:
             return .get
-        case .patchHabit:
+        case .patchHabit, .verifyHabit:
             return .patch
         case .deleteHabit:
             return .delete

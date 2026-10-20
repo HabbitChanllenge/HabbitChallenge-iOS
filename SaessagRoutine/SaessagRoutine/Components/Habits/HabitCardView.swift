@@ -88,12 +88,16 @@ final class HabitCardView: UIView {
         $0.isHidden = true
     }//펼쳤을 때 중간에 가로 선
     
-    init(id: Int, titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : String?) {
+    init(id: Int, titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : String?, complated : Bool) {
         self.id = id
         self.days = days
         self.didTimes = didTimes
+        self.times = times
         super.init(frame: .zero)
         
+        if complated {
+            self.didTimes = self.times
+        }
         
         onStatusChanged?()
         setAttributes(titleText, days, times, didTimes, category, cycle, day)
@@ -104,7 +108,6 @@ final class HabitCardView: UIView {
     }
     
     private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String, _ day: String?) {
-        self.times = times
         let cycle = (cycle == "day") ? "매일" : day ?? "매주"
         titleLabel.text = titleText
         categoryLabel.text = category
@@ -116,7 +119,7 @@ final class HabitCardView: UIView {
         }
         patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
-        let isCompleted = HabitManager.shared.isCompleted
+        let isCompleted = (didTimes >= times)//인증 성공 여부 판단
         if isCompleted {//달성시
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
@@ -252,8 +255,6 @@ final class HabitCardView: UIView {
                 $0.trailing.leading.equalToSuperview().inset(16)
                 $0.bottom.equalToSuperview().inset(16)
             }//카드 바텀을 다시 버튼에서 16 떨어지게 설정
-            
-            
             
         }//확장 돼 있던거 접기
         

@@ -110,6 +110,7 @@ final class HabitEditViewController: UIViewController {
             case .success(let networkResponse):
                 guard let data = try? networkResponse.map(response.self) else { return }
                 if data.statusCode == 200 {
+                    HabitManager.shared.didHabits = 0
                     self.navigationController?.popViewController(animated: true)
                     
                 } else {

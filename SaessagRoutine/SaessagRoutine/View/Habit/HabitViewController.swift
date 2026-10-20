@@ -145,11 +145,12 @@ final class HabitViewController: UIViewController {
             id: habit.habit_id,
             titleText: habit.name,
             days: habit.streak,
-            times: habit.totalRepeat ?? 0,
+            times: max(habit.totalRepeat ?? 1, 1),
             didTimes: habit.completedCount,
             category: habit.categories.first ?? "",
             cycle: habit.periodType,
-            day: dayText
+            day: dayText,
+            complated: habit.completed
         )
         cardStackView.addArrangedSubview(card)
 

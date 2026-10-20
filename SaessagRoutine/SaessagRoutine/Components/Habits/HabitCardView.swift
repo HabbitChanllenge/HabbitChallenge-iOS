@@ -26,8 +26,8 @@ final class HabitCardView: UIView {
     let id: Int
     let days: Int
     
-    // 수정함: 습관 달성 상태나 체크박스가 변경되었음을 HomeViewController에 알리기 위한 클로저 추가
-    var onStatusChanged: (() -> ())?
+    var onStatusChanged: (() -> ())?//성공으로 바꼇을 때.
+    var onVerifiyed: ((Int, Int)->())?//체크 개수 달라졌을 때.
     
     let habitCard = UIView().then {
         $0.backgroundColor = UIColor(named: "main300")
@@ -196,15 +196,6 @@ final class HabitCardView: UIView {
         lineView.isHidden = !isExpanded
         mainCheckBoxStack.isHidden = !isExpanded
         
-        let isCompleted = (didTimes >= times)//인증 성공 여부 판단
-        if isCompleted {
-            verificationButton.isEnabled = false
-            verificationButton.backgroundColor = UIColor(named: "main500")
-            habitCard.backgroundColor = UIColor(named: "main300")
-            HabitManager.shared.didHabits += 1
-            onStatusChanged?()
-        }//성공 했으면 인증버튼 비활성화, 배경색 변경
-        
         if isExpanded {
             mainCheckBoxStack.snp.remakeConstraints {
                 $0.leading.equalToSuperview().inset(16)
@@ -252,6 +243,8 @@ final class HabitCardView: UIView {
             }//체크박스 생성
         }//확장 됐을 때 할 액션
         else {
+            onVerifiyed?(self.id, self.didTimes)
+            
             mainCheckBoxStack.snp.removeConstraints()//체크박스 스택뷰 레이아웃 없애기
             buttonStack.snp.remakeConstraints {
                 $0.height.equalTo(24)
@@ -259,6 +252,9 @@ final class HabitCardView: UIView {
                 $0.trailing.leading.equalToSuperview().inset(16)
                 $0.bottom.equalToSuperview().inset(16)
             }//카드 바텀을 다시 버튼에서 16 떨어지게 설정
+            
+            
+            
         }//확장 돼 있던거 접기
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {

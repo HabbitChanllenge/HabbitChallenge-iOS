@@ -7,7 +7,7 @@ enum HabitAPI {
     case weekCreateHabit(periodType: String, name: String, categorys: String, dayOfWeek: [Int])
     case getHabits
     case deleteHabit(habitId: Int)
-    case verifyHabit(habitId: Int, completedCount: Int, complated: Bool)
+    case verifyHabit(habitId: Int, completedCount: Int)
     case patchHabit(habitId: Int, periodType: String, name: String, categorys: String, totalRepeat: Int?, dayOfWeek: [Int]?)
 }
 
@@ -26,7 +26,7 @@ extension HabitAPI: TargetType {
             return "/habits/\(habitId)"
         case .patchHabit(let habitId, _, _, _, _, _):
             return "/habits/update/\(habitId)"
-        case .verifyHabit(let habitId, _, _):
+        case .verifyHabit(let habitId, _):
             return "/habit/\(habitId)"
         }
     }
@@ -66,8 +66,8 @@ extension HabitAPI: TargetType {
                 parameters["dayOfWeek"] = dayOfWeek
             }
             return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
-        case .verifyHabit(_, let completedCount, let complated):
-            return .requestParameters(parameters: ["completedCount": completedCount, "complated": complated], encoding: JSONEncoding.default)
+        case .verifyHabit(_, let completedCount):
+            return .requestParameters(parameters: ["completedCount": completedCount], encoding: JSONEncoding.default)
         }
     }
 

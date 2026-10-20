@@ -48,7 +48,6 @@ class HabitProgressCardView : UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // 수정함: 외부에서 total과 complete 값을 전달받아 게이지 및 텍스트를 업데이트하도록 파라미터 추가
     func setAtrribute(total: Int, complete: Int) {
         let totalFloat = CGFloat(max(total, 1)) // 0 나누기 방지
         let completeFloat = CGFloat(complete)
@@ -95,7 +94,6 @@ class HabitProgressCardView : UIView {
         }
     }
     
-    // 수정함: 외부에서 최신 total, complete 데이터를 받아 제약조건을 업데이트하도록 수정
     func updateBar() {
         let total = HabitManager.shared.totalHabits
         let complete = HabitManager.shared.didHabits

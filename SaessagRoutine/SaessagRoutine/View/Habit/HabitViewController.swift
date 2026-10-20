@@ -162,5 +162,28 @@ final class HabitViewController: UIViewController {
         card.onStatusChanged = { [weak self] in
             self?.habitProgressCard.updateBar()
         }
+        card.onVerifiyed = { id, didTimes in
+            self.provider.request(.verifyHabit(habitId: id, completedCount: didTimes)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(response.self) else { print("습관 인증 이후 디코딩 실패"); return }
+                    if data.statusCode == 200 {
+                        
+                        let isCompleted = (card.didTimes >= card.times)//인증 성공 여부 판단
+                        if isCompleted {
+                            card.verificationButton.isEnabled = false
+                            card.verificationButton.backgroundColor = UIColor(named: "main500")
+                            card.habitCard.backgroundColor = UIColor(named: "main300")
+                            HabitManager.shared.didHabits += 1
+                            card.onStatusChanged?()
+                        }//성공 했으면 인증버튼 비활성화, 배경색 변경
+                    }
+                case .failure(let err):
+                    print(err)
+                }
+                
+            }
+        }
+        card.onStatusChanged?()
     }
 }

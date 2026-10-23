@@ -5,6 +5,7 @@ import Moya
 
 final class HabitCreateViewController: UIViewController {
     private let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
+    private let rProvider = MoyaProvider<StreakAPI>(plugins: [MoyaLoggingPlugin()])
     
     private let topBar = NavigationBarView()
     
@@ -163,6 +164,15 @@ final class HabitCreateViewController: UIViewController {
                         self.navigationController?.popViewController(animated: true)
                         print("습관 생성 성공 야호")
                         manager.reset()
+                        self.rProvider.request(.getStreak) {
+                            switch $0 {
+                            case .success(let res):
+                                guard let data = try? res.map(Streak.self) else { print("디코딩 실패"); return }
+                                StreakManager.shared.allStreak = data.allStreak
+                            case .failure(let err):
+                                print(err)
+                            }
+                        }
                     } else if data.statusCode == 400 {
                         self.errorMassage.setTitle("잘못된 형식입니다.", for: .normal)
                         self.errorMassage.isHidden = false

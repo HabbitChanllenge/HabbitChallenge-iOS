@@ -148,6 +148,15 @@ class HomeViewController: UIViewController {
             //습관 인증 API 연동
             let homeVC = self
             self.progressCard.updateBar()
+            self.rProvider.request(.getStreak) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(Streak.self) else { print("디코딩 실패"); return }
+                    StreakManager.shared.allStreak = data.allStreak
+                case .failure(let err):
+                    print(err)
+                }
+            }
         }
         habitStack.addArrangedSubview(card)
         

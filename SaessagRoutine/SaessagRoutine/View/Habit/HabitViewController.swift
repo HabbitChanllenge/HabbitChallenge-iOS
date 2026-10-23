@@ -5,6 +5,7 @@ import Moya
 
 final class HabitViewController: UIViewController {
     private let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
+    private let rProvider = MoyaProvider<StreakAPI>(plugins: [MoyaLoggingPlugin()])
     private var habits: [habitInfo] = []
 
     private let topBar = NavigationBarView()
@@ -164,6 +165,15 @@ final class HabitViewController: UIViewController {
         }
         card.onStatusChanged = { [weak self] in
             self?.habitProgressCard.updateBar()
+            self?.rProvider.request(.getStreak) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(Streak.self) else { print("디코딩 실패"); return }
+                    StreakManager.shared.allStreak = data.allStreak
+                case .failure(let err):
+                    print(err)
+                }
+            }
         }
         card.onVerifiyed = { id, didTimes in
             self.provider.request(.verifyHabit(habitId: id, completedCount: didTimes)) {

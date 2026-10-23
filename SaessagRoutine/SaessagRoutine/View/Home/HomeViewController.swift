@@ -120,13 +120,13 @@ class HomeViewController: UIViewController {
         var dayStr = ""
         habit.dayOfWeek?.forEach {
             switch $0 {
-            case 1: dayStr += "월요일 "
-            case 2: dayStr += "화요일 "
-            case 3: dayStr += "수요일 "
-            case 4: dayStr += "목요일 "
-            case 5: dayStr += "금요일 "
-            case 6: dayStr += "토요일 "
-            case 7: dayStr += "일요일 "
+            case 1: dayStr += "일요일 "
+            case 2: dayStr += "월요일 "
+            case 3: dayStr += "화요일 "
+            case 4: dayStr += "수요일 "
+            case 5: dayStr += "목요일 "
+            case 6: dayStr += "금요일 "
+            case 7: dayStr += "토요일 "
             default : break
             }
         }

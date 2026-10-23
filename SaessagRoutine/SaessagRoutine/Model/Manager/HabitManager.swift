@@ -37,23 +37,23 @@ class HabitManager {
     }
 }
 enum weekNumber : String {
+    case sunday = "일요일"
     case monday = "월요일"
     case tuesday = "화요일"
     case wednesday = "수요일"
     case thursday = "목요일"
     case friday = "금요일"
     case saturday = "토요일"
-    case sunday = "일요일"
     
     var number: Int {
         switch self {
-        case .monday: return 1
-        case .tuesday: return 2
-        case .wednesday: return 3
-        case .thursday: return 4
-        case .friday: return 5
-        case .saturday: return 6
-        case .sunday: return 7
+        case .sunday: return 1
+        case .monday: return 2
+        case .tuesday: return 3
+        case .wednesday: return 4
+        case .thursday: return 5
+        case .friday: return 6
+        case .saturday: return 7
         }
     }
 }

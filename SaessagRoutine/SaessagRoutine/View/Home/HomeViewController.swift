@@ -11,9 +11,10 @@ import Then
 import Moya
 
 class HomeViewController: UIViewController {
-    let habitList: [Habit] = MockHabitCard.habit
-
-    let navBar = NavigationBarView(streak: "31")
+    let hProvider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
+    let rProvider = MoyaProvider<StreakAPI>(plugins: [MoyaLoggingPlugin()])
+    
+    let navBar : NavigationBarView = NavigationBarView()
     
     let scrollView = UIScrollView()
     let wholeStack = UIStackView().then {
@@ -99,51 +100,90 @@ class HomeViewController: UIViewController {
         return card
     }()
     var progressCard : HabitProgressCardView = HabitProgressCardView()
-    
+    //--------------------------------------------------------------------------
+    override func viewWillAppear(_ animated: Bool) {
+        navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+        API()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
         setLayout()
-        
-        HabitManager.shared.totalHabits = habitList.count
-        
-        if habitList.count == 0 {
-            noHabitCard.isHidden = false
-        } else {
-            noHabitCard.isHidden = true
-            for i in 0..<3 {
-                setHabitCards(id: i)
-            }
-            progressCard.updateBar()
-        }
     }
-    private func setHabitCards(id: Int) {
-        let card : HabitCardView = HabitCardView(
-            titleText: habitList[id].name,
-            days: habitList[id].streak,
-            times: habitList[id].totalRepeat,
-            didTimes: habitList[id].didRepeat,
-            category: habitList[id].category,
-            cycle: habitList[id].periodType,
-            day: habitList[id].dayOfWeek
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        HabitManager.shared.reset()
+    }
+    //---------------------------------------------------------------------------
+    private func setHabitCards(habit: habitInfo) {
+        
+        var dayStr = ""
+        habit.dayOfWeek?.forEach {
+            switch $0 {
+            case 1: dayStr += "월요일 "
+            case 2: dayStr += "화요일 "
+            case 3: dayStr += "수요일 "
+            case 4: dayStr += "목요일 "
+            case 5: dayStr += "금요일 "
+            case 6: dayStr += "토요일 "
+            case 7: dayStr += "일요일 "
+            default : break
+            }
+        }
+        //요일 문자열 설정
+        
+        let card = HabitCardView(
+            id: habit.habit_id,
+            titleText: habit.name,
+            days: habit.streak,
+            times: max(habit.totalRepeat ?? 1, 1),
+            didTimes: habit.completedCount,
+            category: habit.categories.first ?? "",
+            cycle: habit.periodType,
+            day: dayStr,
+            complated: habit.completed
         )
+        
         card.onStatusChanged = {
+            //습관 인증 API 연동
             let homeVC = self
             self.progressCard.updateBar()
         }
         habitStack.addArrangedSubview(card)
-        card.onPatchButtonTapped = {[weak self] in//수정버튼 클릭 시 실행 클로저
-            guard let self = self,
-            let tabBarController = self.tabBarController else { return }
+        
+        card.onPatchButtonTapped = { _ in//수정버튼 클릭 시 실행 클로저
+            guard let tabBarController = self.tabBarController else { return }
             tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
             
             DispatchQueue.main.async {
                 if let nav = tabBarController.selectedViewController as? UINavigationController {
-                    nav.pushViewController(HabitEditViewController(),animated: false)
+                    nav.pushViewController(HabitEditViewController(habit: habit), animated: false)
                 }
             }
         }
+        card.onVerifiyed = { id, didTimes in
+            self.hProvider.request(.verifyHabit(habitId: id, completedCount: didTimes)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(response.self) else { print("습관 인증 이후 디코딩 실패"); return }
+                    if data.statusCode == 200 {
+                        
+                        let isCompleted = (card.didTimes >= card.times)//인증 성공 여부 판단
+                        if isCompleted {
+                            card.verificationButton.isEnabled = false
+                            card.verificationButton.backgroundColor = UIColor(named: "main500")
+                            card.habitCard.backgroundColor = UIColor(named: "main300")
+                            HabitManager.shared.didHabits += 1
+                            card.onStatusChanged?()
+                        }//성공 했으면 인증버튼 비활성화, 배경색 변경
+                    }
+                case .failure(let err):
+                    print(err)
+                }
+                
+            }
+        }
+        card.onStatusChanged?()
     }//습관 카드 생성 함수
     private func setLayout() {
         view.addSubview(navBar)
@@ -210,6 +250,57 @@ class HomeViewController: UIViewController {
                 if let nav = tabBarController.selectedViewController as? UINavigationController {
                     nav.pushViewController(HabitCreateViewController(),animated: false)
                 }
+            }
+        }
+    }
+    private func API() {
+        hProvider.request(.getHabits) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map([habitInfo].self) else { return }
+                self.habitStack.subviews.forEach{ $0.removeFromSuperview() }//스택 초기화
+                
+                let cnt = (data.count >= 3) ? 3 : data.count
+                guard !data.isEmpty else {
+                    self.habitStack.addArrangedSubview(self.noHabitCard)
+                    self.noHabitCard.isHidden = false
+                    
+                    return
+                }
+                self.noHabitCard.isHidden = true
+                
+                for habit in data.prefix(cnt) {
+                    self.setHabitCards(habit: habit)
+                }
+                
+            case .failure(let err):
+                print(err)
+            }
+        }
+        
+        rProvider.request(.getRank) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map([RankData].self) else { return }
+                if data.count >= 3 {//유저가 3명보다 많거나 3명일 시
+                    self.top3RankCard.configure(firstName: data[0].userName, firstDays: data[0].allStreak, secondName: data[1].userName, secondDays: data[1].allStreak, thirdName: data[2].userName, thirdDays: data[2].allStreak)
+                } else if data.count == 2 {//3명보다 적을 시
+                    self.top3RankCard.firstNameLabel.text = data[0].userName
+                    self.top3RankCard.firstDayLabel.text = "\(data[0].allStreak)일"
+                    
+                    self.top3RankCard.secondNameLabel.text = data[1].userName
+                    self.top3RankCard.secondDayLabel.text = "\(data[1].allStreak)일"
+                    
+                    return
+                } else {//3명보다 적을 시
+                    self.top3RankCard.firstNameLabel.text = data[0].userName
+                    self.top3RankCard.firstDayLabel.text = "\(data[0].allStreak)일"
+                    //1등은 무조건 있으니까 일단 설정
+                   
+                    return//이 밑은 3명 이상일 때에만 실행 할거다.
+                }
+            case .failure(let err):
+                return
             }
         }
     }

@@ -11,6 +11,7 @@ import Then
 import Moya
 
 class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
+    let provider = MoyaProvider<AuthAPI>(plugins:[MoyaLoggingPlugin()])
     let stackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 19
@@ -27,7 +28,7 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         $0.layer.cornerRadius = 10
         $0.setTitle("로그인하기", for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
-        $0.addTarget(self, action: #selector(logInToHome), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(logInButtonTapped), for: .touchUpInside)
     }
     let signUpText = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
@@ -47,7 +48,6 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
     let errorMessage = UILabel().then {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.textColor = UIColor(named: "error")
-        $0.text = "이메일 주소와 비밀번호를 확인해 주세요."
         $0.isHidden = true
     }
     let changePasswordButton = UIButton(type: .system).then {
@@ -64,11 +64,14 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         navigationController?.setNavigationBarHidden(true, animated: animated)
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        
+        logInButtonChange()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        
         setupLayout()
-        logInButtonChange()
         emailTextField.textField.addTarget(self, action: #selector(logInButtonChange), for: .editingChanged)
         passwordTextField.textField.addTarget(self, action: #selector(logInButtonChange), for: .editingChanged)
     }
@@ -120,11 +123,48 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         let signUpVC = SignUpViewController()
         navigationController?.pushViewController(signUpVC, animated: false)
     }
-    @objc func logInToHome() {
-        let homeVC = RootTabBarController()
-        navigationController?.pushViewController(homeVC, animated: false)
-        UIWindow.changeRootViewController(to: homeVC, animated: true)
-    }
+    @objc func logInButtonTapped() {
+        provider.request(.login(email: emailTextField.textField.text!, password: passwordTextField.textField.text!)) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(loginResponse.self) else { print("디코딩 실패"); return }
+                if data.statusCode == 200 {
+                    print("로그인 성공")
+                    TokenManager.shared.token = data.accessToken!
+                    
+                    let homeVC = RootTabBarController()
+                    self.getStreak()
+                    self.navigationController?.pushViewController(homeVC, animated: false)
+                    UIWindow.changeRootViewController(to: homeVC, animated: true)
+                } else if data.statusCode == 401 {
+                    print("비밀번호 틀림")
+                    
+                    DispatchQueue.main.async {
+                        self.errorMessage.text = "비밀번호를 다시 확인해 주세요."
+                        self.errorMessage.isHidden = false
+                        
+                        self.passwordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                        self.passwordTextField.textField.layer.borderWidth = 1
+                        self.emailTextField.textField.layer.borderWidth = 0
+                    }
+                } else if data.statusCode == 400 {
+                    DispatchQueue.main.async {
+                        self.errorMessage.text = "이메일과 비밀번호를 다시 확인해 주세요."
+                        self.errorMessage.isHidden = false
+                        
+                        self.emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                        self.emailTextField.textField.layer.borderWidth = 1
+                    }
+                    print("계정 없음")
+                } else {
+                    print(data.statusCode)
+                }
+                
+            case .failure(_):
+                print("API 연동 실패")
+            }
+        }
+    }//로그인 버튼 클릭시
 
     @objc private func logInButtonChange() {
         let isEmailEmpty = emailTextField.textField.text?.isEmpty ?? true
@@ -139,8 +179,20 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     @objc private func toPasswordChange() {
-        let passwordChangeVC = PasswordChangeViewController()
+        let passwordChangeVC = PasswordFindViewController()
         navigationController?.pushViewController(passwordChangeVC, animated: true)
+    }
+    private func getStreak() {
+        let rProvider = MoyaProvider<StreakAPI>(plugins: [MoyaLoggingPlugin()])
+        rProvider.request(.getStreak) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(Streak.self) else { print("스트릭 가져오기 디코딩 실패"); return }
+                StreakManager.shared.allStreak = data.allStreak
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 extension LogInViewController {

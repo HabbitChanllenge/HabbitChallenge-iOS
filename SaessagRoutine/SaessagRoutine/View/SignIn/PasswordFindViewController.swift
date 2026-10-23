@@ -10,7 +10,8 @@ import Then
 import Moya
 import UIKit
 
-final class PasswordChangeViewController: UIViewController {
+final class PasswordFindViewController: UIViewController {
+    let provider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     let scrollView = UIScrollView()
     
     let stackView = UIStackView().then {
@@ -30,7 +31,7 @@ final class PasswordChangeViewController: UIViewController {
     }
     
     let titleText = UILabel().then {
-        $0.text = "비밀번호 변경"
+        $0.text = "비밀번호 찾기"
         $0.textColor = .black
         $0.font = .systemFont(ofSize: 30, weight: .semibold)
     }
@@ -71,9 +72,11 @@ final class PasswordChangeViewController: UIViewController {
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.isHidden = true
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         setup()
         
         emailTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
@@ -137,11 +140,26 @@ final class PasswordChangeViewController: UIViewController {
             emailTextField.textField.layer.borderWidth = 1
             emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
         } else {//채워져 있을 때
-            emailSendButton.backgroundColor = UIColor(named: "main300")
-            emailTextField.textField.layer.borderWidth = 0
-            errorMessage.isHidden = true
+            provider.request(.checkEmail(email: (emailTextField.textField.text)!)) {//리퀘스트 보냄
+                switch $0 {
+                case .success(let res)://통신 성공 시
+                    guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
+                    if data.statusCode == 200 {//성공시
+                        self.emailSendButton.backgroundColor = UIColor(named: "main300")
+                        self.emailTextField.textField.layer.borderWidth = 0
+                        self.errorMessage.isHidden = true
+                    } else if data.statusCode == 404 {//사용자 못 찾았을 때
+                        self.errorMessage.text = "사용자를 찾을 수 없습니다. 이메일 주소를 확인해 주세요."
+                        self.errorMessage.isHidden = false
+                        self.emailTextField.textField.layer.borderWidth = 1
+                        self.emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
-    }
+    }//인증번호 발송버튼 클릭 시
     @objc private func checkCode() {
         print("인증번호 확인 버튼 클릭")
         if verificationCodeTextField.textField.text?.isEmpty == true {//텍스트필드 비어있을 때
@@ -150,16 +168,44 @@ final class PasswordChangeViewController: UIViewController {
             verificationCodeTextField.textField.layer.borderWidth = 1
             verificationCodeTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
         } else {//채워져 있을 때
-            codeCheckButton.backgroundColor = UIColor(named: "main300")
-            verificationCodeTextField.textField.layer.borderWidth = 0
-            errorMessage.isHidden = true
+            provider.request(.checkVerifyCode(email: emailTextField.textField.text!, code: verificationCodeTextField.textField.text!)) {
+                switch $0 {
+                    case .success(let res):
+                        guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
+                        if data.statusCode == 200 {
+                            self.codeCheckButton.backgroundColor = UIColor(named: "main300")
+                            self.verificationCodeTextField.textField.layer.borderWidth = 0
+                            self.errorMessage.isHidden = true
+                        }
+                        else if data.statusCode == 400 {
+                            self.errorMessage.text = data.message
+                            self.errorMessage.isHidden = false
+                        }
+                case .failure(let err):
+                    print(err)
+                }
+            }
         }
-    }
+    }//인증 번호 확인 버튼 클릭 시
     @objc private func changePassword() {
         print("비밀번호 변경 버튼 클릭")
         let isPasswordSame = passwordTextField.textField.text == checkPasswordTextField.textField.text
         if isPasswordSame {//비밀번호 일치 시
-            navigationController?.popViewController(animated: true)
+            provider.request(.changePassword(email: emailTextField.textField.text!, newPassword: passwordTextField.textField.text!)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
+                    if data.statusCode == 200 {
+                        UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+                        self.navigationController?.popViewController(animated: true)
+                    } else if data.statusCode == 400 {
+                        self.errorMessage.text = data.message
+                        self.errorMessage.isHidden = false
+                    }
+                case .failure(let err):
+                    print(err)
+                }
+            }
         } else {
             errorMessage.text = "비밀번호가 일치하지 않습니다"
             errorMessage.isHidden = false
@@ -170,7 +216,8 @@ final class PasswordChangeViewController: UIViewController {
             checkPasswordTextField.textField.layer.borderWidth = 1
             checkPasswordTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor
         }
-    }
+    }//비밀번호 변경 버튼 클릭 시
+    
     @objc func buttonChange() {
         
         let isEmpty = (passwordTextField.textField.text?.isEmpty ?? true) || (checkPasswordTextField.textField.text?.isEmpty ?? true) || (verificationCodeTextField.textField.text?.isEmpty ?? true) || (emailTextField.textField.text?.isEmpty ?? true)

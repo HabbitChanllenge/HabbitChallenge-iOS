@@ -11,6 +11,7 @@ import Then
 import Moya
 
 class SignUpViewController: UIViewController {
+    let provider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     let titleLabel = UILabel().then {
         $0.text = "계정 만들기"
         $0.textColor = .black
@@ -25,25 +26,17 @@ class SignUpViewController: UIViewController {
     let emailTextField = LabeledTextFieldView(title: "이메일", placeholder: "이메일을 입력해 주세요", isPassword: false)
     let passwordTextField = LabeledTextFieldView(title: "비밀번호", placeholder: "비밀번호를 입력해 주세요", isPassword: true)
     let passwordCheckTextField = LabeledTextFieldView(title: "비밀번호 확인", placeholder: "비밀번호를 확인해주세요", isPassword: true)
-    let errorMessagePassword = UILabel().then {
-        $0.text = "비밀번호가 일치하지 않습니다."
+    let errorMessage = UILabel().then {
         $0.textColor = UIColor(named: "error")
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.isHidden = true
     }
-    let errorMessageNoInput = UILabel().then {
-        $0.text = "모두 입력되지 않았습니다"
-        $0.textColor = UIColor(named: "error")
-        $0.font = .systemFont(ofSize: 15, weight: .regular)
-        $0.isHidden = true
-    }
-    
     let signUpButton = UIButton(type: .system).then {
         $0.setTitle("가입하고 시작하기", for: .normal)
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 10
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
-        $0.addTarget(self, action: #selector(passwordCheck), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
     }
     let toLoginText = UILabel().then {
         $0.text = "이미 계정이 있으신가요?"
@@ -60,6 +53,7 @@ class SignUpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         setupLayout()
         buttonChange()
         //buttonChange 함수 초기 호출 해서 기본값 잡기
@@ -83,7 +77,7 @@ class SignUpViewController: UIViewController {
         stackView.addArrangedSubview(emailTextField)
         stackView.addArrangedSubview(passwordTextField)
         stackView.addArrangedSubview(passwordCheckTextField)
-        stackView.addArrangedSubview(errorMessagePassword)
+        stackView.addArrangedSubview(errorMessage)
         //스택뷰에 추가
         
         titleLabel.snp.makeConstraints {
@@ -125,15 +119,46 @@ class SignUpViewController: UIViewController {
             //전부 다 입력이 됐을 때
         }
     }
-    @objc private func passwordCheck() {
+    @objc private func signUpButtonTapped() {
+        let isPasswordSame = passwordCheck()
+        
+        if isPasswordSame {
+            provider.request(
+                .signup(userId: idTextField.textField.text!,email: emailTextField.textField.text!, password: passwordTextField.textField.text!))
+            {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(signUpResponse.self) else { print("디코딩 실패"); return }
+                    if data.statusCode == 201 {//예잉
+                        print("회원가입 성공")
+                        self.toLogin()
+                    } else if data.statusCode == 409 {//이메일 중복시
+                        self.errorMessage.text = "이미 가입된 이메일입니다."
+                        self.errorMessage.isHidden = false
+                    } else if data.statusCode == 400 {//형식 오류 시
+                        self.errorMessage.text = "비밀번호 길이는 6자 이상, 30자 이하로 작성 해 주세요. \n영문자, 숫자, 특수문자를 모두 포함하여 작성해주세요."
+                        self.errorMessage.isHidden = false
+                    }
+                    
+                case .failure:
+                    return
+                }
+            }
+            print("비밀번호 일치")
+        } else {
+            print("비밀번호 미일치")
+        }
+    }
+    private func passwordCheck() -> Bool {
         let password = passwordTextField.textField.text
         let passwordCheck = passwordCheckTextField.textField.text
         if password == passwordCheck {
-            toLogin()
+            return true
         } else {
-            errorMessagePassword.isHidden = false
+            errorMessage.text = "비밀번호가 일치하지 않습니다."
+            errorMessage.isHidden = false
+            return false
         }
-        return
     }
     @objc private func toLogin() {
         navigationController?.popViewController(animated: false)

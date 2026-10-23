@@ -1,33 +1,27 @@
-//
-//  HabbitMainViewController.swift
-//  SaessagRoutine
-//
-//  Created by Seoyun Jin on 8/2/26.
-//
-
 import UIKit
 import SnapKit
 import Then
 import Moya
 
-class HabitViewController: UIViewController {
-    var habitList: [Habit] = MockHabitCard.habit
-    
-    let topBar = NavigationBarView(streak: "20")
-    let createButton = UIButton(type: .system).then {
+final class HabitViewController: UIViewController {
+    private let provider = MoyaProvider<HabitAPI>(plugins: [MoyaLoggingPlugin()])
+    private var habits: [habitInfo] = []
+
+    private let topBar = NavigationBarView()
+    private let createButton = UIButton(type: .system).then {
         $0.imageView?.contentMode = .scaleAspectFit
         $0.setImage(UIImage(systemName: "plus"), for: .normal)
         $0.tintColor = UIColor(named: "main800")
         $0.addTarget(self, action: #selector(plusTapped), for: .touchUpInside)
     }
-    let cardStackView = UIStackView().then {
+    private let cardStackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 16
     }
-    let scrollView = UIScrollView()
-    var habitProgressCard : HabitProgressCardView = HabitProgressCardView()
-    
-    let noHabitCard : UIView = {
+    private let scrollView = UIScrollView()
+    private let habitProgressCard = HabitProgressCardView()
+
+    private let noHabitCard: UIView = {
         let card = UIView().then {
             $0.backgroundColor = UIColor(named: "gray300")
             $0.layer.cornerRadius = 10
@@ -43,12 +37,9 @@ class HabitViewController: UIViewController {
             $0.layer.cornerRadius = 10
             $0.addTarget(self, action: #selector(plusTapped), for: .touchUpInside)
         }
-        
         card.addSubview(text)
         card.addSubview(createButton)
-        text.snp.makeConstraints {
-            $0.top.leading.equalToSuperview().inset(16)
-        }
+        text.snp.makeConstraints { $0.top.leading.equalToSuperview().inset(16) }
         createButton.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview().inset(16)
             $0.height.equalTo(24)
@@ -60,29 +51,58 @@ class HabitViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setLayout()
-        if habitList.count == 0 {
-            noHabitCard.isHidden = false
-            habitProgressCard.isHidden = true
-        }//습관 없을 시
-        else {
-            noHabitCard.isHidden = true
-    
-            for i in 0..<habitList.count {
-                createCard(id: i)
-            }
-            habitProgressCard.isHidden = false
-        }//습관 있을 시
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        HabitManager.shared.reset()
+        topBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+        fetchHabits()
+    }
+
+    private func fetchHabits() {
+        provider.request(.getHabits) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let response):
+                guard let habits = try? response.map([habitInfo].self) else {
+                    print("습관 목록 디코딩 실패")
+                    return
+                }
+                self.habits = habits
+                self.renderHabits()
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+
+    private func renderHabits() {
+        cardStackView.arrangedSubviews.forEach {
+            cardStackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+
+        cardStackView.addArrangedSubview(habitProgressCard)
+        HabitManager.shared.totalHabits = habits.count
+
+        guard !habits.isEmpty else {
+            habitProgressCard.isHidden = true
+            cardStackView.addArrangedSubview(noHabitCard)
+            return
+        }
+
+        habitProgressCard.isHidden = false
+        habits.forEach(createCard)
+    }
+
     private func setLayout() {
         view.addSubview(topBar)
         view.addSubview(scrollView)
-        
         scrollView.addSubview(createButton)
         scrollView.addSubview(cardStackView)
-        
-        cardStackView.addArrangedSubview(habitProgressCard)
-        cardStackView.addArrangedSubview(noHabitCard)
-    
+
         topBar.snp.makeConstraints {
             $0.top.leading.trailing.equalTo(view)
             $0.height.equalTo(101)
@@ -102,31 +122,70 @@ class HabitViewController: UIViewController {
             $0.leading.trailing.equalTo(scrollView.frameLayoutGuide).inset(24)
             $0.bottom.equalToSuperview().inset(24)
         }
-        noHabitCard.snp.makeConstraints {
-            $0.height.equalTo(116)
-        }
-    }//레이아웃 잡기
+        noHabitCard.snp.makeConstraints { $0.height.equalTo(116) }
+    }
+
     @objc private func plusTapped() {
         navigationController?.pushViewController(HabitCreateViewController(), animated: false)
-    }//생성 버튼 클릭 시 습관 생성 화면으로 이동
-    
-    private func createCard(id : Int) {
+    }
+
+    private func createCard(habit: habitInfo) {
+        let dayText = (habit.dayOfWeek ?? []).compactMap { day -> String? in
+            switch day {
+            case 1: return "월요일"
+            case 2: return "화요일"
+            case 3: return "수요일"
+            case 4: return "목요일"
+            case 5: return "금요일"
+            case 6: return "토요일"
+            case 7: return "일요일"
+            default: return nil
+            }
+        }.joined(separator: " ")
+
         let card = HabitCardView(
-            titleText: habitList[id].name,
-            days: habitList[id].streak,
-            times: habitList[id].totalRepeat,
-            didTimes: habitList[id].didRepeat,
-            category: habitList[id].category,
-            cycle: habitList[id].periodType,
-            day: habitList[id].dayOfWeek
+            id: habit.habit_id,
+            titleText: habit.name,
+            days: habit.streak,
+            times: max(habit.totalRepeat ?? 1, 1),
+            didTimes: habit.completedCount,
+            category: habit.categories.first ?? "",
+            cycle: habit.periodType,
+            day: dayText,
+            complated: habit.completed
         )
         cardStackView.addArrangedSubview(card)
-        card.onPatchButtonTapped = {
-            self.navigationController?.pushViewController(HabitEditViewController(), animated: false)
-            print("수정버튼 탭. id: \(id)")
+
+        card.onPatchButtonTapped = { [weak self] _ in
+            self?.navigationController?.pushViewController(
+                HabitEditViewController(habit: habit),
+                animated: false
+            )
         }
-        card.onStatusChanged = {
-            self.habitProgressCard.updateBar()
+        card.onStatusChanged = { [weak self] in
+            self?.habitProgressCard.updateBar()
+        }
+        card.onVerifiyed = { id, didTimes in
+            self.provider.request(.verifyHabit(habitId: id, completedCount: didTimes)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(response.self) else { print("습관 인증 이후 디코딩 실패"); return }
+                    if data.statusCode == 200 {
+                        
+                        let isCompleted = (card.didTimes >= card.times)//인증 성공 여부 판단
+                        if isCompleted {
+                            card.verificationButton.isEnabled = false
+                            card.verificationButton.backgroundColor = UIColor(named: "main500")
+                            card.habitCard.backgroundColor = UIColor(named: "main300")
+                            HabitManager.shared.didHabits += 1
+                            card.onStatusChanged?()
+                        }//성공 했으면 인증버튼 비활성화, 배경색 변경
+                    }
+                case .failure(let err):
+                    print(err)
+                }
+                
+            }
         }
         card.onStatusChanged?()
     }

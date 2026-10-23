@@ -23,9 +23,11 @@ final class HabitCardView: UIView {
     var cardHeight = 116
     var times = 0
     var didTimes = 0
+    let id: Int
+    let days: Int
     
-    // 수정함: 습관 달성 상태나 체크박스가 변경되었음을 HomeViewController에 알리기 위한 클로저 추가
-    var onStatusChanged: (() -> ())?
+    var onStatusChanged: (() -> ())?//성공으로 바꼇을 때.
+    var onVerifiyed: ((Int, Int)->())?//체크 개수 달라졌을 때.
     
     let habitCard = UIView().then {
         $0.backgroundColor = UIColor(named: "main300")
@@ -79,16 +81,24 @@ final class HabitCardView: UIView {
         $0.layer.cornerRadius = 10
         $0.addTarget(self, action: #selector(verificationButtonTapped), for: .touchUpInside)
     }//인증버튼
-    var onPatchButtonTapped: (() -> Void)?
+    var onPatchButtonTapped: ((Int) -> Void)?
     
     let lineView = UIView().then {
         $0.backgroundColor = UIColor(named: "gray600")
         $0.isHidden = true
     }//펼쳤을 때 중간에 가로 선
     
-    init(titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : [String]?) {
-        super.init(frame: .zero)
+    init(id: Int, titleText: String, days: Int, times: Int, didTimes: Int, category: String, cycle: String, day : String?, complated : Bool) {
+        self.id = id
+        self.days = days
         self.didTimes = didTimes
+        self.times = times
+        super.init(frame: .zero)
+        
+        if complated {
+            self.didTimes = self.times
+        }
+        
         onStatusChanged?()
         setAttributes(titleText, days, times, didTimes, category, cycle, day)
         setupLayout()
@@ -97,9 +107,8 @@ final class HabitCardView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String, _ day: [String]?) {
-        self.times = times
-        let cycle = (cycle == "day") ? "매일" : (weekdays(rawValue: day?.first ?? "")?.rawValue ?? "매주")
+    private func setAttributes(_ titleText: String, _ days: Int, _ times: Int, _ didTimes: Int, _ category: String, _ cycle: String, _ day: String?) {
+        let cycle = (cycle == "day") ? "매일" : day ?? "매주"
         titleLabel.text = titleText
         categoryLabel.text = category
         timesLabel.text = "\(cycle) \(didTimes)/\(times)"
@@ -110,7 +119,7 @@ final class HabitCardView: UIView {
         }
         patchButton.addTarget(self, action: #selector(patchButtonTapped), for: .touchUpInside)
         
-        let isCompleted = (didTimes >= times)
+        let isCompleted = (didTimes >= times)//인증 성공 여부 판단
         if isCompleted {//달성시
             verificationButton.isEnabled = false
             verificationButton.backgroundColor = UIColor(named: "main500")
@@ -180,7 +189,7 @@ final class HabitCardView: UIView {
     }//레이아웃 잡기
     
     @objc func patchButtonTapped() {
-        onPatchButtonTapped?()//클로저 사용
+        onPatchButtonTapped?(self.id)//클로저 사용
     }//수정 버튼 클릭 시
 
     @objc func verificationButtonTapped() {
@@ -189,15 +198,6 @@ final class HabitCardView: UIView {
         
         lineView.isHidden = !isExpanded
         mainCheckBoxStack.isHidden = !isExpanded
-        
-        let isCompleted = (didTimes >= times)//인증 성공 여부 판단
-        if isCompleted {
-            verificationButton.isEnabled = false
-            verificationButton.backgroundColor = UIColor(named: "main500")
-            habitCard.backgroundColor = UIColor(named: "main300")
-            HabitManager.shared.didHabits += 1
-            onStatusChanged?()
-        }//성공 했으면 인증버튼 비활성화, 배경색 변경
         
         if isExpanded {
             mainCheckBoxStack.snp.remakeConstraints {
@@ -246,6 +246,8 @@ final class HabitCardView: UIView {
             }//체크박스 생성
         }//확장 됐을 때 할 액션
         else {
+            onVerifiyed?(self.id, self.didTimes)
+            
             mainCheckBoxStack.snp.removeConstraints()//체크박스 스택뷰 레이아웃 없애기
             buttonStack.snp.remakeConstraints {
                 $0.height.equalTo(24)
@@ -253,6 +255,7 @@ final class HabitCardView: UIView {
                 $0.trailing.leading.equalToSuperview().inset(16)
                 $0.bottom.equalToSuperview().inset(16)
             }//카드 바텀을 다시 버튼에서 16 떨어지게 설정
+            
         }//확장 돼 있던거 접기
         
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {

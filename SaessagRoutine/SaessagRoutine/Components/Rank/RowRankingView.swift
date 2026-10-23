@@ -3,10 +3,7 @@ import SnapKit
 import Then
 
 final class RowRankingView: UIView {
-    
-    private let rank: Int
-    
-    private let rankLabel = UILabel().then {
+    let rankLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 18, weight: .regular)
         $0.textAlignment = .center
     }
@@ -22,14 +19,8 @@ final class RowRankingView: UIView {
         $0.textAlignment = .right
     }
     
-    init(rank: Int, name: String, days: Int) {
-        self.rank = rank
-        
+    init() {
         super.init(frame: .zero)
-        
-        rankLabel.text = "\(rank)"
-        nameLabel.text = name
-        dayLabel.text = "\(days)일"
         
         setupView()
         setupLayout()
@@ -47,13 +38,6 @@ final class RowRankingView: UIView {
         layer.cornerRadius = 20
         clipsToBounds = true
         
-        if rank % 2 == 0 {
-            backgroundColor = UIColor(named: "main100")
-        } else {
-            backgroundColor = .white
-            layer.borderWidth = 1
-            layer.borderColor = UIColor.black.cgColor
-        }
     }
     
     private func setupLayout() {
@@ -79,6 +63,13 @@ final class RowRankingView: UIView {
     }
     
     func configure(rank: Int, name: String, days: Int) {
+        if rank % 2 == 0 {
+            backgroundColor = UIColor(named: "main100")
+        } else {
+            backgroundColor = .white
+            layer.borderWidth = 1
+            layer.borderColor = UIColor.black.cgColor
+        }
         rankLabel.text = "\(rank)"
         nameLabel.text = name
         dayLabel.text = "\(days)일"

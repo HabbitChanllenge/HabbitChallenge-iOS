@@ -11,9 +11,10 @@ import Then
 import Moya
 
 class MyPageEditViewController: UIViewController {
-    let userInfo = UserData.shared
+    let provider = MoyaProvider<UserAPI>(plugins:[MoyaLoggingPlugin()])
+    let deleteProvider = MoyaProvider<AuthAPI>(plugins: [MoyaLoggingPlugin()])
     
-    let navBar = NavigationBarView(streak: "31")
+    let navBar = NavigationBarView()
     
     let profileImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill
@@ -47,9 +48,26 @@ class MyPageEditViewController: UIViewController {
         $0.tintColor = UIColor(named: "gray600")
         $0.addTarget(self, action: #selector(changePasswordButtonTapped), for: .touchUpInside)
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+        provider.request(.getUserInfo) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(getMypageInfo.self) else { print("디코딩 실패"); return }
+                if data.statusCode == 200 {
+                    self.textFiledStack.setInfo(id: data.name, email: data.email)
+                }
+            case .failure(let err):
+                print(err)
+            }
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        
         setupView()
     }
     
@@ -78,7 +96,7 @@ class MyPageEditViewController: UIViewController {
         }
         notAllFilled.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(textFiledStack.snp.bottom).offset(3)
+            $0.bottom.equalTo(editButton.snp.top).offset(-4)
         }
         
         editButton.snp.makeConstraints {
@@ -100,39 +118,61 @@ class MyPageEditViewController: UIViewController {
     
     @objc private func editFinishButtonTapped() {
         guard let emailT = textFiledStack.email.textField.text,
-            let passwordT = textFiledStack.password.textField.text,
             let idT = textFiledStack.id.textField.text,
-            !emailT.isEmpty, !passwordT.isEmpty, !idT.isEmpty else {
+            !emailT.isEmpty, !idT.isEmpty else {
             notAllFilled.isHidden = false
             return
         }
         //모두 다 채워져 있을 시
-        userInfo.updateUserInfo(email: emailT, id: idT, password: passwordT)
-        
-        if let rootVC = self .navigationController?.viewControllers.first(where: { $0 is MyPageViewContoller }) as? MyPageViewContoller {
-            rootVC.editSucsessMessage.isHidden = false//수정 완료 메세지 표시
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                rootVC.editSucsessMessage.isHidden = true
-            }//1.2초 후에 수정 완료 메세지 숨기기
+        provider.request(.patchUserInfo(userId: idT, email: emailT)) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(patchMypageInfo.self) else { print("디코딩 실패"); return }
+                if data.statusCode == 200 {
+                    TokenManager.shared.token = ""
+                    UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+                }
+            case .failure(let err):
+                print(err)
+            }
         }
-        self.navigationController?.popViewController(animated: false)//화면전환
+        
+        
     }//수정 완료 버튼 클릭시
     @objc private func deleteAccountButtonTapped() {
-        let alertView = UIAlertController(title: "새싹루틴 회원을 탈퇴하시겠습니까?", message: "", preferredStyle: .alert)
+        let alertView = UIAlertController(title: "새싹루틴 회원을 탈퇴하시겠습니까?", message: "", preferredStyle: .alert).then {
+            $0.addTextField {
+                $0.placeholder = "비밀번호를 작성해 주세요."
+                $0.textContentType = .password
+            }
+        }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         let confirmAction = UIAlertAction(title: "탈퇴", style: .destructive, handler: { _ in
-            self.deleteAccount()
+            let password = alertView.textFields?.first?.text ?? ""
+            
+            self.deleteProvider.request(.resign(token: TokenManager.shared.token, password: password)) {
+                switch $0 {
+                case .success(let res):
+                    guard let data = try? res.map(authResponse.self) else { return }
+                    if data.statusCode == 200 {
+                        TokenManager.shared.token = ""
+                        UIWindow.changeRootViewController(to: LogInViewController(), animated: true)
+                    } else if data.statusCode == 401 {
+                        let alert = UIAlertController(title: "비밀번호를 확인해 주세요.", message: "", preferredStyle: .alert)
+                        alert.addAction(.init(title: "확인", style: .cancel))
+                        self.present(alert, animated: false)
+                    }
+                    
+                case .failure(let err):
+                    print(err)
+                }
+            }
         })
         alertView.addAction(cancelAction)
         alertView.addAction(confirmAction)
         
         present(alertView, animated: false)
     }//회원 탈퇴 버튼 클릭 시
-    
-    @objc private func deleteAccount() {
-        UIWindow.changeRootViewController(to: LogInViewController(), animated: false)//루트뷰 로그인으로 바꾸기
-        print("확인버튼 클릭")
-    }//탈퇴 팝업 확인 버튼 클릭 시 실행
     @objc private func changePasswordButtonTapped() {
         print("비밀번호 변경 버튼 클릭")
         navigationController?.pushViewController(PasswordChangeViewController(), animated: true)

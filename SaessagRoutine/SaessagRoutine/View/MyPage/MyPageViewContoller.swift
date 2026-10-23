@@ -11,10 +11,11 @@ import Then
 import Moya
 
 class MyPageViewContoller: UIViewController {
-    let userInfo = UserData.shared
+    let provider = MoyaProvider<UserAPI>(plugins:[MoyaLoggingPlugin()])
+    let authProvider = MoyaProvider<AuthAPI>(plugins:[MoyaLoggingPlugin()])
     let editVC = MyPageEditViewController()
+    let navBar = NavigationBarView()
     
-    let navBar = NavigationBarView(streak: "31")
     let profileImg = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.image = UIImage(named: "profileImg")
@@ -47,15 +48,12 @@ class MyPageViewContoller: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        
-        if let user = userInfo.userInformation.first {
-            userID.text = user.Id
-        }
-        textFiledStack.updateInfo()
+        navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
+        updateUserInfo()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let userIDText = userInfo.userInformation.first?.Id { userID.text = userIDText; }
+        view.backgroundColor = .white
         setupView()
     }
     
@@ -93,10 +91,10 @@ class MyPageViewContoller: UIViewController {
         }
         editSucsessMessage.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(textFiledStack.snp.bottom).offset(3)
+            $0.bottom.equalTo(editButton.snp.top).offset(-7)
         }
         editButton.snp.makeConstraints {
-            $0.top.equalTo(textFiledStack.snp.bottom).offset(36)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(25)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(63)
         }
@@ -105,12 +103,38 @@ class MyPageViewContoller: UIViewController {
         navigationController?.pushViewController(MyPageEditViewController(), animated: false)
     }
     @objc private func logoutButtonTapped() {
-        UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
+        authProvider.request(.logout(token: TokenManager.shared.token)) {
+            switch $0 {
+            case .success(let res):
+                guard let data = try? res.map(authResponse.self) else { print("디코딩 실패"); return }
+                if data.statusCode == 200 {
+                    TokenManager.shared.token = ""
+                    UIWindow.changeRootViewController(to: LogInViewController(), animated: false)
+                    print("로그아웃 성공")
+                } else {
+                    print("로그아웃 실패")
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
     private func updateUserInfo() {
-        if let user = userInfo.userInformation.first {
-            userID.text = user.Id
-            
+        provider.request(.getUserInfo) {
+            switch $0 {
+            case .success(let response):
+                if response.statusCode == 200 {
+                    guard let data = try? response.map(getMypageInfo.self) else { print("데이터 디코딩 실패"); return }
+                    self.userID.text = data.name
+                    
+                    let id = data.name
+                    let email = data.email
+                    self.textFiledStack.setInfo(id: id, email: email)
+                }
+                print("유저 정보 불러오기 성공")
+            case .failure(let error):
+                print(error)
+            }
         }
     }
 }

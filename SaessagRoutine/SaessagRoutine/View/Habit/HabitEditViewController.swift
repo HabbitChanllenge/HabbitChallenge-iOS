@@ -15,7 +15,6 @@ final class HabitEditViewController: UIViewController {
     }
 
     private let habitNameView = HabitNameView("")
-    private let repeatCycleView = RepeatCycleView()
     private let categoryView = CategoryView()
     private let verificationCountView = VerificationCountView()
     private let habitEditButton = HabitCreateButton()
@@ -56,7 +55,6 @@ final class HabitEditViewController: UIViewController {
 
         setupUI()
         setupLayout()
-        setupCycleAction()
         configureInitialValues()
     }
 
@@ -67,7 +65,6 @@ final class HabitEditViewController: UIViewController {
 
     private func configureInitialValues() {
         habitNameView.configure(name: habit.name)
-        repeatCycleView.configure(periodType: habit.periodType)
         categoryView.configure(category: habit.categories.first ?? "")
 
         let isWeekly = habit.periodType == "week"
@@ -75,14 +72,6 @@ final class HabitEditViewController: UIViewController {
         weeklyDayView.isHidden = !isWeekly
         verificationCountView.configure(count: habit.totalRepeat)
         weeklyDayView.configure(selectedDays: habit.dayOfWeek ?? [])
-    }
-
-    private func setupCycleAction() {
-        repeatCycleView.onCycleChanged = { [weak self] isWeekly in
-            guard let self else { return }
-            self.verificationCountView.isHidden = isWeekly
-            self.weeklyDayView.isHidden = !isWeekly
-        }
     }
 
     @objc private func editButtonTapped() {
@@ -94,7 +83,7 @@ final class HabitEditViewController: UIViewController {
             return
         }
 
-        let isWeekly = repeatCycleView.periodType == "week"
+        let isWeekly = habit.periodType == "week"
         let repeatCount = verificationCountView.selectedCount
         let selectedDays = weeklyDayView.selectedDays.sorted()
 
@@ -128,8 +117,8 @@ final class HabitEditViewController: UIViewController {
         let alert = UIAlertController(title: "삭제하시겠습니까?", message: "", preferredStyle: .alert)
         let delete = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
             guard let self else { return }
-            self.provider.request(.deleteHabit(habitId: self.habit.habit_id)) { result in
-                guard case let .success(networkResponse) = result,
+            self.provider.request(.deleteHabit(habitId: self.habit.habit_id)) {
+                guard case let .success(networkResponse) = $0,
                       let data = try? networkResponse.map(response.self),
                       data.statusCode == 200 else { return }
                 self.navigationController?.popViewController(animated: true)
@@ -146,7 +135,7 @@ final class HabitEditViewController: UIViewController {
         scrollView.addSubview(stackView)
         scrollView.addSubview(deleteButton)
 
-        [habitNameView, repeatCycleView, categoryView, verificationCountView, weeklyDayView, errorMessageLabel, habitEditButton].forEach {
+        [habitNameView, categoryView, verificationCountView, weeklyDayView, errorMessageLabel, habitEditButton].forEach {
             stackView.addArrangedSubview($0)
         }
     }

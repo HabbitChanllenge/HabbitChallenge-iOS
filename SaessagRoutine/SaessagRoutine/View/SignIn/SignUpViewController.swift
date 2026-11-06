@@ -30,6 +30,7 @@ class SignUpViewController: UIViewController {
         $0.textColor = UIColor(named: "error")
         $0.font = .systemFont(ofSize: 15, weight: .regular)
         $0.isHidden = true
+        $0.numberOfLines = 0
     }
     let signUpButton = UIButton(type: .system).then {
         $0.setTitle("가입하고 시작하기", for: .normal)

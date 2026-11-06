@@ -149,7 +149,7 @@ class LogInViewController: UIViewController, UIGestureRecognizerDelegate {
                     }
                 } else if data.statusCode == 400 {
                     DispatchQueue.main.async {
-                        self.errorMessage.text = "이메일과 비밀번호를 다시 확인해 주세요."
+                        self.errorMessage.text = "이메일을 다시 확인해 주세요."
                         self.errorMessage.isHidden = false
                         
                         self.emailTextField.textField.layer.borderColor = UIColor(named: "error")?.cgColor

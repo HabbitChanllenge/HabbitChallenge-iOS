@@ -173,11 +173,8 @@ final class HabitCreateViewController: UIViewController {
                                 print(err)
                             }
                         }
-                    } else if data.statusCode == 400 {
-                        self.errorMassage.setTitle("잘못된 형식입니다.", for: .normal)
-                        self.errorMassage.isHidden = false
-                    } else if data.statusCode == 401 {
-                        self.errorMassage.setTitle("로그인 상태가 아닙니다.", for: .normal)
+                    } else{
+                        self.errorMassage.setTitle(data.message, for: .normal)
                         self.errorMassage.isHidden = false
                     }
                 case .failure:
@@ -192,11 +189,8 @@ final class HabitCreateViewController: UIViewController {
                     if data.statusCode == 201 {
                         HabitManager.shared.reset()
                         self.navigationController?.popViewController(animated: true)
-                    } else if data.statusCode == 400 {
-                        self.errorMassage.setTitle("잘못된 형식입니다.", for: .normal)
-                        self.errorMassage.isHidden = false
-                    } else if data.statusCode == 401 {
-                        self.errorMassage.setTitle("로그인 상태가 아닙니다.", for: .normal)
+                    } else {
+                        self.errorMassage.setTitle(data.message, for: .normal)
                         self.errorMassage.isHidden = false
                     }
                 case .failure:

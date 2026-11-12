@@ -86,6 +86,12 @@ struct habitInfo: Codable, Equatable {
     let completedCount: Int
     let completed: Bool
     let streak: Int
+
+    var isCompleted: Bool {
+        if completed { return true }
+        guard let totalRepeat else { return false }
+        return completedCount >= max(totalRepeat, 1)
+    }
 }
 
 struct response: Codable {

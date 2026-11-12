@@ -52,7 +52,6 @@ class HomeViewController: UIViewController {
         $0.tintColor = UIColor(named: "gray700")
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
         $0.contentHorizontalAlignment = .right
-        $0.addTarget(self, action: #selector(habitMoreButtonDidTap), for: .touchUpInside)
     }
     let rankText = UILabel().then {
         $0.text = "랭킹"
@@ -67,7 +66,6 @@ class HomeViewController: UIViewController {
         $0.tintColor = UIColor(named: "gray700")
         $0.titleLabel?.font = .systemFont(ofSize: 12, weight: .regular)
         $0.contentHorizontalAlignment = .right
-        $0.addTarget(self, action: #selector(rankMoreButtonDidTap), for: .touchUpInside)
     }
 
     let top3RankCard : TopRankingView = TopRankingView()
@@ -85,7 +83,6 @@ class HomeViewController: UIViewController {
             $0.tintColor = .white
             $0.backgroundColor = UIColor(named: "main600")
             $0.layer.cornerRadius = 10
-            $0.addTarget(self, action: #selector(habitCreateButtonTapped), for: .touchUpInside)
         }
         
         card.addSubview(text)
@@ -99,9 +96,10 @@ class HomeViewController: UIViewController {
         }
         return card
     }()
-    var progressCard : HabitProgressCardView = HabitProgressCardView()
+    var progressCard : HabitProgressCardView = HabitProgressCardView().then { $0.isHidden = true }
     //--------------------------------------------------------------------------
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         navBar.streakLabel.text = "\(StreakManager.shared.allStreak)일"
         API()
     }
@@ -116,7 +114,6 @@ class HomeViewController: UIViewController {
     }
     //---------------------------------------------------------------------------
     private func setHabitCards(habit: habitInfo) {
-        
         var dayStr = ""
         habit.dayOfWeek?.forEach {
             switch $0 {
@@ -141,12 +138,11 @@ class HomeViewController: UIViewController {
             category: habit.categories.first ?? "",
             cycle: habit.periodType,
             day: dayStr,
-            complated: habit.completed
+            complated: habit.isCompleted
         )
         
-        card.onStatusChanged = {
-            //습관 인증 API 연동
-            let homeVC = self
+        card.onStatusChanged = { [weak self] in
+            guard let self = self else { return }
             self.progressCard.updateBar()
             self.rProvider.request(.getStreak) {
                 switch $0 {
@@ -160,8 +156,8 @@ class HomeViewController: UIViewController {
         }
         habitStack.addArrangedSubview(card)
         
-        card.onPatchButtonTapped = { _ in//수정버튼 클릭 시 실행 클로저
-            guard let tabBarController = self.tabBarController else { return }
+        card.onPatchButtonTapped = { [weak self] _ in
+            guard let self = self, let tabBarController = self.tabBarController else { return }
             tabBarController.swichTo(tab: .habit)// 탭을 어디로 이동할지
             
             DispatchQueue.main.async {
@@ -170,8 +166,10 @@ class HomeViewController: UIViewController {
                 }
             }
         }
-        card.onVerifiyed = { id, didTimes in
-            self.hProvider.request(.verifyHabit(habitId: id, completedCount: didTimes)) {
+        card.onVerifiyed = { [weak self, weak card] id, didTimes in
+            guard let self = self, let card = card else { return }
+            self.hProvider.request(.verifyHabit(habitId: id, completedCount: didTimes)) { [weak card] in
+                guard let card = card else { return }
                 switch $0 {
                 case .success(let res):
                     guard let data = try? res.map(response.self) else { print("습관 인증 이후 디코딩 실패"); return }
@@ -182,7 +180,7 @@ class HomeViewController: UIViewController {
                             card.verificationButton.isEnabled = false
                             card.verificationButton.backgroundColor = UIColor(named: "main500")
                             card.habitCard.backgroundColor = UIColor(named: "main300")
-                            HabitManager.shared.didHabits += 1
+                            HabitManager.shared.didHabits = min(HabitManager.shared.totalHabits, HabitManager.shared.didHabits + 1)
                             card.onStatusChanged?()
                         }//성공 했으면 인증버튼 비활성화, 배경색 변경
                     }
@@ -192,7 +190,6 @@ class HomeViewController: UIViewController {
                 
             }
         }
-        card.onStatusChanged?()
     }//습관 카드 생성 함수
     private func setLayout() {
         view.addSubview(navBar)
@@ -205,7 +202,12 @@ class HomeViewController: UIViewController {
         
         habitStack.addArrangedSubview(habitTextView)
         habitStack.addArrangedSubview(noHabitCard)
+        habitStack.addArrangedSubview(progressCard)
         
+        habitMoreButton.addTarget(self, action: #selector(habitMoreButtonDidTap), for: .touchUpInside)
+        rankMoreButton.addTarget(self, action: #selector(rankMoreButtonDidTap), for: .touchUpInside)
+        noHabitCard.subviews.compactMap { $0 as? UIButton }.first?.addTarget(self, action: #selector(habitCreateButtonTapped), for: .touchUpInside)
+
         habitTextView.addArrangedSubview(habitText)
         habitTextView.addArrangedSubview(habitMoreButton)
         
@@ -229,6 +231,11 @@ class HomeViewController: UIViewController {
         noHabitCard.snp.makeConstraints {
             $0.height.equalTo(116)
             $0.width.equalTo(354)
+        }
+        progressCard.snp.makeConstraints {
+            $0.height.equalTo(116)
+            $0.width.equalTo(wholeStack)
+            $0.leading.trailing.equalToSuperview()
         }
         habitTextView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
@@ -267,18 +274,29 @@ class HomeViewController: UIViewController {
             switch $0 {
             case .success(let res):
                 guard let data = try? res.map([habitInfo].self) else { return }
-                self.habitStack.subviews.forEach{ $0.removeFromSuperview() }//스택 초기화
-                
-                let cnt = (data.count >= 3) ? 3 : data.count
-                guard !data.isEmpty else {
-                    self.habitStack.addArrangedSubview(self.noHabitCard)
-                    self.noHabitCard.isHidden = false
-                    
-                    return
-                }
-                self.noHabitCard.isHidden = true
-                
-                for habit in data.prefix(cnt) {
+                HabitManager.shared.reset()
+                HabitManager.shared.totalHabits = data.count
+                HabitManager.shared.didHabits = data.filter {
+                    $0.isCompleted
+                }.count
+
+                self.habitStack.arrangedSubviews
+                    .filter { $0 is HabitCardView }
+                    .forEach {
+                        self.habitStack.removeArrangedSubview($0)
+                        $0.removeFromSuperview()
+                    }
+
+                self.noHabitCard.isHidden = !data.isEmpty
+                self.progressCard.isHidden = data.isEmpty
+                guard !data.isEmpty else { return }
+
+                self.progressCard.configure(
+                    total: HabitManager.shared.totalHabits,
+                    complete: HabitManager.shared.didHabits
+                )
+
+                for habit in data.prefix(2) {
                     self.setHabitCards(habit: habit)
                 }
                 
@@ -290,7 +308,7 @@ class HomeViewController: UIViewController {
         rProvider.request(.getRank) {
             switch $0 {
             case .success(let res):
-                guard let data = try? res.map([RankData].self) else { return }
+                guard let data = try? res.map([RankData].self), !data.isEmpty else { return }
                 if data.count >= 3 {//유저가 3명보다 많거나 3명일 시
                     self.top3RankCard.configure(firstName: data[0].userName, firstDays: data[0].allStreak, secondName: data[1].userName, secondDays: data[1].allStreak, thirdName: data[2].userName, thirdDays: data[2].allStreak)
                 } else if data.count == 2 {//3명보다 적을 시
@@ -308,7 +326,7 @@ class HomeViewController: UIViewController {
                    
                     return//이 밑은 3명 이상일 때에만 실행 할거다.
                 }
-            case .failure(let err):
+            case .failure:
                 return
             }
         }

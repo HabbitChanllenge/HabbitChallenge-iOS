@@ -10,6 +10,5 @@ import Foundation
 class StreakManager {
     static let shared = StreakManager()
     private init(){}
-    
-    var allStreak : Int = 4444
+    var allStreak : Int = 0
 }

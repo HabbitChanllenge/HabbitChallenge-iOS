@@ -37,7 +37,6 @@ class HabitProgressCardView : UIView {
         $0.textColor = .white
         $0.font = .systemFont(ofSize: 12, weight: .medium)
     }
-    var progressBarWidth: CGFloat = 0
     
     init() {
         super.init(frame: .zero)
@@ -48,15 +47,25 @@ class HabitProgressCardView : UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setAtrribute(total: Int, complete: Int) {
-        let totalFloat = CGFloat(max(total, 1)) // 0 나누기 방지
-        let completeFloat = CGFloat(complete)
-        
-        progressBarWidth = (completeFloat / totalFloat) * 322.0
-        
-        let progressText = "\(complete)/\(total)"
+    func configure(total: Int, complete: Int, animated: Bool = false) {
+        let safeTotal = max(total, 0)
+        let safeComplete = min(max(complete, 0), safeTotal)
+        let progress = safeTotal > 0 ? CGFloat(safeComplete) / CGFloat(safeTotal) : 0
+        let progressText = "\(safeComplete)/\(safeTotal)"
+
         grayProgressLabel.text = progressText
         whiteProgressLabel.text = progressText
+        progressBar.snp.remakeConstraints {
+            $0.leading.bottom.height.equalToSuperview()
+            $0.width.equalToSuperview().multipliedBy(progress)
+        }
+
+        let layout: () -> Void = { self.superview?.layoutIfNeeded() }
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: layout)
+        } else {
+            layout()
+        }
     }
     
     private func setupView() {
@@ -80,7 +89,7 @@ class HabitProgressCardView : UIView {
         }
         progressBar.snp.makeConstraints {
             $0.leading.bottom.height.equalToSuperview()
-            $0.width.equalTo(self.progressBarWidth)
+            $0.width.equalToSuperview().multipliedBy(0)
         }
         titleLabel.snp.makeConstraints {
             $0.top.leading.equalToSuperview().inset(16)
@@ -95,16 +104,11 @@ class HabitProgressCardView : UIView {
     }
     
     func updateBar() {
-        let total = HabitManager.shared.totalHabits
-        let complete = HabitManager.shared.didHabits
-        setAtrribute(total: total, complete: complete)
-        print("total: \(total), complete: \(complete)")
-        progressBar.snp.updateConstraints {
-            $0.width.equalTo(self.progressBarWidth)
-        }
-        UIView.animate(withDuration: 0.3) {
-            self.layoutIfNeeded()
-        }
+        configure(
+            total: HabitManager.shared.totalHabits,
+            complete: HabitManager.shared.didHabits,
+            animated: true
+        )
     }
 }
 

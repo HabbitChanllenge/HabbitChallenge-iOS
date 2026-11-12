@@ -87,6 +87,9 @@ final class HabitViewController: UIViewController {
 
         cardStackView.addArrangedSubview(habitProgressCard)
         HabitManager.shared.totalHabits = habits.count
+        HabitManager.shared.didHabits = habits.filter {
+            $0.isCompleted
+        }.count
 
         guard !habits.isEmpty else {
             habitProgressCard.isHidden = true
@@ -95,6 +98,10 @@ final class HabitViewController: UIViewController {
         }
 
         habitProgressCard.isHidden = false
+        habitProgressCard.configure(
+            total: HabitManager.shared.totalHabits,
+            complete: HabitManager.shared.didHabits
+        )
         habits.forEach(createCard)
     }
 
@@ -153,7 +160,7 @@ final class HabitViewController: UIViewController {
             category: habit.categories.first ?? "",
             cycle: habit.periodType,
             day: dayText,
-            complated: habit.completed
+            complated: habit.isCompleted
         )
         cardStackView.addArrangedSubview(card)
 
@@ -187,7 +194,7 @@ final class HabitViewController: UIViewController {
                             card.verificationButton.isEnabled = false
                             card.verificationButton.backgroundColor = UIColor(named: "main500")
                             card.habitCard.backgroundColor = UIColor(named: "main300")
-                            HabitManager.shared.didHabits += 1
+                            HabitManager.shared.didHabits = min(HabitManager.shared.totalHabits, HabitManager.shared.didHabits + 1)
                             card.onStatusChanged?()
                         }//성공 했으면 인증버튼 비활성화, 배경색 변경
                     }
@@ -197,6 +204,5 @@ final class HabitViewController: UIViewController {
                 
             }
         }
-        card.onStatusChanged?()
     }
 }

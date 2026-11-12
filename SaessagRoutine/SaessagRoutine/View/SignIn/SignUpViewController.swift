@@ -37,7 +37,6 @@ class SignUpViewController: UIViewController {
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 10
         $0.titleLabel?.font = .systemFont(ofSize: 25, weight: .semibold)
-        $0.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
     }
     let toLoginText = UILabel().then {
         $0.text = "이미 계정이 있으신가요?"
@@ -48,7 +47,6 @@ class SignUpViewController: UIViewController {
         $0.setTitle("로그인", for: .normal)
         $0.setTitleColor(UIColor(named: "main700"), for: .normal)
         $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
-        $0.addTarget(self, action: #selector(toLogin), for: .touchUpInside)
     }
     
     override func viewDidLoad() {
@@ -57,7 +55,8 @@ class SignUpViewController: UIViewController {
         
         setupLayout()
         buttonChange()
-        //buttonChange 함수 초기 호출 해서 기본값 잡기
+        signUpButton.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
+        toLoginButton.addTarget(self, action: #selector(toLogin), for: .touchUpInside)
         
         idTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
         emailTextField.textField.addTarget(self, action: #selector(buttonChange), for: .editingChanged)
